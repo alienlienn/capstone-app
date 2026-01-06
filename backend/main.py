@@ -6,6 +6,11 @@ from routers import superadmin, account
 
 app = FastAPI()
 
+origins = [
+    "http://localhost:8081",  # For local web testing
+    "exp://192.168.1.103:8081", # For Expo Go
+]
+
 models.Base.metadata.create_all(bind=engine)
 
 # Enable CORS
