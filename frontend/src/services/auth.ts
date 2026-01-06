@@ -6,9 +6,7 @@ export async function loginUser(payload: LoginRequest) {
     `${ENV.API_BASE_URL}/account/user_authentication`,
     {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     }
   );

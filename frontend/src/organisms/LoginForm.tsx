@@ -26,7 +26,7 @@ function LoginForm() {
 
       const user = await loginUser(payload);
       console.log("Logged in user:", user);
-      navigation.replace("Home");
+      navigation.navigate("NavBarRoutes", { screen: "Home" });
     } catch (error: any) {
       setErrorMessage(error?.message || "Invalid email or password. Please try again.");
     } finally {

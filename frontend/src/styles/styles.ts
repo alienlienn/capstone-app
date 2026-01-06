@@ -19,9 +19,9 @@ export const styles = StyleSheet.create({
 	buttonContainer: {
 		width: "85%",
 		backgroundColor: colors.primary_500,
-    	paddingVertical: 16,
     	borderRadius: 8,
     	alignItems: "center",
+		justifyContent: "center",
     	marginTop: 8,
 	},
 
