@@ -1,62 +1,59 @@
-import { View, Text, Pressable } from "react-native";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { View, Text, Pressable, Image } from "react-native";
+import { useNavigation, getFocusedRouteNameFromRoute } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import MaterialIcons from "@react-native-vector-icons/material-icons";
+import { TabItem } from "../types/types";
+import { styles, navBarTabIcon, navBarTabLabel } from "../styles/styles";
 
-type TabItem = {
-  label: string;
-  icon: React.ComponentProps<typeof MaterialIcons>["name"];
-  route: string;
-};
 
 const TABS: TabItem[] = [
-  { label: "Dashboard", icon: "dashboard", route: "Dashboard" },
-  { label: "Home", icon: "home", route: "Home" },
-  { label: "Results", icon: "bar-chart", route: "Results" },
-  { label: "Messages", icon: "chat", route: "Messages" },
+  {
+    label: "Dashboard",
+    icon: require("../../assets/dashboard_icon.png"),
+    route: "Dashboard",
+  },
+  {
+    label: "Results",
+    icon: require("../../assets/result_icon.png"),
+    route: "Results",
+  },
+  {
+    label: "Home",
+    icon: require("../../assets/home_icon.png"),
+    route: "Home",
+  },
+  {
+    label: "Messages",
+    icon: require("../../assets/message_icon.png"),
+    route: "Messages",
+  },
+  {
+    label: "Profile",
+    icon: require("../../assets/profile_icon.png"),
+    route: "Profile",
+  },
 ];
 
-function BottomNavbar() {
+function BottomNavbar({ route }: { route: any }) {
   const navigation = useNavigation<NativeStackNavigationProp<any>>();
-  const route = useRoute();
+  const currentRouteName = getFocusedRouteNameFromRoute(route) || "Home";
 
   return (
-    <View
-      style={{
-        flexDirection: "row",
-        height: 72,
-        backgroundColor: "#ffffff",
-        borderTopWidth: 1,
-        borderTopColor: "#e5e7eb",
-      }}
-    >
+    <View style={styles.navBarContainer}>
       {TABS.map((tab) => {
-        const isActive = route.name === tab.route;
+        const isActive = currentRouteName === tab.route;
 
         return (
           <Pressable
             key={tab.route}
-            onPress={() => navigation.navigate(tab.route)}
-            style={({ pressed }) => ({
-              flex: 1,
-              alignItems: "center",
-              justifyContent: "center",
-              opacity: pressed ? 0.6 : 1,
-            })}
+            onPress={() => navigation.navigate("NavBarRoutes", { screen: tab.route })}
+            style={styles.navBarTab}
           >
-            <MaterialIcons
-              name={tab.icon}
-              size={24}
-              color={isActive ? "#4F46E5" : "#9CA3AF"}
+            <Image
+              source={tab.icon}
+              style={navBarTabIcon(isActive)}
+              resizeMode="contain"
             />
-            <Text
-              style={{
-                fontSize: 12,
-                marginTop: 4,
-                fontWeight: isActive ? "600" : "400",
-                color: isActive ? "#4F46E5" : "#9CA3AF",
-              }}
-            >
+            <Text style={navBarTabLabel(isActive)}>
               {tab.label}
             </Text>
           </Pressable>
@@ -67,3 +64,4 @@ function BottomNavbar() {
 }
 
 export default BottomNavbar;
+

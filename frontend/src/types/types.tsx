@@ -1,6 +1,6 @@
 import { DimensionValue, } from "react-native";
 
-
+// Interfaces
 export interface UserInputProps {
   inputValue: string;
   placeholder: string;
@@ -26,6 +26,13 @@ export interface LoginRequest {
   password: string;
 }
 
+
+// Types
+export type TabItem = {
+  label: string;
+  icon: any;
+  route: string;
+};
 
 
 
