@@ -4,6 +4,8 @@ from sqlalchemy import Column, Integer, String, Text, ForeignKey, Date, DateTime
 from sqlalchemy.sql import func
 
 
+DEFAULT_PROFILE_IMAGE = "http://localhost:8000/static/default-avatar.png"
+
 class UserRole(str, Enum):
     SUPER_ADMIN = "super_admin"
     ADMIN = "admin"
@@ -57,8 +59,10 @@ class UserAccount(Base):
     password_hash = Column(String(255), nullable=False)
     role = Column(SQLAlchemyEnum(UserRole), nullable=False)
     school_id = Column(Integer, ForeignKey("schools.id"), nullable=True)
+    profile_image_url = Column(String(500), nullable=True, server_default=DEFAULT_PROFILE_IMAGE)
     first_name = Column(String(50), nullable=False)
     last_name = Column(String(50), nullable=True)
+    gender = Column(SQLAlchemyEnum(GenderEnum), nullable=True, default=GenderEnum.OTHER) 
     mobile_number = Column(String(20), nullable=True)
     status = Column(SQLAlchemyEnum(AccountStatus), default=AccountStatus.ACTIVE)
     created_at = Column(DateTime(timezone=True), server_default=func.now())

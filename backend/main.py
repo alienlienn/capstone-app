@@ -1,17 +1,12 @@
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-import models
-from database import engine
 from routers import superadmin, account
 
 app = FastAPI()
 
-origins = [
-    "http://localhost:8081",  # For local web testing
-    "exp://192.168.1.103:8081", # For Expo Go
-]
-
-models.Base.metadata.create_all(bind=engine)
+# Static folder
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Enable CORS
 app.add_middleware(

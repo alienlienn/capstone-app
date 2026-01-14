@@ -1,6 +1,20 @@
-.venv
-__pycache__
-*.pyc
-
+# ===== Python =====
+.venv/
+__pycache__/
 **/__pycache__/
-projects.db
+*.pyc
+*.pyo
+*.pyd
+
+# ===== Environment variables =====
+.env
+.env.*
+
+# ===== Database =====
+educonnect.db
+*.sqlite
+*.sqlite3
+
+# ===== Alembic =====
+alembic/__pycache__/
+
