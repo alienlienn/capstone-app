@@ -34,5 +34,17 @@ export type TabItem = {
   route: string;
 };
 
+export type CalendarViewProps = {
+  month?: number;
+  year?: number;
+};
+
+export type Day = {
+  dateString: string;
+  day: number;
+  month: number;
+  year: number;
+};
+
 
 

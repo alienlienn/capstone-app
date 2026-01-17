@@ -1,6 +1,6 @@
 import { View, Text } from "react-native";
 
-function DashboardPage() {
+function ProfilePage() {
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#EAEEFB" }}>
       <Text>Profile Page</Text>
@@ -8,4 +8,4 @@ function DashboardPage() {
   );
 }
 
-export default DashboardPage;
+export default ProfilePage;

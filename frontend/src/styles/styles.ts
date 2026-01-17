@@ -8,7 +8,7 @@ export const styles = StyleSheet.create({
     borderColor: colors.gray_300,
     borderWidth: 1,
     borderRadius: 8,
-    marginBottom: 8,
+    marginBottom: 12,
   },
 
   userInputText: {
@@ -23,7 +23,7 @@ export const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 8,
+    marginTop: 10,
   },
 
   buttonText: {
@@ -67,7 +67,7 @@ export const styles = StyleSheet.create({
   logoImageSize: {
     width: 230,
     height: 230,
-    marginBottom: 12,
+    marginBottom: 24,
   },
 
   navBarContainer: {
