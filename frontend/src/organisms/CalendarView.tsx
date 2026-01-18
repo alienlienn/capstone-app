@@ -26,7 +26,6 @@ export default function CalendarView({ month, year }: CalendarViewProps) {
 
   return (
     <View style={calendarStyles.calendarContainer}>
-      {/* Calendar component */}
       <Calendar
         current={`${currentYear}-${String(currentMonth).padStart(2, "0")}-01`}
         onDayPress={(day: Day) => setSelectedDate(day.dateString)}

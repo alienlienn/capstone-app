@@ -15,7 +15,9 @@ export const calendarStyles = StyleSheet.create({
 		borderRadius: 14,
     paddingBottom: 4,
     backgroundColor: colors.gray_50,
-    elevation: 4,
+    borderWidth: 2,
+    borderColor: colors.gray_200,
+    elevation: 8,
     shadowColor: colors.gray_900,
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.12,
@@ -24,7 +26,7 @@ export const calendarStyles = StyleSheet.create({
 
   dayHeaderLineTop: {
     position: "absolute",
-    top: 52, 
+    top: 53, 
     left: 0,
     right: 0,
     borderBottomWidth: 1,
@@ -34,7 +36,7 @@ export const calendarStyles = StyleSheet.create({
 
   dayHeaderLineBottom: {
     position: "absolute",
-    top: 78, 
+    top: 77, 
     left: 0,
     right: 0,
     borderBottomWidth: 1,

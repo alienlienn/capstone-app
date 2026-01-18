@@ -30,6 +30,6 @@ export default ProfilePage;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#EAEEFB",
+    backgroundColor: "#f6f7f9",
   },
 });
