@@ -1,4 +1,4 @@
-import { View, Text, Image, Pressable, StyleSheet, Switch } from "react-native";
+import { View, Text, Image, Pressable, StyleSheet } from "react-native";
 import { colors } from "../styles/colors";
 
 interface SettingOptionProps {
@@ -11,7 +11,15 @@ interface SettingOptionProps {
   showTopDivider?: boolean;
 }
 
-export default function SettingOption({icon, label, onPress, showToggle = false, toggleValue, onToggleChange, showTopDivider = false}: SettingOptionProps) {
+export default function SettingOption({
+  icon,
+  label,
+  onPress,
+  showToggle = false,
+  toggleValue,
+  onToggleChange,
+  showTopDivider = false,
+}: SettingOptionProps) {
   return (
     <View style={styles.wrapper}>
       {showTopDivider && <View style={styles.divider} />}
@@ -27,13 +35,17 @@ export default function SettingOption({icon, label, onPress, showToggle = false,
         </View>
 
         {showToggle && (
-          <Switch
-            value={toggleValue}
-            onValueChange={onToggleChange}
-            trackColor={{ false: colors.gray_300, true: colors.primary_650 }}
-            thumbColor= {colors.gray_50}
-            style={styles.switch}
-          />
+          <Pressable
+            onPress={() => onToggleChange?.(!toggleValue)}
+            style={[styles.customSwitch, toggleValue && styles.customSwitchOn]}
+          >
+            <View
+              style={[
+                styles.customThumb,
+                toggleValue && styles.customThumbOn,
+              ]}
+            />
+          </Pressable>
         )}
       </Pressable>
 
@@ -45,18 +57,19 @@ export default function SettingOption({icon, label, onPress, showToggle = false,
 const styles = StyleSheet.create({
   wrapper: {
     width: "94%",
-    paddingHorizontal: 16
+    paddingHorizontal: 16,
+    alignSelf: "center",
   },
 
   row: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingVertical: 22,
+    paddingVertical: 20,
   },
 
   compactRow: {
-    paddingVertical: 8,
+    paddingVertical: 20,
   },
 
   left: {
@@ -82,7 +95,31 @@ const styles = StyleSheet.create({
     backgroundColor: colors.gray_200,
   },
 
-  switch: {
-    transform: [{ scale: 0.90 }],
+  customSwitch: {
+    width: 42,
+    height: 24,
+    borderRadius: 12,
+    borderWidth: 1.7,
+    borderColor: colors.primary_800,
+    padding: 3,
+    justifyContent: "center",
+  },
+
+  customSwitchOn: {
+    backgroundColor: colors.primary_100,
+    borderColor: colors.primary_600,
+  },
+
+  customThumb: {
+    width: 16,
+    height: 16,
+    borderRadius: 10,
+    backgroundColor: colors.primary_800,
+    alignSelf: "flex-start",
+  },
+
+  customThumbOn: {
+    alignSelf: "flex-end",
+    backgroundColor: colors.primary_600,
   },
 });

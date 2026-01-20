@@ -1,6 +1,6 @@
 import { View, StyleSheet } from "react-native";
 import { useState } from "react";
-import SettingOption from "../atoms/SettingOption";
+import SettingOption from "../molecules/SettingOption";
 
 export default function SettingsList() {
   const [darkMode, setDarkMode] = useState(false);
@@ -25,7 +25,7 @@ export default function SettingsList() {
 
       <SettingOption
         icon={require("../../assets/notification_icon.png")}
-        label="Notifications"
+        label="Push Notifications"
         showToggle
         toggleValue={notification}
         onToggleChange={setNotification}

@@ -1,6 +1,5 @@
 export const colors = {
   background_color: "#F2F3FA",
-  page_background_color: "#F6F7F9",
   
   primary_50:  "#EFF6FF",
   primary_100: "#DBEAFE",

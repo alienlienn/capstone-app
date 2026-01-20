@@ -87,6 +87,12 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
 	},
 
+  pageContainer: {
+    flex: 1,
+    backgroundColor: colors.background_color,
+    padding: 16,
+  },
+
 
 });
 
