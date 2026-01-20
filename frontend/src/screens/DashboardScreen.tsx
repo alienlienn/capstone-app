@@ -1,6 +1,6 @@
 import { View, Text } from "react-native";
 
-function DashboardPage() {
+function DashboardScreen() {
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#F2F3FA" }}>
       <Text>Dashboard Page</Text>
@@ -8,4 +8,4 @@ function DashboardPage() {
   );
 }
 
-export default DashboardPage;
+export default DashboardScreen;

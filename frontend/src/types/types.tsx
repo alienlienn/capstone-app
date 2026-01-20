@@ -46,5 +46,17 @@ export type Day = {
   year: number;
 };
 
+export type User = {
+  first_name: string;
+  last_name: string;
+  email: string;
+  password?: string;
+  gender?: string;
+  mobile_number?: string;
+};
 
+export type ProfileDetailsFormProps = {
+  user: User;
+  onUpdate?: (updatedUser: User) => void; 
+};
 

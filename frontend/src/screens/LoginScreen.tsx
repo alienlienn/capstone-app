@@ -3,7 +3,7 @@ import LoginForm from "../organisms/LoginForm";
 import { styles } from "../styles/styles";
 
 
-function LoginPage() {
+function LoginScreen() {
   return (
     <View style={styles.loginPageContainer}>
       <Image
@@ -16,4 +16,4 @@ function LoginPage() {
   );
 }
 
-export default LoginPage;
+export default LoginScreen;

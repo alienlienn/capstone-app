@@ -3,7 +3,7 @@ import ProfileHeader from "../organisms/ProfileHeader";
 import SettingsList from "../organisms/SettingsList";
 
 
-function ProfilePage() {
+function ProfileScreen() {
   const user = {
     first_name: "Rita",
     last_name: "Smith",
@@ -20,12 +20,12 @@ function ProfilePage() {
         email={user.email}
         imageUrl={user.profile_image_url}
       />
-      <SettingsList />
+      <SettingsList user={user} />
     </ScrollView >
   );
 }
 
-export default ProfilePage;
+export default ProfileScreen;
 
 const styles = StyleSheet.create({
   container: {

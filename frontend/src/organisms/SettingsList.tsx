@@ -1,8 +1,10 @@
 import { View, StyleSheet } from "react-native";
 import { useState } from "react";
+import { useNavigation } from "@react-navigation/native";
 import SettingOption from "../molecules/SettingOption";
 
-export default function SettingsList() {
+export default function SettingsList({ user }: { user: any }) {
+  const navigation = useNavigation();
   const [darkMode, setDarkMode] = useState(false);
   const [notification, setNotification] = useState(true);
 
@@ -20,7 +22,7 @@ export default function SettingsList() {
       <SettingOption
         icon={require("../../assets/avatar_icon.png")}
         label="Profile details"
-        onPress={() => console.log("Profile details")}
+        onPress={() => (navigation as any).navigate("EditProfile", { user })} 
       />
 
       <SettingOption

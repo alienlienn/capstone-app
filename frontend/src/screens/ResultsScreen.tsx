@@ -1,6 +1,6 @@
 import { View, Text } from "react-native";
 
-function ResultsPage() {
+function ResultsScreen() {
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#F2F3FA" }}>
       <Text>Results Page</Text>
@@ -8,4 +8,4 @@ function ResultsPage() {
   );
 }
 
-export default ResultsPage;
+export default ResultsScreen;
