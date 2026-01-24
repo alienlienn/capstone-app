@@ -1,36 +1,21 @@
-import { Image, StyleSheet, View } from "react-native";
-import { colors } from "../styles/colors";
+import { Image, View, ViewStyle } from "react-native";
+import { ProfileAvatarProps } from "../types/types";
+import { styles } from "../styles/styles";
 
-type ProfileAvatarProps = {
-  imageUrl?: string;
-};
 
-function ProfileAvatar({ imageUrl }: ProfileAvatarProps) {
+function ProfileAvatar({ imageUrl, containerStyle }: ProfileAvatarProps & { containerStyle?: ViewStyle }) {
   return (
-    <View style={styles.container}>
+    <View style={[styles.avatarContainer, containerStyle]}>
       <Image
-        source={{
-          uri: imageUrl ?? "http://localhost:8000/static/default-avatar.png",
-        }}
-        style={styles.avatar}
+        source={
+          imageUrl
+            ? { uri: imageUrl }
+            : require("../../assets/default_profile_avatar.png") 
+        }
+        style={styles.avatarImage}
       />
     </View>
   );
 }
 
 export default ProfileAvatar;
-
-const styles = StyleSheet.create({
-  container: {
-    borderRadius: 60,
-    padding: 2,
-    elevation: 12,
-    marginTop: -20,
-    backgroundColor: colors.gray_50,
-  },
-  avatar: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-  },
-});

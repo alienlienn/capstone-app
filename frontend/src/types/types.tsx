@@ -26,12 +26,34 @@ export interface LoginRequest {
   password: string;
 }
 
+export interface SettingOptionProps {
+  icon: any;
+  label: string;
+  onPress?: () => void;
+  showToggle?: boolean;
+  toggleValue?: boolean;
+  onToggleChange?: (value: boolean) => void;
+  showTopDivider?: boolean;
+  showChevron?: boolean;
+}
+
 
 // Types
 export type TabItem = {
   label: string;
   icon: any;
   route: string;
+};
+
+export type ProfileAvatarProps = {
+  imageUrl?: string | null;
+};
+
+export type ProfileHeaderProps = {
+  fullName: string;
+  phone?: string;
+  email: string;
+  imageUrl?: string;
 };
 
 export type CalendarViewProps = {
@@ -53,6 +75,7 @@ export type User = {
   password?: string;
   gender?: string;
   mobile_number?: string;
+  profile_image_url?: string;
 };
 
 export type ProfileDetailsFormProps = {

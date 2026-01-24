@@ -18,3 +18,16 @@ export async function loginUser(payload: LoginRequest) {
 
   return response.json();
 }
+
+export async function fetchUserById(userId: string) {
+  const response = await fetch(`${ENV.API_BASE_URL}/account/profile_details/${userId}`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch user details");
+  }
+
+  return response.json();
+}

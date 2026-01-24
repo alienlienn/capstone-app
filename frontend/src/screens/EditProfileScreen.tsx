@@ -1,14 +1,17 @@
 import React from "react";
 import { ScrollView } from "react-native";
-import EditProfileDetailsForm from "../organisms/EditProfileForm";
+import EditProfileForm from "../organisms/EditProfileForm";
 import { styles } from "../styles/styles";
 
-export default function EditProfileScreen({ route }: any) {
-  const user = route.params?.user;
+export default function EditProfileScreen() {
+  const user = (global as any).loggedInUser;
 
   return (
-    <ScrollView style={styles.pageContainer}>
-      <EditProfileDetailsForm user={user} />
+    <ScrollView 
+      style={styles.pageContainer}
+      showsVerticalScrollIndicator={false}
+    >
+      <EditProfileForm user={user} />
     </ScrollView>
   );
 }

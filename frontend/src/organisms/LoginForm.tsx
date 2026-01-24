@@ -3,7 +3,7 @@ import { View, Text } from "react-native";
 import Button from "../atoms/Button";
 import UserInput from "../atoms/UserInput";
 import LinkText from "../atoms/LinkText";
-import { loginUser } from "../services/auth";
+import { loginUser, fetchUserById } from "../services/auth";
 import { LoginRequest } from "../types/types";
 import { styles } from "../styles/styles";
 import { useNavigation } from "@react-navigation/native";
@@ -19,13 +19,15 @@ function LoginForm() {
 
   const handleLogin = async () => {
     const payload: LoginRequest = { email, password };
-
     try {
       setLoading(true);
       setErrorMessage(null);
 
-      const user = await loginUser(payload);
+      const loginResponse  = await loginUser(payload);
+      const user = await fetchUserById(loginResponse.user_id);
+      (global as any).loggedInUser = user;
       console.log("Logged in user:", user);
+
       navigation.navigate("NavBarRoutes", { screen: "Home" });
     } catch (error: any) {
       setErrorMessage(error?.message || "Invalid email or password. Please try again.");
@@ -56,6 +58,7 @@ function LoginForm() {
         linkTitle="Forgot Password?" 
         onPressLink={handleForgotPassword}
       />
+
       {errorMessage && (
         <Text style={styles.errorText}>{errorMessage}</Text>
       )}

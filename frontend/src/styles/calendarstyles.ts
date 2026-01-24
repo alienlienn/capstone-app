@@ -9,6 +9,7 @@ export const calendarStyles = StyleSheet.create({
     alignSelf: "center",
     marginTop: 30,
     marginBottom: 24,
+    paddingHorizontal: 12,
   },
 
 	calendarComponent: {

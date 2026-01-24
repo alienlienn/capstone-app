@@ -32,6 +32,27 @@ export const styles = StyleSheet.create({
     color: colors.gray_50,
   },
 
+  avatarContainer: {
+    width: 96,            
+    height: 96,
+    borderRadius: 999,
+    backgroundColor: colors.gray_100,
+    elevation: 12,
+    shadowColor: colors.gray_900,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.18,
+    shadowRadius: 8,
+    alignItems: "center",   
+    justifyContent: "center",
+    marginTop: -12,
+  },
+
+  avatarImage: {
+    width: 120,
+    height: 120,
+    borderRadius: 999,
+  },
+
   loginFormContainer: {
     width: "100%",
     maxWidth: 400,
@@ -90,9 +111,197 @@ export const styles = StyleSheet.create({
   pageContainer: {
     flex: 1,
     backgroundColor: colors.background_color,
-    padding: 16,
   },
 
+  settingOptionWrapper: {
+    width: "94%",
+    paddingHorizontal: 16,
+    alignSelf: "center",
+  },
+
+  optionRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 22,
+  },
+
+  optionRowCompact: {
+    paddingVertical: 20,
+  },
+
+  optionContent: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+
+  optionIcon: {
+    width: 20,
+    height: 20,
+    marginRight: 14,
+    resizeMode: "contain",
+  },
+
+  optionLabel: {
+    fontSize: 16,
+    color: colors.primary_850,
+    fontWeight: "400",
+  },
+
+  chevronIcon: {
+    width: 14,
+    height: 14,
+    marginRight: 8,
+    resizeMode: "contain",
+    tintColor: colors.primary_850,
+  },
+
+  dividerLine: {
+    height: 1,
+    backgroundColor: colors.gray_200,
+  },
+
+  customSwitch: {
+    width: 42,
+    height: 24,
+    borderRadius: 12,
+    borderWidth: 1.7,
+    borderColor: colors.primary_800,
+    padding: 3,
+    marginRight: 4,
+    justifyContent: "center",
+  },
+
+  customSwitchOn: {
+    backgroundColor: colors.primary_100,
+    borderColor: colors.primary_600,
+  },
+
+  customThumb: {
+    width: 16,
+    height: 16,
+    borderRadius: 10,
+    backgroundColor: colors.primary_800,
+    alignSelf: "flex-start",
+  },
+
+  customThumbOn: {
+    alignSelf: "flex-end",
+    backgroundColor: colors.primary_600,
+  },
+
+  profileHeaderBackground: {
+    height: 170,
+    backgroundColor: colors.primary_200,
+  },
+
+  headerContent: {
+    alignItems: "center",
+    marginTop: -48,
+    paddingHorizontal: 16,
+  },
+
+  displayName: {
+    fontSize: 18,
+    fontWeight: "600",
+    marginTop: 12,
+    color: colors.primary_850, 
+  },
+
+  contactContainer: {
+    marginTop: 16,
+    width: "94%",
+  },
+
+  contactRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingVertical: 4,
+  },
+
+  contactLabel: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: colors.gray_400, 
+  },
+
+  contactValue: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: colors.primary_850,
+  },
+
+  settingListContainer: {
+    flex: 1,  
+    alignItems: "center",
+    marginTop: 32,
+  },
+
+  editProfileContainer: {
+    flex: 1,
+    backgroundColor: colors.background_color,
+    paddingTop: 20,
+  },
+
+  editProfileHeaderContainer: {
+    flexDirection: "row",
+    alignItems: "center",     
+    marginBottom: 4,
+  },
+
+  editProfileHeaderTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: colors.primary_850,
+    marginLeft: 2,
+    paddingBottom: 2,
+  },
+
+  backAction: {
+    width: 36,
+    height: 36,
+    marginLeft: 8,
+    justifyContent: "center",
+  },
+
+  backIcon: {
+    width: 18,
+    height: 18,
+    resizeMode: "contain",
+    alignSelf: "center",
+  },
+
+  scrollContent: {
+    paddingHorizontal: 24,
+  },
+
+  editProfileAvatar: {
+    marginTop: 24,
+    marginBottom: 24,
+    alignItems: "center",
+    elevation: 4,
+  },
+
+  editProfileFormContainer: {
+    width: "95%",
+    alignSelf: "center",
+  },
+
+  editProfileFieldLabel: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: colors.gray_700,
+    marginBottom: 4,
+    marginTop: 12,
+    marginLeft: 2,
+  },
+
+  saveChangesButton: {
+    width: "95%",
+    alignSelf: "center",
+    marginTop: 12,
+    marginBottom: 40,
+  },
 
 });
 
