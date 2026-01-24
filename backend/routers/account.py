@@ -31,6 +31,24 @@ async def login(request: LoginRequest, db: db_dependency):
         "last_name": user.last_name,
     }
        
+
+# GET request - fetch user by ID
+@router.get("/profile_details/{user_id}", status_code=status.HTTP_200_OK)
+async def get_user(user_id: int, db: db_dependency):
+    user = db.query(UserAccount).filter(UserAccount.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    
+    return {
+        "id": user.id,
+        "first_name": user.first_name,
+        "last_name": user.last_name,
+        "email": user.email,
+        "password": user.password_hash,
+        "profile_image_url": user.profile_image_url,
+        "gender": user.gender,
+        "mobile_number": user.mobile_number,
+    }
     
 
     

@@ -1,12 +1,12 @@
 from fastapi import FastAPI
-from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from routers import superadmin, account
+from database import Base, engine
 
 app = FastAPI()
 
-# Static folder
-app.mount("/static", StaticFiles(directory="static"), name="static")
+# Create tables
+Base.metadata.create_all(bind=engine)
 
 # Enable CORS
 app.add_middleware(
