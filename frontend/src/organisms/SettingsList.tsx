@@ -1,4 +1,4 @@
-import { View } from "react-native";
+import { View, Alert } from "react-native";
 import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import SettingOption from "../molecules/SettingOption";
@@ -8,6 +8,32 @@ export default function SettingsList({ user }: { user: any }) {
   const navigation = useNavigation();
   const [darkMode, setDarkMode] = useState(false);
   const [notification, setNotification] = useState(true);
+
+  const handleLogout = () => {
+    Alert.alert(
+      "Confirm Logout",
+      "Are you sure you want to log out?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Logout",
+          style: "destructive",
+          onPress: () => {
+            (global as any).loggedInUser = null;
+
+            (navigation as any).reset({
+              index: 0,
+              routes: [{ name: "Login" }],
+            });
+          },
+        },
+      ],
+      { cancelable: true }
+    );
+  };
 
   return (
     <View style={styles.settingListContainer}>
@@ -35,9 +61,8 @@ export default function SettingsList({ user }: { user: any }) {
       <SettingOption
         icon={require("../../assets/logout_icon.png")}
         label="Log out"
-        onPress={() => console.log("Logout")}
+        onPress={handleLogout} 
       />
     </View>
   );
 }
-
