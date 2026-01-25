@@ -3,10 +3,16 @@ import { useState } from "react";
 import { DropdownProps } from "../types/types";
 import { styles } from "../styles/styles";
 
-
-function Dropdown({value, placeholder, options, onSelect, containerStyle}: DropdownProps) {
+function Dropdown({
+  value,
+  placeholder,
+  options,
+  onSelect,
+  containerStyle,
+}: DropdownProps) {
   const [open, setOpen] = useState(false);
-  const selectedLabel = options.find((o) => o.value === value)?.label || placeholder;
+  const selectedLabel =
+    options.find((o) => o.value === value)?.label || placeholder;
 
   return (
     <View style={[styles.userInputContainer, containerStyle]}>
@@ -25,33 +31,28 @@ function Dropdown({value, placeholder, options, onSelect, containerStyle}: Dropd
 
         <Image
           source={require("../../assets/chevron_icons/chevron_down.png")}
-          style={[
-            styles.dropdownIcon,
-            open && styles.dropdownIconOpen,
-          ]}
+          style={[styles.dropdownIcon, open && styles.dropdownIconOpen]}
         />
       </Pressable>
 
       {open && (
         <View style={styles.dropdownMenu}>
-          <FlatList
-            data={options}
-            keyExtractor={(item) => item.value}
-            ItemSeparatorComponent={() => (
-              <View style={styles.menuOptionDivider} />
-            )}
-            renderItem={({ item }) => (
-              <Pressable
-                style={styles.dropdownMenuOption}
-                onPress={() => {
-                  onSelect(item.value);
-                  setOpen(false);
-                }}
-              >
-                <Text style={styles.dropdownMenuOptionText}>{item.label}</Text>
-              </Pressable>
-            )}
-          />
+          {options.map((item) => (
+            <Pressable
+              key={item.value}
+              style={styles.dropdownMenuOption}
+              onPress={() => {
+                onSelect(item.value);
+                setOpen(false);
+              }}
+            >
+              <Text style={styles.dropdownMenuOptionText}>{item.label}</Text>
+              {/* Divider */}
+              {item !== options[options.length - 1] && (
+                <View style={styles.menuOptionDivider} />
+              )}
+            </Pressable>
+          ))}
         </View>
       )}
     </View>
@@ -59,4 +60,3 @@ function Dropdown({value, placeholder, options, onSelect, containerStyle}: Dropd
 }
 
 export default Dropdown;
-

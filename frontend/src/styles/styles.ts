@@ -241,7 +241,7 @@ export const styles = StyleSheet.create({
   },
 
   profileHeaderBackground: {
-    height: 170,
+    height: 165,
     backgroundColor: colors.primary_200,
   },
 
@@ -290,16 +290,24 @@ export const styles = StyleSheet.create({
   editProfileContainer: {
     flex: 1,
     backgroundColor: colors.background_color,
-    paddingTop: 20,
+    paddingTop: 36,
   },
 
   editProfileHeaderContainer: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "flex-start",
     marginBottom: 4,
   },
 
-  editProfileHeaderTitle: {
+  editProfileTitleContainer: {
+    flex: 1, 
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 52,
+  },
+
+  editProfileTitle: {
     fontSize: 18,
     fontWeight: "600",
     color: colors.primary_850,
@@ -310,7 +318,7 @@ export const styles = StyleSheet.create({
   backAction: {
     width: 36,
     height: 36,
-    marginLeft: 8,
+    marginLeft: 12,
     justifyContent: "center",
   },
 

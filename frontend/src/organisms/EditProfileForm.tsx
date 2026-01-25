@@ -61,8 +61,8 @@ function EditProfileForm({ user, onUpdate }: ProfileDetailsFormProps) {
           />
         </Pressable>
 
-        <View style={{ alignSelf: "center" }}>
-          <Text style={styles.editProfileHeaderTitle}>
+        <View style={styles.editProfileTitleContainer}>
+          <Text style={styles.editProfileTitle}>
             Edit Profile
           </Text>
         </View>
