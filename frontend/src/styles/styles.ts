@@ -1,6 +1,5 @@
-import {StyleSheet, ViewStyle, TextStyle, ImageStyle, DimensionValue } from "react-native";
+import { StyleSheet, ViewStyle, TextStyle, ImageStyle, DimensionValue } from "react-native";
 import { colors } from "./colors";
-
 
 export const styles = StyleSheet.create({
   userInputContainer: {
@@ -14,7 +13,7 @@ export const styles = StyleSheet.create({
   userInputText: {
     padding: 12,
     fontSize: 14,
-    color: colors.primary_800,
+    color: colors.primary_850,
   },
 
   buttonContainer: {
@@ -32,8 +31,59 @@ export const styles = StyleSheet.create({
     color: colors.gray_50,
   },
 
+  dropdownContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 16,
+    height: 48,
+    borderRadius: 8,
+  },
+
+  dropdownIcon: {
+    width: 16,
+    height: 16,
+    tintColor: colors.gray_500,
+  },
+
+  dropdownIconOpen: {
+    transform: [{ rotate: "180deg" }],
+  },
+
+  dropdownSelectedText: {
+    fontSize: 14,
+    color: colors.primary_850,
+  },
+
+  dropdownPlaceholderText: {
+    color: colors.gray_400
+  },
+
+  dropdownMenu: {
+    borderWidth: 1,
+    borderColor: colors.gray_200,
+    maxHeight: 200,
+  },
+
+  dropdownMenuOption: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    borderColor: colors.gray_200,
+  },
+
+  dropdownMenuOptionText: {
+    fontSize: 14,
+    color: colors.primary_850,
+  },
+
+  menuOptionDivider: {
+    height: 1,
+    backgroundColor: colors.gray_100,
+  },
+
   avatarContainer: {
-    width: 96,            
+    width: 96,
     height: 96,
     borderRadius: 999,
     backgroundColor: colors.gray_100,
@@ -42,7 +92,7 @@ export const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.18,
     shadowRadius: 8,
-    alignItems: "center",   
+    alignItems: "center",
     justifyContent: "center",
     marginTop: -12,
   },
@@ -92,21 +142,21 @@ export const styles = StyleSheet.create({
   },
 
   navBarContainer: {
-		width: "100%",
+    width: "100%",
     height: 66,
     flexDirection: "row",
     backgroundColor: colors.gray_50,
     borderTopWidth: 1,
     borderTopColor: colors.gray_200,
-		alignItems: "center",
-		justifyContent: "center",
-  },
-
-	navBarTab: {
-		flex: 1,
     alignItems: "center",
     justifyContent: "center",
-	},
+  },
+
+  navBarTab: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
 
   pageContainer: {
     flex: 1,
@@ -205,7 +255,7 @@ export const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "600",
     marginTop: 12,
-    color: colors.primary_850, 
+    color: colors.primary_850,
   },
 
   contactContainer: {
@@ -222,7 +272,7 @@ export const styles = StyleSheet.create({
   contactLabel: {
     fontSize: 14,
     fontWeight: "500",
-    color: colors.gray_400, 
+    color: colors.gray_400,
   },
 
   contactValue: {
@@ -232,7 +282,7 @@ export const styles = StyleSheet.create({
   },
 
   settingListContainer: {
-    flex: 1,  
+    flex: 1,
     alignItems: "center",
     marginTop: 32,
   },
@@ -245,7 +295,7 @@ export const styles = StyleSheet.create({
 
   editProfileHeaderContainer: {
     flexDirection: "row",
-    alignItems: "center",     
+    alignItems: "center",
     marginBottom: 4,
   },
 
@@ -276,10 +326,35 @@ export const styles = StyleSheet.create({
   },
 
   editProfileAvatar: {
+    alignSelf: "center",
     marginTop: 24,
     marginBottom: 24,
+    position: "relative",
+  },
+
+  editAvatarButton: {
+    position: "absolute",
+    bottom: 0,
+    right: 8,
+    width: 24,
+    height: 24,
+    borderRadius: 16,
+    backgroundColor: colors.gray_50,
     alignItems: "center",
-    elevation: 4,
+    justifyContent: "center",
+    elevation: 6,
+    shadowColor: colors.gray_800,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+  },
+
+  editAvatarIcon: {
+    width: 19,
+    height: 19,
+    resizeMode: "contain",
+    alignItems: "center",
+    tintColor: colors.gray_500,
   },
 
   editProfileFormContainer: {
@@ -300,9 +375,8 @@ export const styles = StyleSheet.create({
     width: "95%",
     alignSelf: "center",
     marginTop: 12,
-    marginBottom: 40,
+    marginBottom: 24,
   },
-
 });
 
 
@@ -313,7 +387,7 @@ export const buttonDefault = (width?: DimensionValue, height: number = 48, disab
   opacity: disabled ? 0.6 : 1,
 });
 
-export const buttonHover = ( pressed: boolean, hovered: boolean = false): ViewStyle => ({
+export const buttonHover = (pressed: boolean, hovered: boolean = false): ViewStyle => ({
   backgroundColor: hovered ? colors.primary_600 : colors.primary_500,
   opacity: pressed ? 0.85 : 1,
 });
@@ -326,15 +400,15 @@ export const forgotLinkTextPressed = (pressed: boolean): TextStyle => ({
 });
 
 export const navBarTabIcon = (active: boolean = false): ImageStyle => ({
-	width: 22,
+  width: 22,
   height: 22,
   marginBottom: 4,
   opacity: active ? 1 : 0.4,
-	tintColor: active ? colors.primary_700 : undefined,
+  tintColor: active ? colors.primary_700 : undefined,
 });
 
 export const navBarTabLabel = (active: boolean = false): TextStyle => ({
-	fontSize: 10,
+  fontSize: 10,
   color: active ? colors.primary_700 : colors.gray_400,
-	fontWeight: active ? "600" : "400",
+  fontWeight: active ? "600" : "400",
 });

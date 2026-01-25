@@ -14,7 +14,7 @@ export const colors = {
   primary_700: "#1E40AF",
   primary_750: "#1E3A8A",
   primary_800: "#1F2A44",   // title/heading
-  primary_850: "#18233A",
+  primary_850: "#18233A",   // default text color
   primary_900: "#0F172A",
 
   gray_50:  "#F9FAFB",  

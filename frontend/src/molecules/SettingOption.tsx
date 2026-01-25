@@ -29,7 +29,7 @@ export default function SettingOption({icon, label, onPress, showToggle = false,
           </Pressable>
         ) : showChevron ? (
           <Image
-            source={require("../../assets/chevron_right.png")}
+            source={require("../../assets/chevron_icons/chevron_right.png")}
             style={styles.chevronIcon}
           />
         ) : null}

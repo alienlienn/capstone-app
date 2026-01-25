@@ -8,6 +8,19 @@ export interface UserInputProps {
   secureInputTextEntry?: boolean;
 };
 
+export interface DropdownOption {
+  label: string;
+  value: string;
+}
+
+export interface DropdownProps {
+  value?: string | null;
+  placeholder: string;
+  options: DropdownOption[];
+  onSelect: (value: string) => void;
+  containerStyle?: object;
+}
+
 export interface ButtonProps {
   buttonTitle: string;
   onPressButton: () => void;
