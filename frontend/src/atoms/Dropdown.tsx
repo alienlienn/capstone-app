@@ -1,4 +1,4 @@
-import { View, Text, Pressable, FlatList, Image } from "react-native";
+import { View, Text, Pressable, ScrollView, Image } from "react-native";
 import { useState } from "react";
 import { DropdownProps } from "../types/types";
 import { styles } from "../styles/styles";
@@ -37,22 +37,33 @@ function Dropdown({
 
       {open && (
         <View style={styles.dropdownMenu}>
-          {options.map((item) => (
-            <Pressable
-              key={item.value}
-              style={styles.dropdownMenuOption}
-              onPress={() => {
-                onSelect(item.value);
-                setOpen(false);
-              }}
-            >
-              <Text style={styles.dropdownMenuOptionText}>{item.label}</Text>
-              {/* Divider */}
-              {item !== options[options.length - 1] && (
-                <View style={styles.menuOptionDivider} />
-              )}
-            </Pressable>
-          ))}
+          <ScrollView
+            style={{ maxHeight: 200 }}
+            showsVerticalScrollIndicator={false}
+            nestedScrollEnabled
+          >
+            {options.map((item, index) => {
+              const isLast = index === options.length - 1;
+
+              return (
+                <Pressable
+                  key={item.value}
+                  style={[
+                    styles.dropdownMenuOption,
+                    isLast && styles.dropdownMenuOptionLast,
+                  ]}
+                  onPress={() => {
+                    onSelect(item.value);
+                    setOpen(false);
+                  }}
+                >
+                  <Text style={styles.dropdownMenuOptionText}>
+                    {item.label}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </ScrollView>
         </View>
       )}
     </View>

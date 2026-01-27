@@ -1,51 +1,99 @@
 import { useEffect, useState } from "react";
-import { View, Pressable, Image, Text, ScrollView } from "react-native";
+import { View, Pressable, Image, Text, ScrollView, Alert, Platform } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import * as ImagePicker from "expo-image-picker";
 
 import UserInput from "../atoms/UserInput";
 import Dropdown from "../atoms/Dropdown";
 import Button from "../atoms/Button";
 import ProfileAvatar from "../atoms/ProfileAvatar";
-
 import { ProfileDetailsFormProps, DropdownOption } from "../types/types";
 import { styles } from "../styles/styles";
 import { fetchGenderOptions } from "../services/genderoption";
-
+import { uploadProfileAvatar } from "../services/uploadprofileavatar"; // your API function
 
 function EditProfileForm({ user, onUpdate }: ProfileDetailsFormProps) {
   const navigation = useNavigation<any>();
+
   const [firstName, setFirstName] = useState(user.first_name || "");
   const [lastName, setLastName] = useState(user.last_name || "");
   const [email, setEmail] = useState(user.email || "");
-  const [password, setPassword] = useState(user.password ? "********" : "");
+  const [password, setPassword] = useState("");
   const [gender, setGender] = useState<string | null>(user.gender || null);
   const [genderOptions, setGenderOptions] = useState<DropdownOption[]>([]);
   const [mobileNumber, setMobileNumber] = useState(user.mobile_number || "");
 
-  useEffect(() => { fetchGenderOptions().then(setGenderOptions); }, []);
+  // Avatar states
+  const [originalAvatarUri] = useState(user.profile_image_url || ""); 
+  const [avatarUri, setAvatarUri] = useState(user.profile_image_url || ""); 
+  const [localFile, setLocalFile] = useState<File | null>(null); 
 
-  const handleUpdate = () => {
-    const updatedPassword =
-      password === "********" ? undefined : password;
+  useEffect(() => {
+    fetchGenderOptions().then(setGenderOptions);
+  }, []);
+
+  const handleAvatarEdit = async () => {
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images, 
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.8,
+      });
+
+      if (!result.canceled && result.assets?.[0].uri) {
+        let uri = result.assets[0].uri;
+
+        if (Platform.OS === "web") {
+          const response = await fetch(uri);
+          const blob = await response.blob();
+          const file = new File([blob], "avatar.jpg", { type: blob.type });
+          setLocalFile(file);
+          uri = URL.createObjectURL(file); 
+        }
+
+        console.log("Picked image URI/file:", uri);
+        setAvatarUri(uri); 
+      } else {
+        console.log("Image pick canceled or no URI");
+      }
+    } catch (err) {
+      console.error("Avatar pick error:", err);
+    }
+  };
+
+  const handleUpdate = async () => {
+    const updatedPassword = password === "********" ? undefined : password;
+    let uploadedAvatarUrl = originalAvatarUri;
+
+    if (avatarUri !== originalAvatarUri) {
+      try {
+        if (Platform.OS === "web" && localFile) {
+          uploadedAvatarUrl = await uploadProfileAvatar(user.id!, localFile);
+        } else {
+          uploadedAvatarUrl = await uploadProfileAvatar(user.id!, avatarUri);
+        }
+      } catch (err) {
+        console.error("Upload failed:", err);
+        Alert.alert("Error", "Failed to upload avatar. Please try again.");
+        return;
+      }
+    }
 
     const updatedUser = {
+      id: user.id,
       first_name: firstName,
       last_name: lastName,
       email,
       password: updatedPassword,
       gender: gender ?? undefined,
       mobile_number: mobileNumber,
+      profile_image_url: uploadedAvatarUrl,
     };
 
     onUpdate?.(updatedUser);
-
-    if (updatedPassword) {
-      setPassword("********");
-    }
-  };
-
-  const handleAvatarEdit = () => {
-    console.log("Open image picker for avatar");
+    
+    if (updatedPassword) setPassword("********");
   };
 
   return (
@@ -53,7 +101,9 @@ function EditProfileForm({ user, onUpdate }: ProfileDetailsFormProps) {
       <View style={styles.editProfileHeaderContainer}>
         <Pressable
           style={styles.backAction}
-          onPress={() => navigation.navigate("NavBarRoutes", { screen: "Profile" })}
+          onPress={() =>
+            navigation.navigate("NavBarRoutes", { screen: "Profile" })
+          }
         >
           <Image
             source={require("../../assets/chevron_icons/chevron_left.png")}
@@ -62,9 +112,7 @@ function EditProfileForm({ user, onUpdate }: ProfileDetailsFormProps) {
         </Pressable>
 
         <View style={styles.editProfileTitleContainer}>
-          <Text style={styles.editProfileTitle}>
-            Edit Profile
-          </Text>
+          <Text style={styles.editProfileTitle}>Edit Profile</Text>
         </View>
       </View>
 
@@ -74,7 +122,7 @@ function EditProfileForm({ user, onUpdate }: ProfileDetailsFormProps) {
       >
         <View style={styles.editProfileAvatar}>
           <Pressable onPress={handleAvatarEdit}>
-            <ProfileAvatar imageUrl={user.profile_image_url} />
+            <ProfileAvatar imageUrl={avatarUri} />
           </Pressable>
 
           <Pressable

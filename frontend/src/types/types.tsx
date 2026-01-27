@@ -1,4 +1,5 @@
-import { DimensionValue, } from "react-native";
+import { DimensionValue, ViewStyle } from "react-native";
+import * as ImagePicker from "expo-image-picker";
 
 // Interfaces
 export interface UserInputProps {
@@ -60,6 +61,8 @@ export type TabItem = {
 
 export type ProfileAvatarProps = {
   imageUrl?: string | null;
+  containerStyle?: ViewStyle;
+  onImageSelected?: (image: ImagePicker.ImagePickerAsset) => void;
 };
 
 export type ProfileHeaderProps = {
@@ -82,6 +85,7 @@ export type Day = {
 };
 
 export type User = {
+  id: number;
   first_name: string;
   last_name: string;
   email: string;

@@ -1,21 +1,32 @@
-import { Image, View, ViewStyle } from "react-native";
+import { Image, View, ViewStyle, Platform } from "react-native";
 import { ProfileAvatarProps } from "../types/types";
 import { styles } from "../styles/styles";
 
+export default function ProfileAvatar({
+  imageUrl,
+  containerStyle,
+}: ProfileAvatarProps & { containerStyle?: ViewStyle }) {
+  let displayUrl: any;
 
-function ProfileAvatar({ imageUrl, containerStyle }: ProfileAvatarProps & { containerStyle?: ViewStyle }) {
+  if (Platform.OS === "web") {
+    displayUrl = imageUrl || undefined;
+  } else {
+    displayUrl = imageUrl?.startsWith("http") || imageUrl?.startsWith("file://")
+      ? imageUrl
+      : undefined;
+  }
+
   return (
     <View style={[styles.avatarContainer, containerStyle]}>
       <Image
         source={
-          imageUrl
-            ? { uri: imageUrl }
-            : require("../../assets/default_profile_avatar.png") 
+          displayUrl
+            ? { uri: displayUrl }
+            : require("../../assets/default_profile_avatar.png")
         }
         style={styles.avatarImage}
+        resizeMode="cover" 
       />
     </View>
   );
 }
-
-export default ProfileAvatar;

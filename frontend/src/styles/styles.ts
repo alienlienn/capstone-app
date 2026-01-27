@@ -60,7 +60,7 @@ export const styles = StyleSheet.create({
   },
 
   dropdownMenu: {
-    borderWidth: 1,
+    borderTopWidth: 1,
     borderColor: colors.gray_200,
     maxHeight: 200,
   },
@@ -72,14 +72,14 @@ export const styles = StyleSheet.create({
     borderColor: colors.gray_200,
   },
 
+  dropdownMenuOptionLast: {
+    borderBottomLeftRadius: 8,
+    borderBottomRightRadius: 8,
+  },
+
   dropdownMenuOptionText: {
     fontSize: 14,
     color: colors.primary_850,
-  },
-
-  menuOptionDivider: {
-    height: 1,
-    backgroundColor: colors.gray_100,
   },
 
   avatarContainer: {
@@ -92,6 +92,7 @@ export const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.18,
     shadowRadius: 8,
+    overflow: "hidden",
     alignItems: "center",
     justifyContent: "center",
     marginTop: -12,
