@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { View, Pressable, Image, Text, ScrollView, Alert, Platform } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
-
 import UserInput from "../atoms/UserInput";
 import Dropdown from "../atoms/Dropdown";
 import Button from "../atoms/Button";
@@ -10,20 +9,19 @@ import ProfileAvatar from "../atoms/ProfileAvatar";
 import { ProfileDetailsFormProps, DropdownOption } from "../types/types";
 import { styles } from "../styles/styles";
 import { fetchGenderOptions } from "../services/genderoption";
-import { uploadProfileAvatar } from "../services/uploadprofileavatar"; // your API function
+import { uploadProfileAvatar } from "../services/uploadprofileavatar"; 
+import { updateUserProfile } from "../services/updateprofile"; 
+import { ENV } from "../config/environment";
 
-function EditProfileForm({ user, onUpdate }: ProfileDetailsFormProps) {
+function EditProfileForm({ user }: ProfileDetailsFormProps) {
   const navigation = useNavigation<any>();
-
   const [firstName, setFirstName] = useState(user.first_name || "");
   const [lastName, setLastName] = useState(user.last_name || "");
   const [email, setEmail] = useState(user.email || "");
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState("********");
   const [gender, setGender] = useState<string | null>(user.gender || null);
   const [genderOptions, setGenderOptions] = useState<DropdownOption[]>([]);
   const [mobileNumber, setMobileNumber] = useState(user.mobile_number || "");
-
-  // Avatar states
   const [originalAvatarUri] = useState(user.profile_image_url || ""); 
   const [avatarUri, setAvatarUri] = useState(user.profile_image_url || ""); 
   const [localFile, setLocalFile] = useState<File | null>(null); 
@@ -35,7 +33,7 @@ function EditProfileForm({ user, onUpdate }: ProfileDetailsFormProps) {
   const handleAvatarEdit = async () => {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images, 
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
         aspect: [1, 1],
         quality: 0.8,
@@ -49,13 +47,10 @@ function EditProfileForm({ user, onUpdate }: ProfileDetailsFormProps) {
           const blob = await response.blob();
           const file = new File([blob], "avatar.jpg", { type: blob.type });
           setLocalFile(file);
-          uri = URL.createObjectURL(file); 
+          uri = URL.createObjectURL(file);
         }
 
-        console.log("Picked image URI/file:", uri);
         setAvatarUri(uri); 
-      } else {
-        console.log("Image pick canceled or no URI");
       }
     } catch (err) {
       console.error("Avatar pick error:", err);
@@ -80,20 +75,36 @@ function EditProfileForm({ user, onUpdate }: ProfileDetailsFormProps) {
       }
     }
 
-    const updatedUser = {
-      id: user.id,
+    const payload = {
       first_name: firstName,
       last_name: lastName,
       email,
       password: updatedPassword,
       gender: gender ?? undefined,
       mobile_number: mobileNumber,
-      profile_image_url: uploadedAvatarUrl,
+      profile_image_url: uploadedAvatarUrl
+        ? uploadedAvatarUrl.startsWith("http")
+          ? uploadedAvatarUrl
+          : `${ENV.API_BASE_URL}${uploadedAvatarUrl}`
+        : undefined,
     };
 
-    onUpdate?.(updatedUser);
-    
-    if (updatedPassword) setPassword("********");
+    try {
+      await updateUserProfile(user.id!, payload);
+
+      // Update global user
+      (global as any).loggedInUser = { ...user, ...payload };
+
+      Alert.alert("Success", "Profile updated successfully!", [
+        {
+          text: "OK",
+          onPress: () => navigation.navigate("NavBarRoutes", { screen: "Profile" }),
+        },
+      ]);
+    } catch (err: any) {
+      console.error("Update profile failed:", err);
+      Alert.alert("Error", err.message || "Failed to update profile");
+    }
   };
 
   return (
@@ -116,20 +127,13 @@ function EditProfileForm({ user, onUpdate }: ProfileDetailsFormProps) {
         </View>
       </View>
 
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator
-      >
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator>
         <View style={styles.editProfileAvatar}>
           <Pressable onPress={handleAvatarEdit}>
             <ProfileAvatar imageUrl={avatarUri} />
           </Pressable>
 
-          <Pressable
-            style={styles.editAvatarButton}
-            onPress={handleAvatarEdit}
-            hitSlop={5}
-          >
+          <Pressable style={styles.editAvatarButton} onPress={handleAvatarEdit} hitSlop={5}>
             <Image
               source={require("../../assets/edit_image_icon.png")}
               style={styles.editAvatarIcon}
@@ -137,64 +141,63 @@ function EditProfileForm({ user, onUpdate }: ProfileDetailsFormProps) {
           </Pressable>
         </View>
 
-        {/* Form */}
         <View style={styles.editProfileFormContainer}>
           <Text style={styles.editProfileFieldLabel}>First Name</Text>
-          <UserInput
-            containerStyle={{ width: "100%" }}
-            inputValue={firstName}
-            placeholder="First Name"
-            onChangeInputText={setFirstName}
+          <UserInput 
+            containerStyle={{ width: "100%" }} 
+            inputValue={firstName} 
+            placeholder="First Name" 
+            onChangeInputText={setFirstName} 
           />
 
           <Text style={styles.editProfileFieldLabel}>Last Name</Text>
-          <UserInput
-            containerStyle={{ width: "100%" }}
-            inputValue={lastName}
-            placeholder="Last Name"
-            onChangeInputText={setLastName}
+          <UserInput 
+            containerStyle={{ width: "100%" }} 
+            inputValue={lastName} 
+            placeholder="Last Name" 
+            onChangeInputText={setLastName} 
           />
 
           <Text style={styles.editProfileFieldLabel}>Email</Text>
-          <UserInput
-            containerStyle={{ width: "100%" }}
-            inputValue={email}
-            placeholder="Email"
-            onChangeInputText={setEmail}
+          <UserInput 
+            containerStyle={{ width: "100%" }} 
+            inputValue={email} 
+            placeholder="Email" 
+            onChangeInputText={setEmail} 
           />
 
           <Text style={styles.editProfileFieldLabel}>Password</Text>
-          <UserInput
-            containerStyle={{ width: "100%" }}
-            inputValue={password}
-            placeholder="Password"
-            onChangeInputText={setPassword}
-            secureInputTextEntry
+          <UserInput 
+            containerStyle={{ width: "100%" }} 
+            inputValue={password} 
+            placeholder="Password" 
+            onChangeInputText={setPassword} 
+            secureInputTextEntry 
           />
 
           <Text style={styles.editProfileFieldLabel}>Gender</Text>
-          <Dropdown
-            value={gender}
-            placeholder="Select Gender"
-            options={genderOptions}
-            onSelect={setGender}
-            containerStyle={{ width: "100%" }}
+          <Dropdown 
+            value={gender} 
+            placeholder="Select Gender" 
+            options={genderOptions} 
+            onSelect={setGender} 
+            containerStyle={{ width: "100%" }} 
           />
 
           <Text style={styles.editProfileFieldLabel}>Mobile Number</Text>
-          <UserInput
-            containerStyle={{ width: "100%" }}
-            inputValue={mobileNumber}
-            placeholder="Mobile Number"
-            onChangeInputText={setMobileNumber}
+          <UserInput 
+            containerStyle={{ width: "100%" }} 
+            inputValue={mobileNumber} 
+            placeholder="Mobile Number" 
+            onChangeInputText={setMobileNumber} 
           />
         </View>
 
         <View style={styles.saveChangesButton}>
-          <Button
-            buttonTitle="Save Changes"
-            onPressButton={handleUpdate}
-            width="100%"
+          <Button 
+            buttonTitle="Save Changes" 
+            onPressButton={handleUpdate} 
+            width="100%" 
           />
         </View>
       </ScrollView>
