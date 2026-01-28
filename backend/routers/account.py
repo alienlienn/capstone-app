@@ -1,15 +1,29 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, UploadFile, File
 from starlette import status
 from pydantic import BaseModel
-from utils.utils import db_dependency, verify_password
-from models import UserAccount
+from typing import Optional
+from utils.utils import db_dependency, verify_password, hash_password
+from models import UserAccount, GenderEnum
+import uuid, os, shutil
 
 
 router = APIRouter(prefix="/account", tags=["account"])
 
+UPLOAD_FOLDER = "uploads"
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
 class LoginRequest(BaseModel):
     email: str
     password: str
+    
+class UpdateProfileRequest(BaseModel):
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    email: Optional[str] = None
+    password: Optional[str] = None
+    gender: Optional[GenderEnum] = None
+    mobile_number: Optional[str] = None
+    profile_image_url: Optional[str] = None
 
 
 # POST request - account login
@@ -32,12 +46,12 @@ async def login(request: LoginRequest, db: db_dependency):
     }
        
 
-# GET request - fetch user by ID
+# GET request - fetch user profile by ID
 @router.get("/profile_details/{user_id}", status_code=status.HTTP_200_OK)
 async def get_user(user_id: int, db: db_dependency):
     user = db.query(UserAccount).filter(UserAccount.id == user_id).first()
     if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        raise HTTPException(status_code=404, detail="User not found")
     
     return {
         "id": user.id,
@@ -49,6 +63,69 @@ async def get_user(user_id: int, db: db_dependency):
         "gender": user.gender,
         "mobile_number": user.mobile_number,
     }
-    
 
-    
+
+# POST request - save and update user profile 
+@router.post("/update_profile/{user_id}", status_code=status.HTTP_201_CREATED)
+async def update_profile(user_id: int, payload: UpdateProfileRequest, db: db_dependency):
+    user = db.query(UserAccount).filter(UserAccount.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    if payload.first_name is not None:
+        user.first_name = payload.first_name
+
+    if payload.last_name is not None:
+        user.last_name = payload.last_name
+
+    if payload.email is not None:
+        user.email = payload.email
+
+    if payload.gender is not None:
+        user.gender = payload.gender
+
+    if payload.mobile_number is not None:
+        user.mobile_number = payload.mobile_number
+
+    if payload.profile_image_url is not None:
+        user.profile_image_url = payload.profile_image_url
+
+    if payload.password:
+        user.password_hash = hash_password(payload.password)
+
+    db.commit()
+    db.refresh(user)
+
+    return {
+        "message": "Profile updated successfully",
+        "user": {
+            "id": user.id,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "email": user.email,
+            "gender": user.gender,
+            "mobile_number": user.mobile_number,
+            "profile_image_url": user.profile_image_url,
+        },
+    }
+
+
+# POST request - upload image as user profile avatar
+@router.post("/upload_avatar/{user_id}", status_code=status.HTTP_201_CREATED)
+async def upload_avatar(db: db_dependency, user_id: int, file: UploadFile = File(...)):
+    user = db.query(UserAccount).filter(UserAccount.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+
+    # Save file
+    ext = os.path.splitext(file.filename)[1]
+    filename = f"{uuid.uuid4().hex}{ext}"
+    file_path = os.path.join(UPLOAD_FOLDER, filename)
+    with open(file_path, "wb") as f:
+        shutil.copyfileobj(file.file, f)
+
+    # Store relative path
+    user.profile_image_url = f"/uploads/{filename}"
+    db.commit()
+
+    return {"profile_image_url": user.profile_image_url}
