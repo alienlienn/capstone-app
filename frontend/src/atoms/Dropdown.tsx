@@ -3,21 +3,22 @@ import { useState } from "react";
 import { DropdownProps } from "../types/types";
 import { styles } from "../styles/styles";
 
-function Dropdown({
-  value,
-  placeholder,
-  options,
-  onSelect,
-  containerStyle,
-}: DropdownProps) {
+interface DropdownWithHeightProps extends DropdownProps {
+  height?: number; // optional height for dropdown
+}
+
+function Dropdown({ value, placeholder, options, onSelect, height }: DropdownWithHeightProps) {
   const [open, setOpen] = useState(false);
   const selectedLabel =
     options.find((o) => o.value === value)?.label || placeholder;
 
   return (
-    <View style={[styles.userInputContainer, containerStyle]}>
+    <View style={styles.userInputContainer}>
       <Pressable
-        style={styles.dropdownContainer}
+        style={[
+          styles.dropdownContainer,
+          height ? { height } : {}, // apply custom height if provided
+        ]}
         onPress={() => setOpen((prev) => !prev)}
       >
         <Text

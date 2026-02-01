@@ -8,6 +8,7 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 8,
     marginBottom: 12,
+    backgroundColor: colors.gray_50,
   },
 
   userInputText: {
@@ -35,9 +36,10 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 16,
+    paddingHorizontal: 14,
     height: 48,
     borderRadius: 8,
+    backgroundColor: colors.gray_50,
   },
 
   dropdownIcon: {
@@ -60,15 +62,23 @@ export const styles = StyleSheet.create({
   },
 
   dropdownMenu: {
-    borderTopWidth: 1,
-    borderColor: colors.gray_200,
     maxHeight: 200,
+    position: "absolute",
+    top: "100%",        // directly below dropdown
+    left: 0,            // align left with dropdown box
+    width: "100%",      // match dropdown width
+    backgroundColor: colors.gray_50,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: colors.gray_300,
+    zIndex: 999,
+    overflow: "hidden",
   },
 
   dropdownMenuOption: {
     paddingVertical: 12,
     paddingHorizontal: 16,
-    borderBottomWidth: 1,
+    borderTopWidth: 1,
     borderColor: colors.gray_200,
   },
 
@@ -386,6 +396,70 @@ export const styles = StyleSheet.create({
     marginTop: 12,
     marginBottom: 24,
   },
+
+  childCalendarSectionContainer: {
+    width: "95%",
+    alignSelf: "center",
+    marginTop: 48,
+    paddingHorizontal: 16,
+  },
+
+  sectionRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    marginBottom: 8,
+  },
+
+  segmentedToggle: {
+    height: 42,
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: colors.gray_100,
+    borderRadius: 8,
+    padding: 2.5,
+    borderWidth: 1,
+    borderColor: colors.gray_300,
+    alignSelf: "flex-start",
+  },
+
+  segmentOption: {
+    height: "100%",             
+    paddingHorizontal: 12,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  segmentActive: {
+    backgroundColor: colors.primary_700,
+    borderRadius: 6,
+  },
+
+  segmentText: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: colors.gray_600,
+  },
+
+  segmentTextActive: {
+    color: colors.gray_50,
+  },
+
+  listViewPlaceholder: {
+    height: 300,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: colors.gray_50,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: colors.gray_100,
+  },
+
+  listViewPlaceholderText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: colors.gray_500,
+  },
+
 });
 
 

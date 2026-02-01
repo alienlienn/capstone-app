@@ -5,11 +5,10 @@ import type { CalendarProps } from "react-native-calendars";
 
 export const calendarStyles = StyleSheet.create({
   calendarContainer: {
-    width: "95%",
+    width: "100%",
     alignSelf: "center",
-    marginTop: 30,
+    marginTop: 4,
     marginBottom: 24,
-    paddingHorizontal: 12,
   },
 
 	calendarComponent: {
