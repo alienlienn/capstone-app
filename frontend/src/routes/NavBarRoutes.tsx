@@ -8,6 +8,7 @@ import ResultsScreen from "../screens/ResultsScreen";
 import MessagesScreen from "../screens/MessagesScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import EditProfileScreen from "../screens/EditProfileScreen";
+import EventManagementScreen from "../screens/EventManagementScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -21,6 +22,7 @@ function NavBarRoutes({ route }: { route: any }) {
         <Tab.Screen name="Messages" component={MessagesScreen} />
         <Tab.Screen name="Profile" component={ProfileScreen} />
         <Tab.Screen name="EditProfile" component={EditProfileScreen} />
+        <Tab.Screen name="EventManagement" component={EventManagementScreen} />
       </Tab.Navigator>
       <SafeAreaView edges={['bottom']} >
         <BottomNavbar route={route} />

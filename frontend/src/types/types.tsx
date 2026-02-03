@@ -1,4 +1,4 @@
-import { DimensionValue, ViewStyle } from "react-native";
+import { DimensionValue, ViewStyle, ImageStyle, TextStyle } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 
 // Interfaces
@@ -19,7 +19,7 @@ export interface DropdownProps {
   placeholder: string;
   options: DropdownOption[];
   onSelect: (value: string) => void;
-  containerStyle?: object;
+  height?: number;
 }
 
 export interface ButtonProps {
@@ -28,6 +28,10 @@ export interface ButtonProps {
   width?: DimensionValue;
   height?: number;
   disabled?: boolean;
+  buttonStyle?: ViewStyle;
+  iconSource?: any;           
+  iconStyle?: ImageStyle;    
+  textStyle?: TextStyle;
 }
 
 export interface LinkTextProps {

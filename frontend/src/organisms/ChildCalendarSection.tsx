@@ -5,6 +5,7 @@ import CalendarView from "./CalendarView";
 import { styles } from "../styles/styles";
 
 const CHILD_OPTIONS = [
+  { label: "View All Children", value: "allChildren" },
   { label: "Alicia Tan", value: "alicia" },
   { label: "Brandon Tan", value: "brandon" },
   { label: "Charlotte Tan", value: "charlotte" },

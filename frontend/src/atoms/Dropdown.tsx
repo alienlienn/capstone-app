@@ -3,11 +3,8 @@ import { useState } from "react";
 import { DropdownProps } from "../types/types";
 import { styles } from "../styles/styles";
 
-interface DropdownWithHeightProps extends DropdownProps {
-  height?: number; // optional height for dropdown
-}
 
-function Dropdown({ value, placeholder, options, onSelect, height }: DropdownWithHeightProps) {
+function Dropdown({ value, placeholder, options, onSelect, height }: DropdownProps) {
   const [open, setOpen] = useState(false);
   const selectedLabel =
     options.find((o) => o.value === value)?.label || placeholder;

@@ -66,6 +66,7 @@ function LoginForm() {
         buttonTitle={loading ? "Logging in..." : "Login"}
         onPressButton={handleLogin}
         disabled={loading}
+        width={"100%"}
       />
     </View>
   );

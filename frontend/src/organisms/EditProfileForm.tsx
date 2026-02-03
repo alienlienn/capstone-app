@@ -12,6 +12,8 @@ import { fetchGenderOptions } from "../services/genderoption";
 import { uploadProfileAvatar } from "../services/uploadprofileavatar"; 
 import { updateUserProfile } from "../services/updateprofile"; 
 import { ENV } from "../config/environment";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { colors } from "../styles/colors";
 
 function EditProfileForm({ user }: ProfileDetailsFormProps) {
   const navigation = useNavigation<any>();
@@ -108,23 +110,53 @@ function EditProfileForm({ user }: ProfileDetailsFormProps) {
   };
 
   return (
-    <View style={styles.editProfileContainer}>
-      <View style={styles.editProfileHeaderContainer}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background_color }}>
+      
+      {/* Header with Back Button + Centered Title */}
+      <View
+        style={{
+          width: "100%",
+          height: 54,
+          flexDirection: "row",
+          alignItems: "center",
+          paddingHorizontal: 16,
+          backgroundColor: colors.gray_50,
+          borderTopWidth: 1,
+          borderTopColor: colors.gray_200,
+          elevation: 4,
+          shadowColor: colors.gray_900,
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 4,
+          zIndex: 10,
+        }}
+      >
+        {/* Back Button */}
         <Pressable
-          style={styles.backAction}
+          style={{ padding: 8 }}
           onPress={() =>
             navigation.navigate("NavBarRoutes", { screen: "Profile" })
           }
         >
           <Image
             source={require("../../assets/chevron_icons/chevron_left.png")}
-            style={styles.backIcon}
+            style={{ width: 20, height: 20 }}
           />
         </Pressable>
 
-        <View style={styles.editProfileTitleContainer}>
-          <Text style={styles.editProfileTitle}>Edit Profile</Text>
-        </View>
+        {/* Centered Title */}
+        <Text
+          style={{
+            flex: 1,
+            textAlign: "center",
+            fontSize: 18,
+            fontWeight: "600",
+            color: colors.primary_850,
+            marginRight: 28, // offset for back button
+          }}
+        >
+          Edit Profile
+        </Text>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator>
@@ -181,7 +213,6 @@ function EditProfileForm({ user }: ProfileDetailsFormProps) {
             placeholder="Select Gender" 
             options={genderOptions} 
             onSelect={setGender} 
-            containerStyle={{ width: "100%" }} 
           />
 
           <Text style={styles.editProfileFieldLabel}>Mobile Number</Text>
@@ -201,7 +232,7 @@ function EditProfileForm({ user }: ProfileDetailsFormProps) {
           />
         </View>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
 

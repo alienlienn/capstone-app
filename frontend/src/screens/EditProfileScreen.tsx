@@ -1,7 +1,7 @@
-import React from "react";
 import { ScrollView } from "react-native";
 import EditProfileForm from "../organisms/EditProfileForm";
 import { styles } from "../styles/styles";
+
 
 export default function EditProfileScreen() {
   const user = (global as any).loggedInUser;

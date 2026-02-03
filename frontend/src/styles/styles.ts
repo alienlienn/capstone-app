@@ -3,7 +3,7 @@ import { colors } from "./colors";
 
 export const styles = StyleSheet.create({
   userInputContainer: {
-    width: "85%",
+    width: "100%",
     borderColor: colors.gray_300,
     borderWidth: 1,
     borderRadius: 8,
@@ -18,12 +18,20 @@ export const styles = StyleSheet.create({
   },
 
   buttonContainer: {
-    width: "85%",
+    width: "100%",
     backgroundColor: colors.primary_500,
     borderRadius: 8,
     alignItems: "center",
     justifyContent: "center",
     marginTop: 10,
+  },
+
+  buttonIcon: {
+    width: 18, 
+    height: 18, 
+    marginRight: 8, 
+    resizeMode: "contain",
+    tintColor: colors.gray_50,
   },
 
   buttonText: {
@@ -115,14 +123,14 @@ export const styles = StyleSheet.create({
   },
 
   loginFormContainer: {
-    width: "100%",
+    width: "83%",
     maxWidth: 400,
     alignItems: "center",
   },
 
   forgotPasswordContainer: {
     alignSelf: "flex-end",
-    marginRight: 28,
+    marginRight: 4,
     marginBottom: 16,
   },
 
@@ -346,8 +354,8 @@ export const styles = StyleSheet.create({
 
   editProfileAvatar: {
     alignSelf: "center",
-    marginTop: 24,
-    marginBottom: 24,
+    marginTop: 40,
+    marginBottom: 20,
     position: "relative",
   },
 
@@ -394,7 +402,6 @@ export const styles = StyleSheet.create({
     width: "95%",
     alignSelf: "center",
     marginTop: 12,
-    marginBottom: 24,
   },
 
   childCalendarSectionContainer: {
@@ -408,6 +415,7 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "flex-start",
     marginBottom: 8,
+    gap: 16,
   },
 
   segmentedToggle: {
@@ -416,7 +424,7 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: colors.gray_100,
     borderRadius: 8,
-    padding: 2.5,
+    padding: 3,
     borderWidth: 1,
     borderColor: colors.gray_300,
     alignSelf: "flex-start",
