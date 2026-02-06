@@ -3,7 +3,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import LoginScreen from "../screens/LoginScreen";
 import NavBarRoutes from "./NavBarRoutes";
 import EditProfileScreen from "../screens/EditProfileScreen";
-import EventManagementScreen from "../screens/EventManagementScreen";
+import CreateEventScreen from "../screens/CreateEventScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -14,7 +14,7 @@ function AppRoutes() {
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="NavBarRoutes" component={NavBarRoutes} />
         <Stack.Screen name="EditProfile" component={EditProfileScreen} />
-        <Stack.Screen name="EventManagement" component={EventManagementScreen} />
+        <Stack.Screen name="CreateEvent" component={CreateEventScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

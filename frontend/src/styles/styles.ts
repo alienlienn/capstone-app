@@ -69,12 +69,16 @@ export const styles = StyleSheet.create({
     color: colors.gray_400
   },
 
-  dropdownMenu: {
-    maxHeight: 200,
+  dropdownBackdrop: {
     position: "absolute",
-    top: "100%",        // directly below dropdown
-    left: 0,            // align left with dropdown box
-    width: "100%",      // match dropdown width
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "transparent",
+  },
+
+  dropdownMenu: {
     backgroundColor: colors.gray_50,
     borderRadius: 8,
     borderWidth: 1,
