@@ -1,31 +1,14 @@
 import { View } from "react-native";
 import ActionMenuItem from "../atoms/ActionMenuItem";
 import { colors } from "../styles/colors";
+import { EventActionMenuProps } from "../types/types";
+import { styles } from "../styles/styles";
 
-interface Props {
-  onCreate: () => void;
-  onEdit: () => void;
-  onRemove: () => void;
-}
 
-export default function EventActionMenu({
-  onCreate,
-  onEdit,
-  onRemove,
-}: Props) {
+export default function EventActionMenu({ onCreate, onEdit, onRemove }: EventActionMenuProps) {
   return (
     <View
-      style={{
-        width: 260,
-        backgroundColor: colors.gray_50,
-        borderRadius: 16,
-        overflow: "hidden",
-        elevation: 12,
-        shadowColor: colors.gray_900,
-        shadowOffset: { width: 0, height: 6 },
-        shadowOpacity: 0.25,
-        shadowRadius: 10,
-      }}
+      style={styles.eventActionMenuContainer}
     >
       <ActionMenuItem
         label="Add New Event"
@@ -57,12 +40,6 @@ export default function EventActionMenu({
 
 function Divider() {
   return (
-    <View
-      style={{
-        height: 1,
-        backgroundColor: colors.gray_200,
-        marginHorizontal: 16,
-      }}
-    />
+    <View style={styles.eventActionMenuDivider} />
   );
 }

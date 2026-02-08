@@ -1,57 +1,28 @@
 import { Pressable, Text, Image } from "react-native";
-import { colors } from "../styles/colors";
+import { ActionMenuItemProps } from "../types/types";
+import { styles } from "../styles/styles";
 
-interface Props {
-  icon: any;
-  label: string;
-  tintColor: string;
-  onPress: () => void;
-}
 
-export default function ActionMenuItem({
-  icon,
-  label,
-  tintColor,
-  onPress,
-}: Props) {
+export default function ActionMenuItem({ icon, label, tintColor, onPress }: ActionMenuItemProps) {
   return (
     <Pressable
       onPress={onPress}
-      style={{
-        flexDirection: "row",
-        alignItems: "center",
-        paddingVertical: 14,
-        paddingHorizontal: 16,
-      }}
+      style={styles.actionMenuItemContainer}
     >
       <Image
         source={icon}
-        style={{
-          width: 22,
-          height: 22,
-          tintColor,
-          marginRight: 12,
-        }}
+        style={[styles.actionMenuItemIcon, { tintColor }]}
       />
 
       <Text
-        style={{
-          flex: 1,
-          fontSize: 16,
-          fontWeight: "500",
-          color: colors.primary_850,
-        }}
+        style={styles.actionMenuItemLabel}
       >
         {label}
       </Text>
 
       <Image
         source={require("../../assets/chevron_icons/chevron_right.png")}
-        style={{
-          width: 16,
-          height: 16,
-          tintColor: colors.gray_400,
-        }}
+        style={[styles.chevronIcon, { marginRight: 4, }]}
       />
     </Pressable>
   );

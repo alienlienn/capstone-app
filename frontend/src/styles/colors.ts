@@ -32,6 +32,12 @@ export const colors = {
   gray_800: "#1F2937",
   gray_900: "#111827",
 
+  event_default: "#eb812b",
+  event_announcement: "#2563EB",
+  event_holiday: "#15af7c",
+  event_exams: "#e03243",
+  event_meeting: "#da48c4",
+
   error: "#DC2626",
   success: "#10B981",
 };

@@ -40,6 +40,37 @@ export const styles = StyleSheet.create({
     color: colors.gray_50,
   },
 
+  floatingButtonContainer: {
+    backgroundColor: colors.primary_700,
+    paddingHorizontal: 14,
+    height: 42,
+    borderRadius: 999,
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+    position: "absolute",
+    bottom: 16,
+    right: 16,
+    elevation: 8,
+    shadowColor: colors.gray_900,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+  },
+  
+  floatingButtonIcon: {
+    width: 16, 
+    height: 16, 
+    marginRight: 6, 
+    tintColor: colors.gray_50,
+  },
+
+  floatingButtonLabel: {
+    color: colors.gray_50, 
+    fontWeight: "600", 
+    fontSize: 14,
+  },
+
   dropdownContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -101,6 +132,51 @@ export const styles = StyleSheet.create({
 
   dropdownMenuOptionText: {
     fontSize: 14,
+    color: colors.primary_850,
+  },
+
+  dateBoxContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    borderWidth: 1,
+    borderColor: colors.gray_300,
+    borderRadius: 8,
+    padding: 12,
+    backgroundColor: colors.gray_50,
+  },
+
+  actionMenuItemContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 18,
+    paddingHorizontal: 16,
+  },
+
+  actionMenuItemIcon: {
+    width: 22,
+    height: 22,
+    marginRight: 12,
+  },
+
+  actionMenuItemLabel: {
+    flex: 1,
+    fontSize: 16,
+    fontWeight: "500",
+    color: colors.primary_850,
+  },
+
+  filterMultiSelectSearchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 12,
+    borderBottomWidth: 1,
+    borderColor: colors.gray_200,
+  },
+
+  filterMultiSelectSearchText: {
+    flex: 1,
+    height: 40,
     color: colors.primary_850,
   },
 
@@ -181,6 +257,24 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
   },
 
+  eventActionMenuContainer: {
+    width: 260,
+    backgroundColor: colors.gray_50,
+    borderRadius: 16,
+    overflow: "hidden",
+    elevation: 12,
+    shadowColor: colors.gray_900,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.25,
+    shadowRadius: 10,
+  },
+
+  eventActionMenuDivider: {
+    height: 1,
+    backgroundColor: colors.gray_200,
+    marginHorizontal: 16,
+  },
+
   pageContainer: {
     flex: 1,
     backgroundColor: colors.background_color,
@@ -226,7 +320,7 @@ export const styles = StyleSheet.create({
     height: 14,
     marginRight: 8,
     resizeMode: "contain",
-    tintColor: colors.primary_850,
+    tintColor: colors.gray_500,
   },
 
   dividerLine: {
@@ -470,6 +564,44 @@ export const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "600",
     color: colors.gray_500,
+  },
+
+  screenTopHeader: {
+    height: 54,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    backgroundColor: colors.gray_50,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.gray_200,
+  },
+
+  screenTopHeaderLabel: {
+    flex: 1,
+    textAlign: "center",
+    fontSize: 18,
+    fontWeight: "600",
+    marginRight: 32,
+  },
+
+  createEventScrollContent: {
+    paddingTop: 28,
+    paddingHorizontal: 28,
+    paddingBottom: 12,
+  },
+
+  createEventFormFieldLabel: {
+    marginBottom: 6,
+    marginLeft: 2,
+    fontWeight: "500",
+    color: colors.primary_850,
+  },
+
+  modalCenteredOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.25)",
+    justifyContent: "center",
+    alignItems: "center",
   },
 
 });

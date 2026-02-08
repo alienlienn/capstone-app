@@ -8,7 +8,7 @@ import Button from "../atoms/Button";
 import ProfileAvatar from "../atoms/ProfileAvatar";
 import { ProfileDetailsFormProps, DropdownOption } from "../types/types";
 import { styles } from "../styles/styles";
-import { fetchGenderOptions } from "../services/genderoption";
+import { fetchGenderOptions } from "../services/lookup";
 import { uploadProfileAvatar } from "../services/uploadprofileavatar"; 
 import { updateUserProfile } from "../services/updateprofile"; 
 import { ENV } from "../config/environment";
@@ -111,52 +111,17 @@ function EditProfileForm({ user }: ProfileDetailsFormProps) {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background_color }}>
-      
-      {/* Header with Back Button + Centered Title */}
-      <View
-        style={{
-          width: "100%",
-          height: 54,
-          flexDirection: "row",
-          alignItems: "center",
-          paddingHorizontal: 16,
-          backgroundColor: colors.gray_50,
-          borderTopWidth: 1,
-          borderTopColor: colors.gray_200,
-          elevation: 4,
-          shadowColor: colors.gray_900,
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.1,
-          shadowRadius: 4,
-          zIndex: 10,
-        }}
-      >
-        {/* Back Button */}
+      <View style={styles.screenTopHeader}>
         <Pressable
           style={{ padding: 8 }}
-          onPress={() =>
-            navigation.navigate("NavBarRoutes", { screen: "Profile" })
-          }
+          onPress={() => navigation.navigate("NavBarRoutes", { screen: "Profile" })}
         >
           <Image
             source={require("../../assets/chevron_icons/chevron_left.png")}
             style={{ width: 20, height: 20 }}
           />
         </Pressable>
-
-        {/* Centered Title */}
-        <Text
-          style={{
-            flex: 1,
-            textAlign: "center",
-            fontSize: 18,
-            fontWeight: "600",
-            color: colors.primary_850,
-            marginRight: 28, // offset for back button
-          }}
-        >
-          Edit Profile
-        </Text>
+        <Text style={[styles.screenTopHeaderLabel, { marginRight: 28, }]}> Edit Profile </Text>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator>

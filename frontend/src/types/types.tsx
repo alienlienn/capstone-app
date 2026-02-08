@@ -9,17 +9,17 @@ export interface UserInputProps {
   secureInputTextEntry?: boolean;
 };
 
-export interface DropdownOption {
-  label: string;
-  value: string;
-}
-
 export interface DropdownProps {
   value?: string | null;
   placeholder: string;
   options: DropdownOption[];
   onSelect: (value: string) => void;
   height?: number;
+}
+
+export interface DropdownOption {
+  label: string;
+  value: string;
 }
 
 export interface ButtonProps {
@@ -34,9 +34,41 @@ export interface ButtonProps {
   textStyle?: TextStyle;
 }
 
+export interface DateBoxProps {
+  label: string;
+  onPress: () => void;
+}
+
+export interface FilterMultiSelectOption {
+  label: string;
+  value: string;
+}
+
+export interface FilterMultiSelectProps {
+  label: string;
+  options: FilterMultiSelectOption[];
+  selectedValues: string[];
+  onChange: (values: string[]) => void;
+}
+
 export interface LinkTextProps {
   linkTitle: string;
   onPressLink: () => void;
+}
+
+export interface FloatingButtonProps {
+  label: string;
+  onPress: () => void;
+  style?: ViewStyle;
+  textStyle?: TextStyle;
+  iconSource?: any; 
+}
+
+export interface ActionMenuItemProps {
+  icon: any;
+  label: string;
+  tintColor: string;
+  onPress: () => void;
 }
 
 export interface LoginRequest {
@@ -53,6 +85,12 @@ export interface SettingOptionProps {
   onToggleChange?: (value: boolean) => void;
   showTopDivider?: boolean;
   showChevron?: boolean;
+}
+
+export interface EventActionMenuProps {
+  onCreate: () => void;
+  onEdit: () => void;
+  onRemove: () => void;
 }
 
 
@@ -79,6 +117,14 @@ export type ProfileHeaderProps = {
 export type CalendarViewProps = {
   month?: number;
   year?: number;
+  events?: CalendarEvent[];
+};
+
+export type CalendarEvent = {
+  startDate: string; 
+  endDate: string;   
+  title?: string;
+  eventType?: string;
 };
 
 export type Day = {

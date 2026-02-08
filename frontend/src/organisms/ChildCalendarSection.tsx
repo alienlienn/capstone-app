@@ -1,8 +1,11 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { View, Text, Pressable } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 import Dropdown from "../atoms/Dropdown";
 import CalendarView from "./CalendarView";
 import { styles } from "../styles/styles";
+import { fetchAllEvents } from "../services/event";
+import type { CalendarEvent } from "../types/types";
 
 const CHILD_OPTIONS = [
   { label: "View All Children", value: "allChildren" },
@@ -16,6 +19,23 @@ type ViewMode = "calendar" | "list";
 export default function ChildCalendarSection() {
   const [selectedChild, setSelectedChild] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>("calendar");
+  const [events, setEvents] = useState<CalendarEvent[]>([]);
+
+  // Fetch events when component mounts and when user navigates back to this screen
+  useFocusEffect(
+    React.useCallback(() => {
+      loadEvents();
+    }, [])
+  );
+
+  const loadEvents = async () => {
+    try {
+      const fetchedEvents = await fetchAllEvents();
+      setEvents(fetchedEvents);
+    } catch (error) {
+      console.error("Error loading events:", error);
+    }
+  };
 
   return (
     <View style={styles.childCalendarSectionContainer}>
@@ -52,7 +72,7 @@ export default function ChildCalendarSection() {
       </View>
 
       {viewMode === "calendar" ? (
-        <CalendarView />
+        <CalendarView events={events} />
       ) : (
         <View style={styles.listViewPlaceholder}>
           <Text style={styles.listViewPlaceholderText}>

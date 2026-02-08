@@ -1,25 +1,14 @@
 import { Pressable, View, Text, Image } from "react-native";
+import { styles } from "../styles/styles";
 import { colors } from "../styles/colors";
+import { DateBoxProps } from "../types/types";
 
-interface DateBoxProps {
-  label: string;
-  onPress: () => void;
-}
 
 export default function DateBox({ label, onPress }: DateBoxProps) {
   return (
     <Pressable
       onPress={onPress}
-      style={{
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-        borderWidth: 1,
-        borderColor: colors.gray_300,
-        borderRadius: 8,
-        padding: 12,
-        backgroundColor: colors.gray_50,
-      }}
+      style={styles.dateBoxContainer}
     >
       <Text style={{ color: colors.gray_700 }}>{label}</Text>
       <Image

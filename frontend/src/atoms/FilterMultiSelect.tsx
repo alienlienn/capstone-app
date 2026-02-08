@@ -1,35 +1,11 @@
 import { useRef, useState } from "react";
-import {
-  View,
-  Text,
-  Pressable,
-  ScrollView,
-  Image,
-  Modal,
-  TouchableWithoutFeedback,
-  TextInput,
-} from "react-native";
+import { View, Text, Pressable, ScrollView, Image, Modal, TouchableWithoutFeedback, TextInput } from "react-native";
 import { colors } from "../styles/colors";
 import { styles } from "../styles/styles";
+import { FilterMultiSelectProps } from "../types/types";
 
-interface Option {
-  label: string;
-  value: string;
-}
 
-interface Props {
-  label: string;
-  options: Option[];
-  selectedValues: string[];
-  onChange: (values: string[]) => void;
-}
-
-export default function FilterMultiSelect({
-  label,
-  options,
-  selectedValues,
-  onChange,
-}: Props) {
+export default function FilterMultiSelect({ label, options, selectedValues, onChange }: FilterMultiSelectProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [menuPos, setMenuPos] = useState({ x: 0, y: 0, width: 0, height: 0 });
@@ -111,19 +87,13 @@ export default function FilterMultiSelect({
             >
               {/* Search */}
               <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  paddingHorizontal: 12,
-                  borderBottomWidth: 1,
-                  borderColor: colors.gray_200,
-                }}
+                style={styles.filterMultiSelectSearchContainer}
               >
                 <TextInput
                   placeholder="Search..."
                   value={query}
                   onChangeText={setQuery}
-                  style={{ flex: 1, height: 40 }}
+                  style={styles.filterMultiSelectSearchText}
                 />
                 <Image
                   source={require("../../assets/search_icon.png")}
@@ -156,14 +126,14 @@ export default function FilterMultiSelect({
                           width: 20,
                           height: 20,
                           marginRight: 8,
-                          tintColor: selected ? colors.primary_700 : undefined, // ✅ tintColor change
+                          tintColor: selected ? colors.primary_700 : undefined, 
                         }}
                       />
 
                       <Text
                         style={[
                           styles.dropdownMenuOptionText,
-                          selected && { color: colors.primary_700 },
+                          selected && { color: colors.primary_700, fontWeight: "600", },
                         ]}
                       >
                         {item.label}

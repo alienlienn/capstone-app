@@ -16,7 +16,7 @@ LocaleConfig.locales["custom"] = {
 };
 LocaleConfig.defaultLocale = "custom";
 
-export default function CalendarView({ month, year }: CalendarViewProps) {
+export default function CalendarView({ month, year, events }: CalendarViewProps) {
   const today = new Date();
   const todayString = today.toISOString().split("T")[0];
   const [selectedDate, setSelectedDate] = useState(todayString);
@@ -29,8 +29,8 @@ export default function CalendarView({ month, year }: CalendarViewProps) {
       <Calendar
         current={`${currentYear}-${String(currentMonth).padStart(2, "0")}-01`}
         onDayPress={(day: Day) => setSelectedDate(day.dateString)}
-        markingType="custom"
-        markedDates={calendarMarkedDates(selectedDate, todayString)}
+        markingType="multi-dot"
+        markedDates={calendarMarkedDates(selectedDate, todayString, events)}
         theme={calendarTheme}
         style={calendarStyles.calendarComponent}
       />
