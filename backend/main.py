@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from routers import superadmin, account, lookup
+from routers import superadmin, account, lookup, event
 from database import Base, engine
 
 app = FastAPI()
@@ -25,3 +25,4 @@ app.add_middleware(
 app.include_router(account.router)
 app.include_router(superadmin.router)
 app.include_router(lookup.router)
+app.include_router(event.router)

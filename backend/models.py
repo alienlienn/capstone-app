@@ -40,6 +40,35 @@ class EventType(str, Enum):
     ANNOUNCEMENT = "announcement"
     OTHER = "other"
 
+class AffectedGroup(str, Enum):
+    SECONDARY1 = "secondary 1"
+    SECONDARY1_CLASS1 = "secondary 1-1"
+    SECONDARY1_CLASS2 = "secondary 1-2"
+    SECONDARY1_CLASS3 = "secondary 1-3"
+    SECONDARY1_CLASS4 = "secondary 1-4"
+    SECONDARY1_CLASS5 = "secondary 1-5"
+    SECONDARY2 = "secondary 2"
+    SECONDARY2_CLASS1 = "secondary 2-1"
+    SECONDARY2_CLASS2 = "secondary 2-2"
+    SECONDARY2_CLASS3 = "secondary 2-3"
+    SECONDARY2_CLASS4 = "secondary 2-4"
+    SECONDARY2_CLASS5 = "secondary 2-5"
+    SECONDARY3 = "secondary 3"
+    SECONDARY3_CLASS1 = "secondary 3-1"
+    SECONDARY3_CLASS2 = "secondary 3-2"
+    SECONDARY3_CLASS3 = "secondary 3-3"
+    SECONDARY3_CLASS4 = "secondary 3-4"
+    SECONDARY3_CLASS5 = "secondary 3-5"
+    SECONDARY4 = "secondary 4"
+    SECONDARY4_CLASS1 = "secondary 4-1"
+    SECONDARY4_CLASS2 = "secondary 4-2"
+    SECONDARY4_CLASS3 = "secondary 4-3"
+    SECONDARY4_CLASS4 = "secondary 4-4"
+    SECONDARY4_CLASS5 = "secondary 4-5"
+    SECONDARY5 = "secondary 5"
+    SECONDARY5_CLASS1 = "secondary 5-1"
+    SECONDARY5_CLASS2 = "secondary 5-2"
+    
 
 class School(Base):
     __tablename__ = "schools"
@@ -138,6 +167,7 @@ class EventItem(Base):
     title = Column(String(100), nullable=False)
     description = Column(Text, nullable=True)
     event_type = Column(SQLAlchemyEnum(EventType), default=EventType.OTHER)
+    affected_groups = Column(SQLAlchemyEnum(AffectedGroup), nullable=True)
     start_datetime = Column(DateTime, nullable=False)
     end_datetime = Column(DateTime, nullable=True)  
     created_by = Column(Integer, ForeignKey("user_accounts.id"), nullable=False)

@@ -18,3 +18,5 @@ educonnect.db
 # ===== Alembic =====
 alembic/__pycache__/
 
+# ==== Uploads ====
+uploads/
