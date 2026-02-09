@@ -13,6 +13,7 @@ class AddEvent(BaseModel):
     title: str
     description: str | None = None
     event_type: EventType
+    venue: str | None = None
     affected_groups: AffectedGroup | None = None
     start_datetime: datetime
     end_datetime: datetime | None = None
@@ -30,6 +31,7 @@ def get_all_events(db: db_dependency):
             "title": event.title,
             "description": event.description,
             "event_type": event.event_type.value if event.event_type else None,
+            "venue": event.venue,
             "affected_groups": event.affected_groups.value if event.affected_groups else None,
             "start_datetime": event.start_datetime.isoformat() if event.start_datetime else None,
             "end_datetime": event.end_datetime.isoformat() if event.end_datetime else None,
@@ -51,6 +53,7 @@ def add_new_event(event: AddEvent, db: db_dependency):
         title=event.title,
         description=event.description,
         event_type=event.event_type,
+        venue=event.venue,
         affected_groups=event.affected_groups,
         start_datetime=event.start_datetime,
         end_datetime=event.end_datetime,

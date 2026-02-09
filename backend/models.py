@@ -1,16 +1,19 @@
 from database import Base
 from enum import Enum
 from sqlalchemy import Column, Integer, String, Text, ForeignKey, Date, DateTime, Enum as SQLAlchemyEnum
-from sqlalchemy.sql import func
+from datetime import datetime
+from zoneinfo import ZoneInfo 
 
 
 DEFAULT_PROFILE_IMAGE = "http://localhost:8000/static/default-avatar.png"
+SINGAPORE_TZ = ZoneInfo("Asia/Singapore")  
+
 
 class UserRole(str, Enum):
     SUPER_ADMIN = "super_admin"
     ADMIN = "admin"
     TEACHER = "teacher"
-    USER = "user"   # can be parent/student
+    USER = "user"   
 
 class AccountStatus(str, Enum):
     ACTIVE = "active"
@@ -77,7 +80,7 @@ class School(Base):
     school_name = Column(String(150), unique=True, nullable=False)
     address = Column(String(255), nullable=True)
     contact_email = Column(String(255), nullable=True)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ))
     
 
 class UserAccount(Base):
@@ -94,8 +97,8 @@ class UserAccount(Base):
     gender = Column(SQLAlchemyEnum(GenderEnum), nullable=True, default=GenderEnum.OTHER) 
     mobile_number = Column(String(20), nullable=True)
     status = Column(SQLAlchemyEnum(AccountStatus), default=AccountStatus.ACTIVE)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ))
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ), onupdate=lambda: datetime.now(SINGAPORE_TZ))
     
 
 class UserPermission(Base):
@@ -105,7 +108,7 @@ class UserPermission(Base):
     user_id = Column(Integer, ForeignKey("user_accounts.id"), nullable=False)
     permission = Column(SQLAlchemyEnum(PermissionType), nullable=False)
     granted_by = Column(Integer, ForeignKey("user_accounts.id"), nullable=True)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ))
 
 
 class Student(Base):
@@ -122,8 +125,8 @@ class Student(Base):
     enrollment_year = Column(Integer, nullable=True)
     parent_contact_email = Column(String(255), nullable=True)  
     parent_contact_number = Column(String(20), nullable=True) 
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ))
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ), onupdate=lambda: datetime.now(SINGAPORE_TZ))
 
 
 class ParentStudent(Base):
@@ -133,7 +136,7 @@ class ParentStudent(Base):
     parent_id = Column(Integer, ForeignKey("user_accounts.id"), nullable=False)
     student_id = Column(Integer, ForeignKey("students.id"), nullable=False)
     relationship = Column(SQLAlchemyEnum(ParentRelationship), nullable=False, default=ParentRelationship.OTHER)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ))
 
 
 class Announcement(Base):
@@ -144,8 +147,8 @@ class Announcement(Base):
     title = Column(String(150), nullable=False)
     content = Column(Text, nullable=False)
     created_by = Column(Integer, ForeignKey("user_accounts.id"), nullable=False)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ))
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ), onupdate=lambda: datetime.now(SINGAPORE_TZ))
 
 
 class Message(Base):
@@ -156,7 +159,7 @@ class Message(Base):
     receiver_id = Column(Integer, ForeignKey("user_accounts.id"), nullable=False)
     content = Column(Text, nullable=False)
     is_read = Column(Integer, default=0)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ))
     
 
 class EventItem(Base):
@@ -167,11 +170,11 @@ class EventItem(Base):
     title = Column(String(100), nullable=False)
     description = Column(Text, nullable=True)
     event_type = Column(SQLAlchemyEnum(EventType), default=EventType.OTHER)
+    venue = Column(String(150), nullable=True) 
     affected_groups = Column(SQLAlchemyEnum(AffectedGroup), nullable=True)
     start_datetime = Column(DateTime, nullable=False)
     end_datetime = Column(DateTime, nullable=True)  
     created_by = Column(Integer, ForeignKey("user_accounts.id"), nullable=False)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
-
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ))
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ), onupdate=lambda: datetime.now(SINGAPORE_TZ))
 
