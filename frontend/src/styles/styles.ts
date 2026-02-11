@@ -604,6 +604,148 @@ export const styles = StyleSheet.create({
     alignItems: "center",
   },
 
+  eventListLabel: {
+    fontSize: 16,
+    fontWeight: "700",
+    marginBottom: 8,
+    marginTop: 8,
+    marginLeft: 4,
+    color: colors.gray_800,
+  },
+
+  notAvailableOption: {
+    flexDirection: "row", 
+    alignItems: "center", 
+    marginBottom: 24,
+  },
+
+  notAvailableText: {
+    fontSize: 12, 
+    fontWeight: "500", 
+    color: colors.gray_700,
+  },
+
+  mandatoryField: {
+    color: colors.error, 
+    marginLeft: 4, 
+    fontSize: 16,
+  },
+
+  eventListCardContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: colors.gray_50,
+    borderRadius: 8,
+    padding: 8,
+    marginBottom: 10,
+    marginHorizontal: 4,
+    shadowColor: colors.gray_800,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+
+  eventListCardDateBox: {
+    width: 56,
+    height: 56,
+    backgroundColor: colors.gray_100,
+    borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 12,
+  },
+
+  eventListCardDateBoxDay: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: colors.gray_900,
+  },
+
+  eventListCardDateBoxMonth: {
+    fontSize: 10,
+    fontWeight: "600",
+    color: colors.gray_500,
+  },
+
+  eventListCardContent: {
+    flex: 1,
+    justifyContent: "center",
+  },
+
+  eventListCardTitle: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: colors.gray_900,
+    marginBottom: 2,
+  },
+
+  eventListCardRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 2,
+  },
+
+  eventListCardIcon: {
+    width: 12,
+    height: 12,
+    marginRight: 4,
+    tintColor: colors.gray_400,
+  },
+
+  eventListCardText: {
+    fontSize: 12,
+    color: colors.gray_500,
+  },
+
+  eventListCardChevron: {
+    width: 16,
+    height: 16,
+    marginRight: 4,
+    tintColor: colors.gray_400,
+  },
+
+  eventDetailsModalView: {
+    flex: 1, 
+    justifyContent: "flex-end", 
+    backgroundColor: "transparent",
+  },
+
+  eventDetailsModalContainer: {
+    backgroundColor: colors.gray_50,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 20,
+    paddingBottom: 40,
+    maxHeight: "80%",
+  },
+
+  eventDetailsModalDragIcon: {
+    width: 48, 
+    height: 12, 
+    tintColor: colors.gray_300, 
+    borderRadius: 3,
+  },
+
+  eventDetailsModalTitle: {
+    fontSize: 20, 
+    fontWeight: "700", 
+    color: colors.gray_900, 
+    marginBottom: 16,
+  },
+
+  eventDetailsModalLabel: {
+    fontSize: 12, 
+    fontWeight: "600", 
+    color: colors.gray_500, 
+    marginBottom: 4,
+  },
+
+  eventDetailsModalText: {
+    fontSize: 14, 
+    color: colors.gray_800,
+  },
+
 });
 
 

@@ -124,7 +124,11 @@ export type CalendarEvent = {
   startDate: string; 
   endDate: string;   
   title?: string;
+  description?: string;
+  venue?: string;
   eventType?: string;
+  startTime?: string;
+  endTime?: string;
 };
 
 export type Day = {
@@ -148,5 +152,20 @@ export type User = {
 export type ProfileDetailsFormProps = {
   user: User;
   onUpdate?: (updatedUser: User) => void; 
+};
+
+export type EventListCardProps = {
+  date: string; 
+  title?: string;
+  venue?: string;
+  startTime?: string;
+  endTime?: string;
+  onPress?: () => void;
+};
+
+export type EventDetailsModalProps = {
+  visible: boolean;
+  event: CalendarEvent | null;
+  onClose: () => void;
 };
 

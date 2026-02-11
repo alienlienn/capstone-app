@@ -21,7 +21,6 @@ export default function ChildCalendarSection() {
   const [viewMode, setViewMode] = useState<ViewMode>("calendar");
   const [events, setEvents] = useState<CalendarEvent[]>([]);
 
-  // Fetch events when component mounts and when user navigates back to this screen
   useFocusEffect(
     React.useCallback(() => {
       loadEvents();

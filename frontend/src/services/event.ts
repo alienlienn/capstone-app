@@ -13,12 +13,16 @@ export async function fetchAllEvents(): Promise<CalendarEvent[]> {
 
     if (data.events && Array.isArray(data.events)) {
       data.events.forEach((event: any) => {
-        if (event.start_datetime) {
+        if (event.start_date) {
           events.push({
-            startDate: event.start_datetime.split("T")[0],
-            endDate: event.end_datetime ? event.end_datetime.split("T")[0] : event.start_datetime.split("T")[0],
+            startDate: event.start_date.split("T")[0],
+            endDate: event.end_date ? event.end_date.split("T")[0] : event.start_date.split("T")[0],
             title: event.title,
-            eventType: event.event_type, // map backend field to frontend type
+            description: event.description,
+            venue: event.venue,
+            eventType: event.event_type,
+            startTime: event.start_time,
+            endTime: event.end_time,
           });
         }
       });

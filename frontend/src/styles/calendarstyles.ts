@@ -104,9 +104,9 @@ const eventTypeColor = (type?: string) => {
 };
 
 export const calendarMarkedDates = (selectedDate: string, todayString: string, eventDates?: EventDate[]): CalendarMarkedDates => {
-  const isTodaySelected = selectedDate === todayString;
   const marked: CalendarMarkedDates = {};
 
+  // Build event type map for dots
   const eventTypeMap = new Map<string, string[]>();
   if (eventDates) {
     eventDates.forEach((event) => {
@@ -121,75 +121,53 @@ export const calendarMarkedDates = (selectedDate: string, todayString: string, e
     });
   }
 
-  if (isTodaySelected) {
-    const types = eventTypeMap.get(selectedDate) ?? [];
-    const dots = types.slice(0, 3).map((t, i) => ({ key: `event${i + 1}`, color: eventTypeColor(t) }));
-
-    marked[selectedDate] = {
-      customStyles: {
-        container: {
-          backgroundColor: colors.primary_700,
-          borderRadius: 999,
-          alignSelf: "center",
-          justifyContent: "center",
-        },
-        text: {
-          color: colors.gray_50,
-          fontWeight: "800",
-        },
-      },
-      ...(dots.length > 0 && { dots }),
-    };
-
-    eventTypeMap.forEach((typesArr, dateStr) => {
-      if (dateStr === selectedDate) return;
-      const dotsForDate = typesArr.slice(0, 3).map((t, i) => ({ key: `event${i + 1}`, color: eventTypeColor(t) }));
-      if (dotsForDate.length > 0) marked[dateStr] = { dots: dotsForDate };
-    });
-
-    return marked;
-  }
-
+  // Always mark selected date (whether it's today or not)
   const selectedTypes = eventTypeMap.get(selectedDate) ?? [];
   const selectedDots = selectedTypes.slice(0, 3).map((t, i) => ({ key: `event${i + 1}`, color: eventTypeColor(t) }));
 
+  // Selected date styling - filled background with primary color
   marked[selectedDate] = {
     customStyles: {
       container: {
-        borderWidth: 2,
-        borderColor: colors.primary_700,
+        backgroundColor: colors.primary_600,
         borderRadius: 999,
         alignSelf: "center",
         justifyContent: "center",
-        backgroundColor: "transparent",
+        borderWidth: 0,
       },
       text: {
-        color: colors.primary_700,
+        color: colors.gray_50,
         fontWeight: "700",
       },
     },
     ...(selectedDots.length > 0 && { dots: selectedDots }),
   };
 
-  const todayTypes = eventTypeMap.get(todayString) ?? [];
-  const todayDots = todayTypes.slice(0, 3).map((t, i) => ({ key: `event${i + 1}`, color: eventTypeColor(t) }));
+  // Mark today if not selected
+  if (selectedDate !== todayString) {
+    const todayTypes = eventTypeMap.get(todayString) ?? [];
+    const todayDots = todayTypes.slice(0, 3).map((t, i) => ({ key: `event${i + 1}`, color: eventTypeColor(t) }));
 
-  marked[todayString] = {
-    customStyles: {
-      container: {
-        backgroundColor: colors.primary_700,
-        borderRadius: 999,
-        alignSelf: "center",
-        justifyContent: "center",
+    marked[todayString] = {
+      customStyles: {
+        container: {
+          backgroundColor: colors.primary_100,
+          borderRadius: 999,
+          alignSelf: "center",
+          justifyContent: "center",
+          borderWidth: 1,
+          borderColor: colors.primary_600,
+        },
+        text: {
+          color: colors.primary_600,
+          fontWeight: "700",
+        },
       },
-      text: {
-        color: colors.gray_50,
-        fontWeight: "800",
-      },
-    },
-    ...(todayDots.length > 0 && { dots: todayDots }),
-  };
+      ...(todayDots.length > 0 && { dots: todayDots }),
+    };
+  }
 
+  // Mark other event dates with just dots
   eventTypeMap.forEach((typesArr, dateStr) => {
     if (dateStr === selectedDate || dateStr === todayString) return;
     const dotsForDate = typesArr.slice(0, 3).map((t, i) => ({ key: `event${i + 1}`, color: eventTypeColor(t) }));
