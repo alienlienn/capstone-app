@@ -16,7 +16,9 @@ export async function loginUser(payload: LoginRequest) {
     throw new Error(errorData.detail || "Login Unsuccessful");
   }
 
-  return response.json();
+  const loginData = await response.json();
+  const user = await fetchUserById(loginData.user_id);
+  return user;
 }
 
 export async function fetchUserById(userId: string) {

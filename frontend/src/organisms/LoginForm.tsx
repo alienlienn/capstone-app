@@ -23,8 +23,7 @@ function LoginForm() {
       setLoading(true);
       setErrorMessage(null);
 
-      const loginResponse  = await loginUser(payload);
-      const user = await fetchUserById(loginResponse.user_id);
+      const user = await loginUser(payload);
       (global as any).loggedInUser = user;
       console.log("Logged in user:", user);
 

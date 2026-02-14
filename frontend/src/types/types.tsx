@@ -35,7 +35,7 @@ export interface ButtonProps {
 }
 
 export interface DateBoxProps {
-  label: string;
+  label?: string;
   onPress: () => void;
 }
 
@@ -121,6 +121,8 @@ export type CalendarViewProps = {
 };
 
 export type CalendarEvent = {
+  id?: number;
+  date?: string;
   startDate: string; 
   endDate: string;   
   title?: string;
@@ -129,6 +131,7 @@ export type CalendarEvent = {
   eventType?: string;
   startTime?: string;
   endTime?: string;
+  createdBy?: string;
 };
 
 export type Day = {

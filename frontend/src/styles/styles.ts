@@ -746,6 +746,21 @@ export const styles = StyleSheet.create({
     color: colors.gray_800,
   },
 
+  formLabel: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: colors.gray_900,
+    marginTop: 16,
+    marginBottom: 8,
+  },
+
+  subLabel: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: colors.gray_600,
+    marginBottom: 4,
+  },
+
 });
 
 

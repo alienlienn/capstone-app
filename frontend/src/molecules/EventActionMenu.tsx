@@ -26,14 +26,6 @@ export default function EventActionMenu({ onCreate, onEdit, onRemove }: EventAct
         onPress={onEdit}
       />
 
-      <Divider />
-
-      <ActionMenuItem
-        label="Remove Event"
-        icon={require("../../assets/delete_icon.png")}
-        tintColor={colors.error}
-        onPress={onRemove}
-      />
     </View>
   );
 }

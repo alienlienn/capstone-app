@@ -1,47 +1,80 @@
-import { Modal, Pressable, View } from "react-native";
-import { useState } from "react";
+import { Modal, Pressable } from "react-native";
+import { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import FloatingButton from "../atoms/FloatingButton";
 import EventActionMenu from "../molecules/EventActionMenu";
+import EventSearchModal from "./EventSearchModal";
+import { fetchAllEvents } from "../services/event";
+import { CalendarEvent } from "../types/types";
 import { styles } from "../styles/styles";
 
 export default function ManageEventFAB() {
   const navigation = useNavigation<any>();
-  const [open, setOpen] = useState(false);
+
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [events, setEvents] = useState<CalendarEvent[]>([]);
+
+  // Load all events when component mounts
+  useEffect(() => {
+    fetchAllEvents().then(setEvents).catch((err) => console.error(err));
+  }, []);
 
   return (
     <>
+      {/* Floating Button */}
       <FloatingButton
         label="Manage Event"
         iconSource={require("../../assets/calendar_icon.png")}
-        onPress={() => setOpen(true)}
+        onPress={() => setMenuOpen(true)}
       />
+
+      {/* Event Action Menu Modal */}
       <Modal
-        visible={open}
+        visible={menuOpen}
         transparent
         animationType="fade"
-        onRequestClose={() => setOpen(false)}
+        onRequestClose={() => setMenuOpen(false)}
       >
         <Pressable
           style={styles.modalCenteredOverlay}
-          onPress={() => setOpen(false)}
+          onPress={() => setMenuOpen(false)}
         >
           <EventActionMenu
             onCreate={() => {
-              setOpen(false);
+              setMenuOpen(false);
               navigation.navigate("CreateEvent");
             }}
             onEdit={() => {
-              setOpen(false);
-              // future: navigate to edit
+              setMenuOpen(false);
+              // Refresh events before opening the search/edit modal
+              fetchAllEvents()
+                .then((fetched) => {
+                  setEvents(fetched);
+                  setSearchOpen(true);
+                })
+                .catch((err) => {
+                  console.error("Failed to refresh events:", err);
+                  setSearchOpen(true);
+                });
             }}
             onRemove={() => {
-              setOpen(false);
-              // future: confirm delete
+              setMenuOpen(false);
+              // TODO: confirm delete
             }}
           />
         </Pressable>
       </Modal>
+
+      {/* Event Search / Edit Modal */}
+      <EventSearchModal
+        visible={searchOpen}
+        onClose={() => setSearchOpen(false)}
+        onSelect={(event) => {
+          setSearchOpen(false);
+          navigation.navigate("EditEvent", { event }); // Navigate to EditEvent screen with selected event
+        }}
+      />
     </>
   );
 }
