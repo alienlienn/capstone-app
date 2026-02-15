@@ -72,6 +72,29 @@ class AffectedGroup(str, Enum):
     SECONDARY5_CLASS1 = "secondary 5-1"
     SECONDARY5_CLASS2 = "secondary 5-2"
     
+class EventTime(str, Enum):
+    T0800 = "08:00"
+    T0830 = "08:30"
+    T0900 = "09:00"
+    T0930 = "09:30"
+    T1000 = "10:00"
+    T1030 = "10:30"
+    T1100 = "11:00"
+    T1130 = "11:30"
+    T1200 = "12:00"
+    T1230 = "12:30"
+    T1300 = "13:00"
+    T1330 = "13:30"
+    T1400 = "14:00"
+    T1430 = "14:30"
+    T1500 = "15:00"
+    T1530 = "15:30"
+    T1600 = "16:00"
+    T1630 = "16:30"
+    T1700 = "17:00"
+    T1730 = "17:30"
+    T1800 = "18:00"
+    
 
 class School(Base):
     __tablename__ = "schools"
@@ -171,10 +194,13 @@ class EventItem(Base):
     description = Column(Text, nullable=True)
     event_type = Column(SQLAlchemyEnum(EventType), default=EventType.OTHER)
     venue = Column(String(150), nullable=True) 
-    affected_groups = Column(SQLAlchemyEnum(AffectedGroup), nullable=True)
+    affected_groups = Column(Text, nullable=True) 
+    start_time = Column(SQLAlchemyEnum(EventTime), nullable=True)
+    end_time = Column(SQLAlchemyEnum(EventTime), nullable=True)
     start_datetime = Column(DateTime, nullable=False)
     end_datetime = Column(DateTime, nullable=True)  
     created_by = Column(Integer, ForeignKey("user_accounts.id"), nullable=False)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ))
     updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ), onupdate=lambda: datetime.now(SINGAPORE_TZ))
+
 

@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from starlette import status
-from models import GenderEnum, EventType, AffectedGroup
+from models import GenderEnum, EventType, AffectedGroup, EventTime
 
 router = APIRouter(prefix="/lookup", tags=["lookup"])
 
@@ -39,3 +39,14 @@ def get_affected_group_options():
       }
       for group in AffectedGroup
   ]
+
+# GET request - get event time options
+@router.get("/event_time_options", status_code=status.HTTP_200_OK)
+def get_event_time_options():
+    return [
+      {
+        "label": time.value,
+        "value": time.value
+      }
+      for time in EventTime
+    ]
