@@ -94,6 +94,14 @@ export default function CreateEventForm() {
 
     setSubmitting(true)
 
+    const formatDateTimeToISO = (date: Date, timeStr: string | null) => {
+      const year = date.getFullYear()
+      const month = String(date.getMonth() + 1).padStart(2, "0")
+      const day = String(date.getDate()).padStart(2, "0")
+      const time = timeStr || "00:00"
+      return `${year}-${month}-${day}T${time}:00`
+    }
+
     try {
       const response = await fetch(`${ENV.API_BASE_URL}/event/add_event`, {
         method: "POST",
@@ -104,11 +112,9 @@ export default function CreateEventForm() {
           description,
           venue: venueNotAvailable ? null : venue,
           event_type: eventType,
-          affected_groups: affectedGroups[0],
-          start_date: formatDateToISO(startDate),
-          end_date: formatDateToISO(endDate),
-          start_time: timeNotAvailable ? null : startTime,
-          end_time: timeNotAvailable ? null : endTime,
+          affected_groups: affectedGroups.length > 0 ? affectedGroups[0] : null,
+          start_datetime: formatDateTimeToISO(startDate, timeNotAvailable ? null : startTime),
+          end_datetime: formatDateTimeToISO(endDate, timeNotAvailable ? null : endTime),
           created_by: (global as any).loggedInUser?.id || 1, 
         }),
       })
