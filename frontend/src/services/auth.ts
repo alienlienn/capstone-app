@@ -1,6 +1,7 @@
 import { ENV } from "../config/environment";
 import { LoginRequest } from "../types/types";
 
+
 export async function loginUser(payload: LoginRequest) {
   const response = await fetch(
     `${ENV.API_BASE_URL}/account/user_authentication`,
@@ -20,6 +21,7 @@ export async function loginUser(payload: LoginRequest) {
   const user = await fetchUserById(loginData.user_id);
   return user;
 }
+
 
 export async function fetchUserById(userId: string) {
   const response = await fetch(`${ENV.API_BASE_URL}/account/profile_details/${userId}`, {

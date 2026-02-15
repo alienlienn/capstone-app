@@ -1,5 +1,6 @@
 import { ENV } from "../config/environment";
 
+
 export async function updateUserProfile(userId: number, payload: any) {
   const response = await fetch(
     `${ENV.API_BASE_URL}/account/update_profile/${userId}`,

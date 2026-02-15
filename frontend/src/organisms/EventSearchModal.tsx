@@ -1,16 +1,12 @@
 import { Modal, View, Text, Pressable, FlatList, Image, Alert } from "react-native"
 import { useState, useEffect } from "react"
-import { colors } from "../styles/colors"
 import { StyleSheet } from "react-native"
-import { CalendarEvent } from "../types/types"
+import { EditEventModalProps, CalendarEvent } from "../types/types"
 import { fetchEventsByUserId, deleteEvent, updateEvent, addEvent } from "../services/event"
 import UserInput from "../atoms/UserInput"
+import { styles } from "../styles/styles"
+import { colors } from "../styles/colors"
 
-type EditEventModalProps = {
-  visible: boolean
-  onClose: () => void
-  onSelect: (event: CalendarEvent) => void
-}
 
 export default function EventSearchModal({ visible, onClose, onSelect }: EditEventModalProps) {
   const [searchText, setSearchText] = useState("")
@@ -37,11 +33,10 @@ export default function EventSearchModal({ visible, onClose, onSelect }: EditEve
               ).padStart(2, "0")}/${d.getFullYear()}`
               expandedEvents.push({
                 ...event,
-                date: dayStr, // Specific day in the range
+                date: dayStr, 
               })
             }
           })
-          // Sort events: by date (earliest first), then by title (A-Z)
           expandedEvents.sort((a, b) => {
             const dateA = (a.date || "").split("/").reverse().join("");
             const dateB = (b.date || "").split("/").reverse().join("");
@@ -110,10 +105,8 @@ export default function EventSearchModal({ visible, onClose, onSelect }: EditEve
               const endDateStr = selectedEvent.endDate || selectedEvent.startDate
 
               if (selectedDateStr === startDateStr && selectedDateStr === endDateStr) {
-                // Single day event, delete the whole thing
                 await deleteEvent(selectedEvent.id!)
               } else if (selectedDateStr === startDateStr) {
-                // Deleting the start date, move start date to next day
                 const nextDay = parseDDMMYYYY(selectedDateStr)
                 nextDay.setDate(nextDay.getDate() + 1)
 
@@ -122,7 +115,6 @@ export default function EventSearchModal({ visible, onClose, onSelect }: EditEve
                   createPayload(selectedEvent, nextDay, parseDDMMYYYY(endDateStr))
                 )
               } else if (selectedDateStr === endDateStr) {
-                // Deleting the end date, move end date to previous day
                 const prevDay = parseDDMMYYYY(selectedDateStr)
                 prevDay.setDate(prevDay.getDate() - 1)
 
@@ -131,26 +123,23 @@ export default function EventSearchModal({ visible, onClose, onSelect }: EditEve
                   createPayload(selectedEvent, parseDDMMYYYY(startDateStr), prevDay)
                 )
               } else {
-                // Deleting in the middle! Split into two events.
                 const dayBefore = parseDDMMYYYY(selectedDateStr)
                 dayBefore.setDate(dayBefore.getDate() - 1)
 
                 const dayAfter = parseDDMMYYYY(selectedDateStr)
                 dayAfter.setDate(dayAfter.getDate() + 1)
 
-                // 1. Update existing event to end the day before
                 await updateEvent(
                   selectedEvent.id!,
                   createPayload(selectedEvent, parseDDMMYYYY(startDateStr), dayBefore)
                 )
 
-                // 2. Create new event starting the day after
                 await addEvent(createPayload(selectedEvent, dayAfter, parseDDMMYYYY(endDateStr)))
               }
 
               Alert.alert("Success", "Event updated successfully")
               setSelectedEvent(null)
-              loadEvents() // Refresh list
+              loadEvents() 
             } catch (error) {
               console.error("Delete failed:", error)
               Alert.alert("Error", "Failed to delete event")
@@ -172,7 +161,7 @@ export default function EventSearchModal({ visible, onClose, onSelect }: EditEve
     return (
       <Pressable
         style={[
-          styles.editEventRow,
+          styles.eventSearchButtonRow,
           isSelected && { backgroundColor: colors.primary_100 },
         ]}
         onPress={() => {
@@ -183,42 +172,39 @@ export default function EventSearchModal({ visible, onClose, onSelect }: EditEve
           }
         }}
       >
-        <Text style={styles.editEventTitle}>{item.title}</Text>
-        <Text style={styles.editEventDate}>{item.date}</Text>
+        <Text style={styles.eventSearchTitle}>{item.title}</Text>
+        <Text style={styles.eventSearchDate}>{item.date}</Text>
       </Pressable>
     )
   }
 
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-      <View style={styles.modalCenteredOverlay}>
-        <View style={styles.editEventModalContainer}>
-          <Text style={styles.editEventHeader}>Select Event to Edit/Remove</Text>
+      <View style={[styles.modalCenteredOverlay, { paddingHorizontal: 16 }]}>
+        <View style={styles.eventSearchModalContainer}>
+          <Text style={styles.eventSearchHeader}>Select Event to Edit/Remove</Text>
 
-          {/* Search bar with UserInput and search icon */}
-          <View style={styles.searchRow}>
-            <View style={{ flex: 1, flexDirection: "row", alignItems: "center", backgroundColor: colors.gray_50, borderRadius: 8, borderWidth: 1, borderColor: colors.gray_200 }}>
+          <View style={styles.eventSearchRow}>
+            <View style={styles.eventSearchContainer}>
               <UserInput
                 inputValue={searchText}
                 placeholder="Search event title"
                 onChangeInputText={setSearchText}
-                containerStyle={{ flex: 1, height: 40, marginBottom: 0, backgroundColor: 'transparent', borderWidth: 0 }}
-                inputStyle={{ alignItems: "center", marginBottom: -2, paddingRight: 36 }}
+                containerStyle={styles.eventCustomSearchBox}
+                inputStyle={styles.eventSearchText}
               />
               <Image
                 source={require("../../assets/search_icon.png")}
-                style={{ width: 16, height: 16, position: "absolute", right: 12, tintColor: colors.gray_500 }}
+                style={styles.eventSearchIcon}
               />
             </View>
           </View>
 
-          {/* Event list header */}
-          <View style={styles.editEventTableHeader}>
-            <Text style={styles.tableHeaderTitle}>Event Title</Text>
-            <Text style={styles.tableHeaderDate}>Dates</Text>
+          <View style={styles.eventSearchTableHeader}>
+            <Text style={[styles.eventSearchTableHeaderLabel, { flex: 2 }]}>Event Title</Text>
+            <Text style={[styles.eventSearchTableHeaderLabel, { textAlign: "left" }]}>Dates</Text>
           </View>
 
-          {/* Event list */}
           <FlatList
             data={filteredEvents}
             keyExtractor={(item, index) => `${item.id}_${item.date}_${index}`}
@@ -231,30 +217,30 @@ export default function EventSearchModal({ visible, onClose, onSelect }: EditEve
             }
           />
 
-          {/* Footer buttons */}
-          <View style={styles.editEventFooter}>
-            <Pressable style={styles.cancelButton} onPress={onClose}>
-              <Text style={styles.cancelButtonText}>Cancel</Text>
+          <View style={styles.eventSearchButtonContainer}>
+            <Pressable style={[styles.eventSearchButton, { backgroundColor: colors.gray_200 }]} onPress={onClose}>
+              <Text style={styles.eventSearchButtonText}>Cancel</Text>
             </Pressable>
             <Pressable
               style={[
-                styles.selectButton,
+                styles.eventSearchSelectedItem,
                 !selectedEvent && { opacity: 0.5 },
               ]}
               onPress={() => selectedEvent && onSelect(selectedEvent)}
               disabled={!selectedEvent}
             >
-              <Text style={styles.editButtonText}>Edit Event</Text>
+              <Text style={[styles.eventSearchButtonText, { color: colors.gray_50 }]}>Edit Event</Text>
             </Pressable>
             <Pressable
               style={[
-                styles.deleteButton,
+                styles.eventSearchButton, 
+                { backgroundColor: colors.error },
                 !selectedEvent && { opacity: 0.5 },
               ]}
               onPress={handleDeleteEvent}
               disabled={!selectedEvent}
             >
-              <Text style={styles.deleteButtonText}>Delete</Text>
+              <Text style={[styles.eventSearchButtonText, { color: colors.gray_50 }]}>Delete</Text>
             </Pressable>
           </View>
         </View>
@@ -263,104 +249,3 @@ export default function EventSearchModal({ visible, onClose, onSelect }: EditEve
   )
 }
 
-const styles = StyleSheet.create({
-  modalCenteredOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.25)",
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 16,
-  },
-  editEventModalContainer: {
-    width: "100%",
-    maxHeight: "80%",
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    padding: 20,
-    overflow: "hidden",
-    flex: 1, // Ensure the container expands
-  },
-  editEventHeader: {
-    fontSize: 18,
-    fontWeight: "600",
-    marginBottom: 20,
-    marginLeft: 2,
-  },
-  searchRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 12,
-  },
-  calendarButton: {
-    marginLeft: 8,
-    padding: 8,
-    borderRadius: 8,
-    backgroundColor: colors.gray_200,
-    height: 40,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  calendarIcon: {
-    width: 24,
-    height: 24,
-  },
-  editEventTableHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingVertical: 6,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.gray_300,
-    marginBottom: 4,
-    marginHorizontal: 4,
-    alignItems: "center",
-  },
-  tableHeaderTitle: { flex: 2, fontWeight: "600", fontSize: 14 },
-  tableHeaderDate: { flex: 1, fontWeight: "600", fontSize: 14, textAlign: "left" },
-  editEventRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingVertical: 12,
-    marginHorizontal: 4,
-    alignItems: "center",
-    borderBottomWidth: 1,
-    borderBottomColor: colors.gray_200,
-  },
-  editEventTitle: { flex: 2, fontSize: 14 },
-  editEventDate: { flex: 1, fontSize: 13, color: colors.gray_600, textAlign: "left" },
-  editEventFooter: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    marginTop: 12,
-  },
-  cancelButton: {
-    backgroundColor: colors.gray_200,
-    borderRadius: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    marginLeft: 8,
-    alignSelf: "center"
-  },
-  cancelButtonText: { fontSize: 14, fontWeight: "600" },
-  selectButton: {
-    backgroundColor: colors.primary_600,
-    borderRadius: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    marginLeft: 8,
-    alignSelf: "center"
-  },
-  editButtonText: { fontSize: 14, fontWeight: "600", color: "#fff" },
-  deleteButton: {
-    backgroundColor: colors.error,
-    borderRadius: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    marginLeft: 8,
-    alignSelf: "center"
-  },
-  deleteButtonText: {
-    color: '#fff',
-    fontWeight: '600',
-    fontSize: 14,
-  },
-})

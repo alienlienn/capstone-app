@@ -3,20 +3,17 @@ import { View, Text, Pressable, Image, Alert, ScrollView, ActivityIndicator } fr
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useNavigation, useRoute } from "@react-navigation/native"
 import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker"
-
 import Dropdown from "../atoms/Dropdown"
 import FilterMultiSelect from "../atoms/FilterMultiSelect"
 import UserInput from "../atoms/UserInput"
 import DateBox from "../atoms/DateBox"
 import Button from "../atoms/Button"
 import { colors } from "../styles/colors"
-
 import { fetchEventTypeOptions, fetchAffectedGroupOptions, fetchEventTimeOptions } from "../services/lookup"
 import { updateEvent } from "../services/event"
 import type { DropdownOption, CalendarEvent } from "../types/types"
 import { styles } from "../styles/styles"
 
-import { ENV } from "../config/environment"
 
 export default function EditEventForm() {
   const navigation = useNavigation<any>()
@@ -45,7 +42,6 @@ export default function EditEventForm() {
   const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
-    // Reset form fields when the event parameter changes
     setTitle(event.title || "")
     setDescription(event.description || "")
     setEventType(event.eventType || null)
@@ -68,7 +64,6 @@ export default function EditEventForm() {
         setGroupOptions(groups)
         setEventTimeOptions(times)
 
-        // Parse dates from string "DD/MM/YYYY" to Date objects
         if (event.startDate) {
           const [d, m, y] = event.startDate.split("/").map(Number)
           setStartDate(new Date(y, m - 1, d))
@@ -89,13 +84,6 @@ export default function EditEventForm() {
 
   const formatDate = (date: Date) =>
     `${String(date.getDate()).padStart(2, "0")}/${String(date.getMonth() + 1).padStart(2, "0")}/${date.getFullYear()}`
-
-  const formatDateToISO = (date: Date) => {
-    const year = date.getFullYear()
-    const month = String(date.getMonth() + 1).padStart(2, "0")
-    const day = String(date.getDate()).padStart(2, "0")
-    return `${year}-${month}-${day}T00:00:00`
-  }
 
   const handleUpdateEvent = async () => {
     if (!title || !startDate || !endDate || !eventType) {
@@ -132,17 +120,17 @@ export default function EditEventForm() {
       if (!event.id) throw new Error("Event ID not found")
       
       await updateEvent(event.id, {
-        school_id: 1, // Add missing school_id
+        school_id: 1, 
         title,
         description,
         event_type: eventType,
         venue: venueNotAvailable ? null : venue,
-        affected_groups: affectedGroups, // Send the full array of strings
+        affected_groups: affectedGroups,
         start_time: timeNotAvailable ? null : startTime,
         end_time: timeNotAvailable ? null : endTime,
         start_datetime: formatDateTimeToISO(startDate, timeNotAvailable ? null : startTime),
         end_datetime: formatDateTimeToISO(endDate, timeNotAvailable ? null : endTime),
-        created_by: event.createdBy || 1, // Add missing created_by
+        created_by: event.createdBy || 1, 
       })
 
       Alert.alert("Success", "Event updated successfully")

@@ -25,7 +25,6 @@ function expandEventsByDateRange(events: CalendarEvent[]): CalendarEvent[] {
   const expanded: CalendarEvent[] = [];
   
   events.forEach(event => {
-    // Handle both YYYY-MM-DD and DD/MM/YYYY formats
     const parseDate = (dStr: string) => {
       if (dStr.includes("/")) {
         const [d, m, y] = dStr.split("/").map(Number);

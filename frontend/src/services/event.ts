@@ -40,6 +40,7 @@ export async function fetchAllEvents(): Promise<CalendarEvent[]> {
   }
 }
 
+
 export async function fetchEventsByUserId(userId: number): Promise<CalendarEvent[]> {
   try {
     const response = await fetch(`${ENV.API_BASE_URL}/event/get_user_events/${userId}`);
@@ -83,6 +84,7 @@ export async function fetchEventsByUserId(userId: number): Promise<CalendarEvent
   }
 }
 
+
 export async function addEvent(eventData: any) {
   const response = await fetch(`${ENV.API_BASE_URL}/event/add_event`, {
     method: "POST",
@@ -98,6 +100,7 @@ export async function addEvent(eventData: any) {
   return response.json();
 }
 
+
 export async function updateEvent(eventId: number, eventData: any) {
   const response = await fetch(`${ENV.API_BASE_URL}/event/update_event/${eventId}`, {
     method: "POST",
@@ -112,6 +115,8 @@ export async function updateEvent(eventId: number, eventData: any) {
 
   return response.json();
 }
+
+
 export async function deleteEvent(eventId: number) {
   const response = await fetch(`${ENV.API_BASE_URL}/event/delete_event/${eventId}`, {
     method: "POST",

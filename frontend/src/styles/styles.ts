@@ -746,19 +746,126 @@ export const styles = StyleSheet.create({
     color: colors.gray_800,
   },
 
-  formLabel: {
-    fontSize: 14,
-    fontWeight: "700",
-    color: colors.gray_900,
-    marginTop: 16,
-    marginBottom: 8,
+  eventSearchModalContainer: {
+    width: "100%",
+    maxHeight: "80%",
+    backgroundColor: colors.gray_50,
+    borderRadius: 12,
+    padding: 20,
+    overflow: "hidden",
+    flex: 1, 
   },
 
-  subLabel: {
-    fontSize: 12,
+  eventSearchHeader: {
+    fontSize: 18,
     fontWeight: "600",
-    color: colors.gray_600,
+    marginBottom: 20,
+    marginLeft: 2,
+  },
+
+  eventSearchTitle: { 
+    flex: 2, 
+    fontSize: 14 
+  },
+
+  eventSearchDate: { 
+    flex: 1, 
+    fontSize: 13, 
+    color: colors.gray_600, 
+    textAlign: "left" 
+  },
+
+  eventSearchRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+
+  eventSearchContainer: {
+    flex: 1, 
+    flexDirection: "row", 
+    alignItems: "center", 
+    backgroundColor: colors.gray_50, 
+    borderRadius: 8, 
+    borderWidth: 1, 
+    borderColor: colors.gray_200 
+  },
+
+  eventCustomSearchBox: {
+    flex: 1, 
+    height: 40, 
+    marginBottom: 0, 
+    backgroundColor: 'transparent', 
+    borderWidth: 0
+  },
+
+  eventSearchText: {
+    alignItems: "center", 
+    marginBottom: -2, 
+    paddingRight: 36
+  },
+
+  eventSearchIcon: {
+    width: 16, 
+    height: 16, 
+    position: "absolute", 
+    right: 12, 
+    tintColor: colors.gray_500
+  },
+
+  eventSearchTableHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingVertical: 6,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.gray_300,
     marginBottom: 4,
+    marginHorizontal: 4,
+    alignItems: "center",
+  },
+
+  eventSearchTableHeaderLabel: { 
+    flex: 1, 
+    fontWeight: "600", 
+    fontSize: 14 
+  },
+
+  eventSearchButtonRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingVertical: 12,
+    marginHorizontal: 4,
+    alignItems: "center",
+    borderBottomWidth: 1,
+    borderBottomColor: colors.gray_200,
+  },
+
+  eventSearchButtonContainer: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    marginTop: 12,
+  },
+
+  eventSearchButton: {
+    borderRadius: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    marginLeft: 8,
+    alignSelf: "center"
+  },
+
+  eventSearchButtonText: {
+    fontSize: 14, 
+    fontWeight: "600"
+  },
+
+  eventSearchSelectedItem: {
+    backgroundColor: colors.primary_600,
+    borderRadius: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    marginLeft: 8,
+    alignSelf: "center"
   },
 
 });

@@ -3,14 +3,12 @@ import { View, Text, Pressable, Image, Alert, ScrollView, ActivityIndicator } fr
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useNavigation } from "@react-navigation/native"
 import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker"
-
 import Dropdown from "../atoms/Dropdown"
 import FilterMultiSelect from "../atoms/FilterMultiSelect"
 import UserInput from "../atoms/UserInput"
 import DateBox from "../atoms/DateBox"
 import Button from "../atoms/Button"
 import { colors } from "../styles/colors"
-
 import { fetchEventTypeOptions, fetchAffectedGroupOptions, fetchEventTimeOptions } from "../services/lookup"
 import { addEvent } from "../services/event"
 import type { DropdownOption } from "../types/types"
@@ -64,13 +62,6 @@ export default function CreateEventForm() {
   const formatDate = (date: Date) =>
     `${String(date.getDate()).padStart(2, "0")}/${String(date.getMonth() + 1).padStart(2, "0")}/${date.getFullYear()}`
 
-  const formatDateToISO = (date: Date) => {
-    const year = date.getFullYear()
-    const month = String(date.getMonth() + 1).padStart(2, "0")
-    const day = String(date.getDate()).padStart(2, "0")
-    return `${year}-${month}-${day}T00:00:00`
-  }
-
   const handleCreateEvent = async () => {
     if (!title || !startDate || !endDate || !eventType || affectedGroups.length === 0) {
       Alert.alert("Error", "Please fill in all required fields")
@@ -109,7 +100,7 @@ export default function CreateEventForm() {
         description,
         venue: venueNotAvailable ? null : venue,
         event_type: eventType,
-        affected_groups: affectedGroups, // Send the full array of strings
+        affected_groups: affectedGroups,
         start_time: timeNotAvailable ? null : startTime,
         end_time: timeNotAvailable ? null : endTime,
         start_datetime: formatDateTimeToISO(startDate, timeNotAvailable ? null : startTime),

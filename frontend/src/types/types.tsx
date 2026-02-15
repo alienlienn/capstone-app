@@ -174,3 +174,9 @@ export type EventDetailsModalProps = {
   onClose: () => void;
 };
 
+export type EditEventModalProps = {
+  visible: boolean
+  onClose: () => void
+  onSelect: (event: CalendarEvent) => void
+};
+
