@@ -12,6 +12,7 @@ import Button from "../atoms/Button"
 import { colors } from "../styles/colors"
 
 import { fetchEventTypeOptions, fetchAffectedGroupOptions, fetchEventTimeOptions } from "../services/lookup"
+import { updateEvent } from "../services/event"
 import type { DropdownOption, CalendarEvent } from "../types/types"
 import { styles } from "../styles/styles"
 
@@ -30,7 +31,9 @@ export default function EditEventForm() {
   const [timeNotAvailable, setTimeNotAvailable] = useState(!event.startTime && !event.endTime)
   const [startTime, setStartTime] = useState<string | null>(event.startTime || null)
   const [endTime, setEndTime] = useState<string | null>(event.endTime || null)
-  const [affectedGroups, setAffectedGroups] = useState<string[]>([]) // Backend doesn't currently return this for edit in provided logs, but mapping it
+  const [affectedGroups, setAffectedGroups] = useState<string[]>(
+    event.affectedGroups ? event.affectedGroups.split(",") : []
+  )
   const [startDate, setStartDate] = useState<Date | null>(null)
   const [endDate, setEndDate] = useState<Date | null>(null)
   const [showStartPicker, setShowStartPicker] = useState(false)
@@ -106,33 +109,34 @@ export default function EditEventForm() {
 
     setSubmitting(true)
 
-    try {
-      // Assuming PUT /event/update_event/{id} exists
-      const response = await fetch(`${ENV.API_BASE_URL}/event/update_event/${event.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title,
-          description,
-          event_type: eventType,
-          venue: venueNotAvailable ? null : venue,
-          start_time: timeNotAvailable ? null : startTime,
-          end_time: timeNotAvailable ? null : endTime,
-          start_date: formatDateToISO(startDate),
-          end_date: formatDateToISO(endDate),
-          affected_groups: affectedGroups.length > 0 ? affectedGroups[0] : null, // Backend seems to expect single AffectedGroup enum
-        }),
-      })
+    const formatDateTimeToISO = (date: Date, timeStr: string | null) => {
+      const year = date.getFullYear()
+      const month = String(date.getMonth() + 1).padStart(2, "0")
+      const day = String(date.getDate()).padStart(2, "0")
+      const time = timeStr || "00:00"
+      return `${year}-${month}-${day}T${time}:00`
+    }
 
-      if (!response.ok) {
-        throw new Error("Failed to update event")
-      }
+    try {
+      if (!event.id) throw new Error("Event ID not found")
+      
+      await updateEvent(event.id, {
+        school_id: 1, // Add missing school_id
+        title,
+        description,
+        event_type: eventType,
+        venue: venueNotAvailable ? null : venue,
+        affected_groups: affectedGroups, // Send the full array of strings
+        start_datetime: formatDateTimeToISO(startDate, timeNotAvailable ? null : startTime),
+        end_datetime: formatDateTimeToISO(endDate, timeNotAvailable ? null : endTime),
+        created_by: event.createdBy || 1, // Add missing created_by
+      })
 
       Alert.alert("Success", "Event updated successfully")
       navigation.goBack()
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error updating event:", error)
-      Alert.alert("Error", "Something went wrong. Please try again.")
+      Alert.alert("Error", error?.detail?.[0]?.msg || "Something went wrong. Please try again.")
     } finally {
       setSubmitting(false)
     }

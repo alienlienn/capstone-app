@@ -21,6 +21,7 @@ export async function fetchAllEvents(): Promise<CalendarEvent[]> {
             description: event.description,
             venue: event.venue,
             eventType: event.event_type,
+            affectedGroups: event.affected_groups,
             startTime: event.start_datetime.split("T")[1]?.substring(0, 5),
             endTime: event.end_datetime ? event.end_datetime.split("T")[1]?.substring(0, 5) : null,
             createdBy: event.created_by,
@@ -62,6 +63,7 @@ export async function fetchEventsByUserId(userId: number): Promise<CalendarEvent
             description: event.description,
             venue: event.venue,
             eventType: event.event_type,
+            affectedGroups: event.affected_groups,
             startTime: event.start_datetime.split("T")[1]?.substring(0, 5),
             endTime: event.end_datetime ? event.end_datetime.split("T")[1]?.substring(0, 5) : null,
             createdBy: event.created_by,
@@ -76,3 +78,34 @@ export async function fetchEventsByUserId(userId: number): Promise<CalendarEvent
     return [];
   }
 }
+
+export async function addEvent(eventData: any) {
+  const response = await fetch(`${ENV.API_BASE_URL}/event/add_event`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(eventData),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw errorData;
+  }
+
+  return response.json();
+}
+
+export async function updateEvent(eventId: number, eventData: any) {
+  const response = await fetch(`${ENV.API_BASE_URL}/event/update_event/${eventId}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(eventData),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw errorData;
+  }
+
+  return response.json();
+}
+

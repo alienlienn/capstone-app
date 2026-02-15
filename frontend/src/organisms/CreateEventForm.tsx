@@ -12,10 +12,10 @@ import Button from "../atoms/Button"
 import { colors } from "../styles/colors"
 
 import { fetchEventTypeOptions, fetchAffectedGroupOptions, fetchEventTimeOptions } from "../services/lookup"
+import { addEvent } from "../services/event"
 import type { DropdownOption } from "../types/types"
 import { styles } from "../styles/styles"
 
-import { ENV } from "../config/environment"
 
 export default function CreateEventForm() {
   const navigation = useNavigation<any>()
@@ -103,30 +103,18 @@ export default function CreateEventForm() {
     }
 
     try {
-      const response = await fetch(`${ENV.API_BASE_URL}/event/add_event`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          school_id: 1,
-          title,
-          description,
-          venue: venueNotAvailable ? null : venue,
-          event_type: eventType,
-          affected_groups: affectedGroups.length > 0 ? affectedGroups[0] : null,
-          start_datetime: formatDateTimeToISO(startDate, timeNotAvailable ? null : startTime),
-          end_datetime: formatDateTimeToISO(endDate, timeNotAvailable ? null : endTime),
-          created_by: (global as any).loggedInUser?.id || 1, 
-        }),
+      const data = await addEvent({
+        school_id: 1,
+        title,
+        description,
+        venue: venueNotAvailable ? null : venue,
+        event_type: eventType,
+        affected_groups: affectedGroups, // Send the full array of strings
+        start_datetime: formatDateTimeToISO(startDate, timeNotAvailable ? null : startTime),
+        end_datetime: formatDateTimeToISO(endDate, timeNotAvailable ? null : endTime),
+        created_by: (global as any).loggedInUser?.id || 1, 
       })
 
-      if (!response.ok) {
-        const errorData = await response.json()
-        console.error("Add event failed:", errorData)
-        Alert.alert("Error", "Failed to create event")
-        return
-      }
-
-      const data = await response.json()
       console.log("Event created:", data)
 
       setTitle("")
@@ -144,9 +132,9 @@ export default function CreateEventForm() {
       Alert.alert("Success", "Event created successfully", [
         { text: "OK", onPress: () => navigation.navigate("Home") },
       ])
-    } catch (error) {
-      console.error("Error creating event:", error)
-      Alert.alert("Error", "An unexpected error occurred")
+    } catch (error: any) {
+      console.error("Add event failed:", error)
+      Alert.alert("Error", error?.detail?.[0]?.msg || "Failed to create event")
     } finally {
       setSubmitting(false)
     }

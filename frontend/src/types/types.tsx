@@ -129,6 +129,7 @@ export type CalendarEvent = {
   description?: string;
   venue?: string;
   eventType?: string;
+  affectedGroups?: string;
   startTime?: string;
   endTime?: string;
   createdBy?: string;
