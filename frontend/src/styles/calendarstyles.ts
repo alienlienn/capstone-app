@@ -110,8 +110,17 @@ export const calendarMarkedDates = (selectedDate: string, todayString: string, e
   const eventTypeMap = new Map<string, string[]>();
   if (eventDates) {
     eventDates.forEach((event) => {
-      const start = new Date(event.startDate);
-      const end = new Date(event.endDate);
+      const parseDate = (dStr: string) => {
+        if (dStr.includes("/")) {
+          const [d, m, y] = dStr.split("/").map(Number);
+          return new Date(y, m - 1, d);
+        }
+        return new Date(dStr);
+      };
+
+      const start = parseDate(event.startDate);
+      const end = parseDate(event.endDate || event.startDate);
+      
       for (let current = new Date(start); current <= end; current.setDate(current.getDate() + 1)) {
         const key = current.toISOString().split("T")[0];
         const arr = eventTypeMap.get(key) ?? [];

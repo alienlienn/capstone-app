@@ -122,6 +122,7 @@ export type CalendarViewProps = {
 
 export type CalendarEvent = {
   id?: number;
+  schoolId?: number;
   date?: string;
   startDate: string; 
   endDate: string;   
@@ -132,7 +133,7 @@ export type CalendarEvent = {
   affectedGroups?: string;
   startTime?: string;
   endTime?: string;
-  createdBy?: string;
+  createdBy?: number;
 };
 
 export type Day = {

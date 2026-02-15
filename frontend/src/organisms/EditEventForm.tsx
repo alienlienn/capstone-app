@@ -45,6 +45,17 @@ export default function EditEventForm() {
   const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
+    // Reset form fields when the event parameter changes
+    setTitle(event.title || "")
+    setDescription(event.description || "")
+    setEventType(event.eventType || null)
+    setVenue(event.venue || "")
+    setVenueNotAvailable(!event.venue)
+    setTimeNotAvailable(!event.startTime && !event.endTime)
+    setStartTime(event.startTime || null)
+    setEndTime(event.endTime || null)
+    setAffectedGroups(event.affectedGroups ? event.affectedGroups.split(",") : [])
+
     async function loadOptions() {
       try {
         setLoadingOptions(true)
@@ -127,6 +138,8 @@ export default function EditEventForm() {
         event_type: eventType,
         venue: venueNotAvailable ? null : venue,
         affected_groups: affectedGroups, // Send the full array of strings
+        start_time: timeNotAvailable ? null : startTime,
+        end_time: timeNotAvailable ? null : endTime,
         start_datetime: formatDateTimeToISO(startDate, timeNotAvailable ? null : startTime),
         end_datetime: formatDateTimeToISO(endDate, timeNotAvailable ? null : endTime),
         created_by: event.createdBy || 1, // Add missing created_by

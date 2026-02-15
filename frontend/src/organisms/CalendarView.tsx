@@ -25,8 +25,17 @@ function expandEventsByDateRange(events: CalendarEvent[]): CalendarEvent[] {
   const expanded: CalendarEvent[] = [];
   
   events.forEach(event => {
-    const startDate = new Date(event.startDate);
-    const endDate = new Date(event.endDate || event.startDate);
+    // Handle both YYYY-MM-DD and DD/MM/YYYY formats
+    const parseDate = (dStr: string) => {
+      if (dStr.includes("/")) {
+        const [d, m, y] = dStr.split("/").map(Number);
+        return new Date(y, m - 1, d);
+      }
+      return new Date(dStr);
+    };
+
+    const startDate = parseDate(event.startDate);
+    const endDate = parseDate(event.endDate || event.startDate);
     
     for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
       const currentDateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;

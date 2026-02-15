@@ -16,7 +16,7 @@ const CHILD_OPTIONS = [
 
 type ViewMode = "calendar" | "list";
 
-export default function ChildCalendarSection() {
+export default function ChildCalendarSection({ refreshKey }: { refreshKey?: number }) {
   const [selectedChild, setSelectedChild] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>("calendar");
   const [events, setEvents] = useState<CalendarEvent[]>([]);
@@ -26,6 +26,11 @@ export default function ChildCalendarSection() {
       loadEvents();
     }, [])
   );
+
+  // Re-load events when refreshKey changes
+  React.useEffect(() => {
+    loadEvents();
+  }, [refreshKey]);
 
   const loadEvents = async () => {
     try {

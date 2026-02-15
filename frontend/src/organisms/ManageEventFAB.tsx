@@ -8,7 +8,7 @@ import { fetchAllEvents } from "../services/event";
 import { CalendarEvent } from "../types/types";
 import { styles } from "../styles/styles";
 
-export default function ManageEventFAB() {
+export default function ManageEventFAB({ onRefresh }: { onRefresh?: () => void }) {
   const navigation = useNavigation<any>();
 
   const [menuOpen, setMenuOpen] = useState(false);
@@ -69,7 +69,10 @@ export default function ManageEventFAB() {
       {/* Event Search / Edit Modal */}
       <EventSearchModal
         visible={searchOpen}
-        onClose={() => setSearchOpen(false)}
+        onClose={() => {
+          setSearchOpen(false);
+          if (onRefresh) onRefresh();
+        }}
         onSelect={(event) => {
           setSearchOpen(false);
           navigation.navigate("EditEvent", { event }); // Navigate to EditEvent screen with selected event

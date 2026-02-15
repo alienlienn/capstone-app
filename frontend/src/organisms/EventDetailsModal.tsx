@@ -102,7 +102,7 @@ export default function EventDetailsModal({ visible, event, onClose }: EventDeta
                     TIME
                   </Text>
                   <Text style={styles.eventDetailsModalText}>
-                    {event.startTime && event.endTime
+                    {event.startTime && event.endTime && !(event.startTime === "00:00" && event.endTime === "00:00")
                       ? `${event.startTime} - ${event.endTime}`
                       : "NIL"}
                   </Text>

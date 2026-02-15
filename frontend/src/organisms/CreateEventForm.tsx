@@ -110,6 +110,8 @@ export default function CreateEventForm() {
         venue: venueNotAvailable ? null : venue,
         event_type: eventType,
         affected_groups: affectedGroups, // Send the full array of strings
+        start_time: timeNotAvailable ? null : startTime,
+        end_time: timeNotAvailable ? null : endTime,
         start_datetime: formatDateTimeToISO(startDate, timeNotAvailable ? null : startTime),
         end_datetime: formatDateTimeToISO(endDate, timeNotAvailable ? null : endTime),
         created_by: (global as any).loggedInUser?.id || 1, 
