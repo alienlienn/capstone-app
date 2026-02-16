@@ -20,7 +20,8 @@ class AddEvent(BaseModel):
     start_datetime: datetime
     end_datetime: datetime | None = None
     created_by: int
-    
+
+
 # GET request - get all event items
 @router.get("/get_all_events", status_code=status.HTTP_200_OK)
 def get_all_events(db: db_dependency):

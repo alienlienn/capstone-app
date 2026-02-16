@@ -22,7 +22,7 @@ def get_gender_option():
 def get_event_type_options():
     return [
       {
-        "label": event_type.value.capitalize(), 
+        "label": event_type.value.replace("_", " ").title(), 
         "value": event_type.value
       }
       for event_type in EventType
@@ -34,7 +34,7 @@ def get_event_type_options():
 def get_affected_group_options():
     return [
       {
-        "label": group.value.capitalize(), 
+        "label": group.value.replace("_", " ").title(), 
         "value": group.value
       }
       for group in AffectedGroup

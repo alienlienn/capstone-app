@@ -37,7 +37,7 @@ class ParentRelationship(str, Enum):
     OTHER = "other" 
 
 class EventType(str, Enum):
-    MEETING = "meeting"
+    SCHOOL_EVENT = "school event"
     HOLIDAY = "holiday"
     EXAM = "exam"
     ANNOUNCEMENT = "announcement"
@@ -106,34 +106,6 @@ class School(Base):
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ))
     
 
-class UserAccount(Base):
-    __tablename__ = "user_accounts"
-
-    id = Column(Integer, primary_key=True, index=True)
-    email = Column(String(255), unique=True, nullable=False, index=True)
-    password_hash = Column(String(255), nullable=False)
-    role = Column(SQLAlchemyEnum(UserRole), nullable=False)
-    school_id = Column(Integer, ForeignKey("schools.id"), nullable=True)
-    profile_image_url = Column(String(500), nullable=True)
-    first_name = Column(String(50), nullable=False)
-    last_name = Column(String(50), nullable=True)
-    gender = Column(SQLAlchemyEnum(GenderEnum), nullable=True, default=GenderEnum.OTHER) 
-    mobile_number = Column(String(20), nullable=True)
-    status = Column(SQLAlchemyEnum(AccountStatus), default=AccountStatus.ACTIVE)
-    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ))
-    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ), onupdate=lambda: datetime.now(SINGAPORE_TZ))
-    
-
-class UserPermission(Base):
-    __tablename__ = "user_permissions"
-
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("user_accounts.id"), nullable=False)
-    permission = Column(SQLAlchemyEnum(PermissionType), nullable=False)
-    granted_by = Column(Integer, ForeignKey("user_accounts.id"), nullable=True)
-    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ))
-
-
 class Student(Base):
     __tablename__ = "students"
 
@@ -162,28 +134,33 @@ class ParentStudent(Base):
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ))
 
 
-class Announcement(Base):
-    __tablename__ = "announcements"
+class UserAccount(Base):
+    __tablename__ = "user_accounts"
 
     id = Column(Integer, primary_key=True, index=True)
-    school_id = Column(Integer, ForeignKey("schools.id"), nullable=False)
-    title = Column(String(150), nullable=False)
-    content = Column(Text, nullable=False)
-    created_by = Column(Integer, ForeignKey("user_accounts.id"), nullable=False)
+    email = Column(String(255), unique=True, nullable=False, index=True)
+    password_hash = Column(String(255), nullable=False)
+    role = Column(SQLAlchemyEnum(UserRole), nullable=False)
+    school_id = Column(Integer, ForeignKey("schools.id"), nullable=True)
+    profile_image_url = Column(String(500), nullable=True)
+    first_name = Column(String(50), nullable=False)
+    last_name = Column(String(50), nullable=True)
+    gender = Column(SQLAlchemyEnum(GenderEnum), nullable=True, default=GenderEnum.OTHER) 
+    mobile_number = Column(String(20), nullable=True)
+    status = Column(SQLAlchemyEnum(AccountStatus), default=AccountStatus.ACTIVE)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ))
     updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ), onupdate=lambda: datetime.now(SINGAPORE_TZ))
+    
 
-
-class Message(Base):
-    __tablename__ = "messages"
+class UserPermission(Base):
+    __tablename__ = "user_permissions"
 
     id = Column(Integer, primary_key=True, index=True)
-    sender_id = Column(Integer, ForeignKey("user_accounts.id"), nullable=False)
-    receiver_id = Column(Integer, ForeignKey("user_accounts.id"), nullable=False)
-    content = Column(Text, nullable=False)
-    is_read = Column(Integer, default=0)
+    user_id = Column(Integer, ForeignKey("user_accounts.id"), nullable=False)
+    permission = Column(SQLAlchemyEnum(PermissionType), nullable=False)
+    granted_by = Column(Integer, ForeignKey("user_accounts.id"), nullable=True)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ))
-    
+
 
 class EventItem(Base):
     __tablename__ = "event_items"
