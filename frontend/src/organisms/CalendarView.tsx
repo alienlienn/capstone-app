@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { View, ScrollView, Text } from "react-native";
+import { View, ScrollView, Text, StyleSheet } from "react-native";
 import { Calendar, LocaleConfig } from "react-native-calendars";
 import EventListCard from "../molecules/EventListCard";
 import EventDetailsModal from "./EventDetailsModal";
 import { CalendarViewProps, Day, CalendarEvent } from "../types/types";
 import { calendarStyles, calendarTheme, calendarMarkedDates } from "../styles/calendarstyles";
+import EventTypeLegend from "../molecules/EventTypeLegend";
 import { styles } from "../styles/styles";
 
 
@@ -71,6 +72,7 @@ export default function CalendarView({ month, year, events }: CalendarViewProps)
 
   return (
     <View style={{ flex: 1 }}>
+      {/* Legend is now only rendered in ChildCalendarSection for both views */}
       <Calendar
         current={`${currentYear}-${String(currentMonth).padStart(2, "0")}-01`}
         onDayPress={(day: Day) => setSelectedDate(day.dateString)}
@@ -87,8 +89,8 @@ export default function CalendarView({ month, year, events }: CalendarViewProps)
         showsVerticalScrollIndicator={false}
       >
         {todayEvents.length > 0 && (
-          <View style={{ marginBottom: 24 }}>
-            <Text style={[styles.eventListLabel, { marginTop: 8 }]}>Today's Events</Text>
+          <View style={{ marginBottom: 16 }}>
+            <Text style={[styles.eventListLabel, { marginTop: 4 }]}>Today's Events</Text>
             {todayEvents.map((event, index) => (
               <EventListCard
                 key={`today-${index}`}
@@ -108,7 +110,7 @@ export default function CalendarView({ month, year, events }: CalendarViewProps)
 
         {upcomingEvents.length > 0 && (
           <View>
-            <Text style={[styles.eventListLabel, { marginTop: -4 }]}>Upcoming Events</Text>
+            <Text style={[styles.eventListLabel, { marginTop: 2 }]}>Upcoming Events</Text>
             {upcomingEvents.map((event, index) => (
               <EventListCard
                 key={`upcoming-${index}`}
