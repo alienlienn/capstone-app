@@ -13,7 +13,7 @@ function formatDayMonth(dateStr: string) {
 export default function EventListCard({ date, title, venue, startTime, endTime, onPress }: EventListCardProps) {
   const { day, month } = formatDayMonth(date);
   const isTimeMissing = !startTime || !endTime || (startTime === "00:00" && endTime === "00:00");
-  const timeString = isTimeMissing ? "NIL" : `${startTime} - ${endTime}`;
+  const timeString = isTimeMissing ? "Not Specified" : `${startTime} - ${endTime}`;
 
   const venueString = venue || null;
 
@@ -46,7 +46,7 @@ export default function EventListCard({ date, title, venue, startTime, endTime, 
               style={styles.eventListCardIcon}
             />
             <Text style={styles.eventListCardText}>
-              NIL
+              Not Specified
             </Text>
           </View>
         )}

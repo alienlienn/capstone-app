@@ -96,30 +96,26 @@ export default function EventDetailsModal({ visible, event, onClose }: EventDeta
               </View>
 
               {/* Time */}
-              {(event.startTime || event.endTime) && (
-                <View style={{ marginBottom: 16 }}>
-                  <Text style={styles.eventDetailsModalLabel}>
-                    TIME
-                  </Text>
-                  <Text style={styles.eventDetailsModalText}>
-                    {event.startTime && event.endTime && !(event.startTime === "00:00" && event.endTime === "00:00")
-                      ? `${event.startTime} - ${event.endTime}`
-                      : "NIL"}
-                  </Text>
-                </View>
-              )}
+              <View style={{ marginBottom: 16 }}>
+                <Text style={styles.eventDetailsModalLabel}>
+                  TIME
+                </Text>
+                <Text style={styles.eventDetailsModalText}>
+                  {event.startTime && event.endTime && !(event.startTime === "00:00" && event.endTime === "00:00")
+                    ? `${event.startTime} - ${event.endTime}`
+                    : "Not Specified"}
+                </Text>
+              </View>
 
               {/* Venue */}
-              {event.venue && (
-                <View style={{ marginBottom: 16 }}>
-                  <Text style={styles.eventDetailsModalLabel}>
-                    VENUE
-                  </Text>
-                  <Text style={styles.eventDetailsModalText}>
-                    {event.venue}
-                  </Text>
-                </View>
-              )}
+              <View style={{ marginBottom: 16 }}>
+                <Text style={styles.eventDetailsModalLabel}>
+                  VENUE
+                </Text>
+                <Text style={styles.eventDetailsModalText}>
+                  {event.venue || "Not Specified"}
+                </Text>
+              </View>
             </ScrollView>
           )}
         </Animated.View>

@@ -36,7 +36,7 @@ export const colors = {
   event_announcement: "#2563EB",
   event_holiday: "#15af7c",
   event_exams: "#e03243",
-  event_meeting: "#da48c4",
+  event_school_event: "#da48c4",
 
   error: "#DC2626",
   success: "#10B981",

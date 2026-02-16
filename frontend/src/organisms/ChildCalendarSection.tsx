@@ -3,6 +3,7 @@ import { View, Text, Pressable } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import Dropdown from "../atoms/Dropdown";
 import CalendarView from "./CalendarView";
+import CalendarListView from "./CalendarListView";
 import EventTypeLegend from "../molecules/EventTypeLegend";
 import { styles } from "../styles/styles";
 import { fetchAllEvents } from "../services/event";
@@ -80,11 +81,7 @@ export default function ChildCalendarSection({ refreshKey }: { refreshKey?: numb
       {viewMode === "calendar" ? (
         <CalendarView events={events} />
       ) : (
-        <View style={styles.listViewPlaceholder}>
-          <Text style={styles.listViewPlaceholderText}>
-            List view coming soon
-          </Text>
-        </View>
+        <CalendarListView events={events} />
       )}
     </View>
   );

@@ -94,8 +94,8 @@ const eventTypeColor = (type?: string) => {
       return colors.event_holiday; 
     case "exam":
       return colors.event_exams; 
-    case "meeting":
-      return colors.event_meeting; 
+    case "school event":
+      return colors.event_school_event; 
     case "announcement":
       return colors.event_announcement; 
     default:
