@@ -119,8 +119,15 @@ export default function EditEventForm() {
     try {
       if (!event.id) throw new Error("Event ID not found")
       
+      const currentUser = (global as any).loggedInUser;
+
+      if (!currentUser || !currentUser.id) {
+        Alert.alert("Error", "User session information is missing. Please log in again.");
+        return;
+      }
+
       await updateEvent(event.id, {
-        school_id: 1, 
+        school_id: event.schoolId || currentUser.school_id || 0, // Fallback to 0 if both are missing, but ideally should be caught by logic above
         title,
         description,
         event_type: eventType,
@@ -130,7 +137,7 @@ export default function EditEventForm() {
         end_time: timeNotAvailable ? null : endTime,
         start_datetime: formatDateTimeToISO(startDate, timeNotAvailable ? null : startTime),
         end_datetime: formatDateTimeToISO(endDate, timeNotAvailable ? null : endTime),
-        created_by: event.createdBy || 1, 
+        created_by: event.createdBy || currentUser.id, 
       })
 
       Alert.alert("Success", "Event updated successfully")

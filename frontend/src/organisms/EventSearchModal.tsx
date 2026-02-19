@@ -72,8 +72,14 @@ export default function EventSearchModal({ visible, onClose, onSelect }: EditEve
   }
 
   const createPayload = (event: CalendarEvent, start: Date, end: Date) => {
+    const currentUser = (global as any).loggedInUser;
+    
+    if (!currentUser || !currentUser.id) {
+      throw new Error("User session information is missing");
+    }
+
     return {
-      school_id: event.schoolId || 1,
+      school_id: event.schoolId || currentUser.school_id,
       title: event.title,
       description: event.description,
       event_type: event.eventType,
@@ -83,7 +89,7 @@ export default function EventSearchModal({ visible, onClose, onSelect }: EditEve
       end_time: event.endTime,
       start_datetime: formatDateTimeToISO(start, event.startTime || null),
       end_datetime: formatDateTimeToISO(end, event.endTime || null),
-      created_by: event.createdBy || 1,
+      created_by: event.createdBy || currentUser.id,
     }
   }
 

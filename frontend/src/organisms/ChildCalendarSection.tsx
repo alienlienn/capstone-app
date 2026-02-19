@@ -6,7 +6,7 @@ import CalendarView from "./CalendarView";
 import CalendarListView from "./CalendarListView";
 import EventTypeLegend from "../molecules/EventTypeLegend";
 import { styles } from "../styles/styles";
-import { fetchAllEvents } from "../services/event";
+import { fetchAllEvents, fetchEventsBySchoolId } from "../services/event";
 import type { CalendarEvent } from "../types/types";
 
 const CHILD_OPTIONS = [
@@ -36,7 +36,17 @@ export default function ChildCalendarSection({ refreshKey }: { refreshKey?: numb
 
   const loadEvents = async () => {
     try {
-      const fetchedEvents = await fetchAllEvents();
+      const currentUser = (global as any).loggedInUser;
+      let fetchedEvents: CalendarEvent[] = [];
+
+      if (currentUser && currentUser.role === "super_admin") {
+        // Super admin can see all events
+        fetchedEvents = await fetchAllEvents();
+      } else if (currentUser && currentUser.school_id) {
+        // Fetch only events for the current user's school
+        fetchedEvents = await fetchEventsBySchoolId(currentUser.school_id);
+      }
+      
       setEvents(fetchedEvents);
     } catch (error) {
       console.error("Error loading events:", error);

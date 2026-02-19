@@ -152,6 +152,8 @@ export type User = {
   gender?: string;
   mobile_number?: string;
   profile_image_url?: string;
+  role?: string;
+  school_id?: number;
 };
 
 export type ProfileDetailsFormProps = {

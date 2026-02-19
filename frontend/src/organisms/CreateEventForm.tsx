@@ -94,8 +94,15 @@ export default function CreateEventForm() {
     }
 
     try {
+      const currentUser = (global as any).loggedInUser;
+      
+      if (!currentUser || !currentUser.school_id) {
+        Alert.alert("Error", "User session or school information is missing. Please log in again.");
+        return;
+      }
+
       const data = await addEvent({
-        school_id: 1,
+        school_id: currentUser.school_id,
         title,
         description,
         venue: venueNotAvailable ? null : venue,
@@ -105,7 +112,7 @@ export default function CreateEventForm() {
         end_time: timeNotAvailable ? null : endTime,
         start_datetime: formatDateTimeToISO(startDate, timeNotAvailable ? null : startTime),
         end_datetime: formatDateTimeToISO(endDate, timeNotAvailable ? null : endTime),
-        created_by: (global as any).loggedInUser?.id || 1, 
+        created_by: currentUser.id, 
       })
 
       console.log("Event created:", data)

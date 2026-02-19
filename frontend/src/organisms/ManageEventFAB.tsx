@@ -4,7 +4,6 @@ import { useNavigation } from "@react-navigation/native";
 import FloatingButton from "../atoms/FloatingButton";
 import EventActionMenu from "../molecules/EventActionMenu";
 import EventSearchModal from "./EventSearchModal";
-import { fetchAllEvents } from "../services/event";
 import { CalendarEvent } from "../types/types";
 import { styles } from "../styles/styles";
 
@@ -13,12 +12,6 @@ export default function ManageEventFAB({ onRefresh }: { onRefresh?: () => void }
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [events, setEvents] = useState<CalendarEvent[]>([]);
-
-  // Load all events when component mounts
-  useEffect(() => {
-    fetchAllEvents().then(setEvents).catch((err) => console.error(err));
-  }, []);
 
   return (
     <>
@@ -47,16 +40,7 @@ export default function ManageEventFAB({ onRefresh }: { onRefresh?: () => void }
             }}
             onEdit={() => {
               setMenuOpen(false);
-              // Refresh events before opening the search/edit modal
-              fetchAllEvents()
-                .then((fetched) => {
-                  setEvents(fetched);
-                  setSearchOpen(true);
-                })
-                .catch((err) => {
-                  console.error("Failed to refresh events:", err);
-                  setSearchOpen(true);
-                });
+              setSearchOpen(true);
             }}
             onRemove={() => {
               setMenuOpen(false);

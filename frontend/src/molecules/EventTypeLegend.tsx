@@ -61,7 +61,7 @@ const legendStyles = StyleSheet.create({
     width: "100%",
     alignItems: "flex-end",
     marginTop: -2,
-    marginBottom: 4,
+    marginBottom: 2,
     paddingHorizontal: 2,
     maxWidth: 370,
     alignSelf: "center",
