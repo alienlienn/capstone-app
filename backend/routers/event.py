@@ -148,3 +148,5 @@ def delete_event(event_id: int, db: db_dependency):
         "message": "Event deleted successfully",
         "event_id": event_id
     }
+
+

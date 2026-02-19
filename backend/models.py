@@ -104,6 +104,7 @@ class School(Base):
     address = Column(String(255), nullable=True)
     contact_email = Column(String(255), nullable=True)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ))
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ), onupdate=lambda: datetime.now(SINGAPORE_TZ))
     
 
 class Student(Base):
@@ -116,10 +117,25 @@ class Student(Base):
     last_name = Column(String(50), nullable=True)
     date_of_birth = Column(Date, nullable=True)
     gender = Column(SQLAlchemyEnum(GenderEnum), nullable=True, default=GenderEnum.OTHER)
-    class_name = Column(String(50), nullable=True)  
+    assigned_groups = Column(Text, nullable=True)  
     enrollment_year = Column(Integer, nullable=True)
     parent_contact_email = Column(String(255), nullable=True)  
     parent_contact_number = Column(String(20), nullable=True) 
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ))
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ), onupdate=lambda: datetime.now(SINGAPORE_TZ))
+
+
+class Parent(Base):
+    __tablename__ = "parents"
+
+    id = Column(Integer, primary_key=True, index=True)
+    nric = Column(String(12), unique=True, nullable=False, index=True)
+    first_name = Column(String(50), nullable=False)
+    last_name = Column(String(50), nullable=True)
+    email = Column(String(255), nullable=True)
+    mobile_number = Column(String(20), nullable=True)
+    gender = Column(SQLAlchemyEnum(GenderEnum), nullable=True, default=GenderEnum.OTHER)
+    user_id = Column(Integer, ForeignKey("user_accounts.id"), nullable=True)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ))
     updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ), onupdate=lambda: datetime.now(SINGAPORE_TZ))
 
@@ -128,10 +144,27 @@ class ParentStudent(Base):
     __tablename__ = "parent_students"
 
     id = Column(Integer, primary_key=True, index=True)
-    parent_id = Column(Integer, ForeignKey("user_accounts.id"), nullable=False)
+    parent_id = Column(Integer, ForeignKey("parents.id"), nullable=False)
     student_id = Column(Integer, ForeignKey("students.id"), nullable=False)
     relationship = Column(SQLAlchemyEnum(ParentRelationship), nullable=False, default=ParentRelationship.OTHER)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ))
+
+
+class Teacher(Base):
+    __tablename__ = "teachers"
+
+    id = Column(Integer, primary_key=True, index=True)
+    nric = Column(String(12), unique=True, nullable=False, index=True)
+    school_id = Column(Integer, ForeignKey("schools.id"), nullable=False)
+    first_name = Column(String(50), nullable=False)
+    last_name = Column(String(50), nullable=True)
+    email = Column(String(255), nullable=True)
+    mobile_number = Column(String(20), nullable=True)
+    gender = Column(SQLAlchemyEnum(GenderEnum), nullable=True, default=GenderEnum.OTHER)
+    assigned_groups = Column(Text, nullable=True)
+    user_id = Column(Integer, ForeignKey("user_accounts.id"), nullable=True)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ))
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ), onupdate=lambda: datetime.now(SINGAPORE_TZ))
 
 
 class UserAccount(Base):
