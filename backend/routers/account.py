@@ -3,7 +3,7 @@ from starlette import status
 from pydantic import BaseModel
 from typing import Optional
 from utils.utils import db_dependency, verify_password, hash_password
-from models import UserAccount, GenderEnum
+from models import UserAccount, GenderEnum, Teacher, Parent, ParentStudent, Student, UserRole
 import uuid, os, shutil
 
 
@@ -36,11 +36,30 @@ async def login(request: LoginRequest, db: db_dependency):
     if not verify_password(request.password, user.password_hash):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid email or password")
 
+    # Fetch school_id based on role
+    school_id = None
+    if user.role == UserRole.USER:
+        # For 'user' role, find school_id via Parent -> ParentStudent -> Student
+        parent = db.query(Parent).filter(Parent.user_id == user.id).first()
+        if parent:
+            # Get school_id from the first linked student
+            student_link = db.query(ParentStudent).filter(ParentStudent.parent_id == parent.id).first()
+            if student_link:
+                student = db.query(Student).filter(Student.id == student_link.student_id).first()
+                if student:
+                    school_id = student.school_id
+    else:
+        # Fetch school_id from Teacher table for other roles
+        teacher_record = db.query(Teacher).filter(Teacher.user_id == user.id).first()
+        if teacher_record:
+            school_id = teacher_record.school_id
+
     return {
         "message": "Login Successful",
         "user_id": user.id,
         "user_email": user.email,
         "role": user.role,
+        "school_id": school_id,
         "first_name": user.first_name,
         "last_name": user.last_name,
     }
@@ -53,6 +72,21 @@ async def get_user(user_id: int, db: db_dependency):
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     
+    # Fetch school_id based on role
+    school_id = None
+    if user.role == UserRole.USER:
+        parent = db.query(Parent).filter(Parent.user_id == user.id).first()
+        if parent:
+            student_link = db.query(ParentStudent).filter(ParentStudent.parent_id == parent.id).first()
+            if student_link:
+                student = db.query(Student).filter(Student.id == student_link.student_id).first()
+                if student:
+                    school_id = student.school_id
+    else:
+        teacher_record = db.query(Teacher).filter(Teacher.user_id == user.id).first()
+        if teacher_record:
+            school_id = teacher_record.school_id
+    
     return {
         "id": user.id,
         "first_name": user.first_name,
@@ -62,6 +96,8 @@ async def get_user(user_id: int, db: db_dependency):
         "profile_image_url": user.profile_image_url,
         "gender": user.gender,
         "mobile_number": user.mobile_number,
+        "role": user.role,
+        "school_id": school_id,
     }
 
 
@@ -129,3 +165,25 @@ async def upload_avatar(db: db_dependency, user_id: int, file: UploadFile = File
     db.commit()
 
     return {"profile_image_url": user.profile_image_url}
+
+@router.get("/get_students/{user_id}", status_code=status.HTTP_200_OK)
+async def get_students(user_id: int, db: db_dependency):
+    parent = db.query(Parent).filter(Parent.user_id == user_id).first()
+    if not parent:
+        return []
+    
+    student_links = db.query(ParentStudent).filter(ParentStudent.parent_id == parent.id).all()
+    student_ids = [link.student_id for link in student_links]
+    
+    students = db.query(Student).filter(Student.id.in_(student_ids)).all()
+    
+    return [
+        {
+            "id": s.id,
+            "first_name": s.first_name,
+            "last_name": s.last_name,
+            "assigned_groups": s.assigned_groups,
+            "school_id": s.school_id,
+        }
+        for s in students
+    ]

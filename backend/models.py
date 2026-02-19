@@ -174,7 +174,6 @@ class UserAccount(Base):
     email = Column(String(255), unique=True, nullable=False, index=True)
     password_hash = Column(String(255), nullable=False)
     role = Column(SQLAlchemyEnum(UserRole), nullable=False)
-    school_id = Column(Integer, ForeignKey("schools.id"), nullable=True)
     profile_image_url = Column(String(500), nullable=True)
     first_name = Column(String(50), nullable=False)
     last_name = Column(String(50), nullable=True)

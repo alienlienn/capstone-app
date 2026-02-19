@@ -14,6 +14,7 @@ class CreateAccountRequest(BaseModel):
     role: UserRole
     first_name: str
     last_name: str
+    school_id: int | None = None
     mobile_number: str | None = None
 
 class CreateAccountResponse(BaseModel):

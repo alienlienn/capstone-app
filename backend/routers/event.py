@@ -49,6 +49,33 @@ def get_all_events(db: db_dependency):
     return {"events": event_list, "count": len(event_list)}
 
 
+# GET request - get events by school id
+@router.get("/get_school_events/{school_id}", status_code=status.HTTP_200_OK)
+def get_school_events(school_id: int, db: db_dependency):
+    events = db.query(EventItem).filter(EventItem.school_id == school_id).all()
+    event_list = [
+        {
+            "id": event.id,
+            "school_id": event.school_id,
+            "title": event.title,
+            "description": event.description,
+            "event_type": event.event_type.value if event.event_type else None,
+            "venue": event.venue,
+            "affected_groups": event.affected_groups,
+            "start_time": event.start_time.value if event.start_time else None,
+            "end_time": event.end_time.value if event.end_time else None,
+            "start_datetime": event.start_datetime.isoformat() if event.start_datetime else None,
+            "end_datetime": event.end_datetime.isoformat() if event.end_datetime else None,
+            "created_by": event.created_by,
+            "created_at": event.created_at.isoformat() if event.created_at else None,
+            "updated_at": event.updated_at.isoformat() if event.updated_at else None,
+        }
+        for event in events
+    ]
+
+    return {"events": event_list, "count": len(event_list)}
+
+
 # GET request - get events by user id
 @router.get("/get_user_events/{user_id}", status_code=status.HTTP_200_OK)
 def get_user_events(user_id: int, db: db_dependency):
