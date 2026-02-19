@@ -9,6 +9,9 @@ export default function HomeScreen() {
   const navigation = useNavigation<any>();
   const [refreshKey, setRefreshKey] = useState(0);
 
+  const currentUser = (global as any).loggedInUser;
+  const showFAB = currentUser?.role !== "user";
+
   const handleRefresh = useCallback(() => {
     setRefreshKey(prev => prev + 1);
   }, []);
@@ -18,7 +21,7 @@ export default function HomeScreen() {
       <ScrollView style={styles.pageContainer}>
         <ChildCalendarSection refreshKey={refreshKey} />
       </ScrollView>
-      <ManageEventFAB onRefresh={handleRefresh} />
+      {showFAB && <ManageEventFAB onRefresh={handleRefresh} />}
     </>
   );
 }

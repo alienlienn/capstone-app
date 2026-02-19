@@ -60,7 +60,7 @@ const legendStyles = StyleSheet.create({
   container: {
     width: "100%",
     alignItems: "flex-end",
-    marginTop: -2,
+    marginTop: 2,
     marginBottom: 2,
     paddingHorizontal: 2,
     maxWidth: 370,
