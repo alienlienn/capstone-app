@@ -5,6 +5,7 @@ import NavBarRoutes from "./NavBarRoutes";
 import EditProfileScreen from "../screens/EditProfileScreen";
 import CreateEventScreen from "../screens/CreateEventScreen";
 import EditEventScreen from "../screens/EditEventScreen";
+import EditResultsScreen from "../screens/EditResultsScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -17,6 +18,7 @@ function AppRoutes() {
         <Stack.Screen name="EditProfile" component={EditProfileScreen} />
         <Stack.Screen name="CreateEvent" component={CreateEventScreen} />
         <Stack.Screen name="EditEvent" component={EditEventScreen} />
+        <Stack.Screen name="EditResults" component={EditResultsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -9,6 +9,7 @@ import ProfileScreen from "../screens/ProfileScreen";
 import EditProfileScreen from "../screens/EditProfileScreen";
 import CreateEventScreen from "../screens/CreateEventScreen";
 import EditEventScreen from "../screens/EditEventScreen";
+import EditResultsScreen from "../screens/EditResultsScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -23,6 +24,7 @@ function NavBarRoutes({ route }: { route: any }) {
         <Tab.Screen name="EditProfile" component={EditProfileScreen} />
         <Tab.Screen name="CreateEvent" component={CreateEventScreen} />
         <Tab.Screen name="EditEvent" component={EditEventScreen} />
+        <Tab.Screen name="EditResults" component={EditResultsScreen} />
       </Tab.Navigator>
       <SafeAreaView edges={['bottom']} >
         <BottomNavbar route={route} />

@@ -1,4 +1,4 @@
-import { View, TextInput } from "react-native";
+import { View, TextInput, Image, Pressable } from "react-native";
 import { styles } from "../styles/styles";
 import { UserInputProps } from "../types/types";
 
@@ -8,7 +8,9 @@ function UserInput({
   onChangeInputText, 
   secureInputTextEntry = false, 
   containerStyle, 
-  inputStyle }: UserInputProps & { containerStyle?: any; inputStyle?: any }) {
+  inputStyle,
+  rightIconSource,
+  onPressRightIcon }: UserInputProps & { containerStyle?: any; inputStyle?: any }) {
 
   return (
     <View style={[styles.userInputContainer, containerStyle]}>
@@ -19,6 +21,11 @@ function UserInput({
         secureTextEntry={secureInputTextEntry}
         style={[styles.userInputText, inputStyle]}
       />
+      {rightIconSource && (
+        <Pressable onPress={onPressRightIcon}>
+          <Image source={rightIconSource} style={styles.userInputIcon} />
+        </Pressable>
+      )}
     </View>
   );
 }

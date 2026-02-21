@@ -7,6 +7,8 @@ export interface UserInputProps {
   placeholder: string;
   onChangeInputText: (text: string) => void;
   secureInputTextEntry?: boolean;
+  rightIconSource?: any;
+  onPressRightIcon?: () => void;
 };
 
 export interface DropdownProps {
@@ -93,6 +95,17 @@ export interface EventActionMenuProps {
   onRemove: () => void;
 }
 
+export interface StudentResult {
+  id?: number;
+  student_id: number;
+  subject: string;
+  grade?: string;
+  score?: number;
+  term: string;
+  year: number;
+  teacher_id: number;
+}
+
 
 // Types
 export type TabItem = {
@@ -175,6 +188,13 @@ export type EventDetailsModalProps = {
   event: CalendarEvent | null;
   onClose: () => void;
 };
+
+export interface StudentCardProps {
+  id: number;
+  firstName: string;
+  lastName: string;
+  onPress: () => void;
+}
 
 export type EditEventModalProps = {
   visible: boolean

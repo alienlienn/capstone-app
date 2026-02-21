@@ -9,12 +9,23 @@ export const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 12,
     backgroundColor: colors.gray_50,
+    flexDirection: "row",
+    alignItems: "center",
   },
 
   userInputText: {
+    flex: 1,
     padding: 12,
     fontSize: 14,
     color: colors.primary_850,
+  },
+
+  userInputIcon: {
+    width: 20,
+    height: 20,
+    marginRight: 12,
+    tintColor: colors.gray_400,
+    resizeMode: "contain",
   },
 
   buttonContainer: {
@@ -72,13 +83,13 @@ export const styles = StyleSheet.create({
   },
 
   dropdownContainer: {
+    flex: 1,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 14,
     height: 48,
     borderRadius: 8,
-    backgroundColor: colors.gray_50,
   },
 
   dropdownIcon: {
@@ -92,6 +103,7 @@ export const styles = StyleSheet.create({
   },
 
   dropdownSelectedText: {
+    flex: 1,
     fontSize: 14,
     color: colors.primary_850,
   },
@@ -629,6 +641,35 @@ export const styles = StyleSheet.create({
     color: colors.error, 
     marginLeft: 4, 
     fontSize: 16,
+  },
+
+  studentCardContainer: {
+    backgroundColor: colors.gray_50,
+    borderRadius: 8,
+    padding: 16,
+    marginBottom: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    borderWidth: 1,
+    borderColor: colors.gray_200,
+    elevation: 2,
+    shadowColor: colors.gray_900,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+  },
+
+  studentCardName: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: colors.primary_850,
+  },
+
+  studentCardChevron: {
+    width: 14,
+    height: 14,
+    tintColor: colors.gray_400,
   },
 
   eventListCardContainer: {
