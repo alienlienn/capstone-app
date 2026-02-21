@@ -1,11 +1,11 @@
 import { View, Text } from "react-native";
 
-function MessagesScreen() {
+function ContactUsScreen() {
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#F2F3FA"}}>
-      <Text>Messages Page</Text>
+      <Text>Contact Us Page</Text>
     </View>
   );
 }
 
-export default MessagesScreen;
+export default ContactUsScreen;
