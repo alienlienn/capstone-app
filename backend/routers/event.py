@@ -105,29 +105,40 @@ def get_user_events(user_id: int, db: db_dependency):
 
 # POST request - add new event item 
 @router.post("/add_event", status_code=status.HTTP_201_CREATED)
-def add_new_event(event: AddEvent, db: db_dependency):
-    new_event = EventItem(
-        school_id=event.school_id,
-        title=event.title,
-        description=event.description,
-        event_type=event.event_type,
-        venue=event.venue,
-        affected_groups=",".join([g.value for g in event.affected_groups]) if event.affected_groups else None,
-        start_time=event.start_time,
-        end_time=event.end_time,
-        start_datetime=event.start_datetime,
-        end_datetime=event.end_datetime,
-        created_by=event.created_by
-    )
+def add_new_event(request: AddEvent | list[AddEvent], db: db_dependency):
+    requests = request if isinstance(request, list) else [request]
+    created_events = []
 
-    db.add(new_event)
+    for req in requests:
+        new_event = EventItem(
+            school_id=req.school_id,
+            title=req.title,
+            description=req.description,
+            event_type=req.event_type,
+            venue=req.venue,
+            affected_groups=",".join([g.value for g in req.affected_groups]) if req.affected_groups else None,
+            start_time=req.start_time,
+            end_time=req.end_time,
+            start_datetime=req.start_datetime,
+            end_datetime=req.end_datetime,
+            created_by=req.created_by
+        )
+        db.add(new_event)
+        created_events.append(new_event)
+
     db.commit()
-    db.refresh(new_event)
+    for event in created_events:
+        db.refresh(event)
 
-    return {
-        "message": "Event created successfully",
-        "event_id": new_event.id
-    }
+    result = [
+        {
+            "message": "Event created successfully",
+            "event_id": event.id
+        }
+        for event in created_events
+    ]
+
+    return result if isinstance(request, list) else result[0]
 
 
 # POST request - update and save event 

@@ -148,6 +148,17 @@ class ParentStudent(Base):
     student_id = Column(Integer, ForeignKey("students.id"), nullable=False)
     relationship = Column(SQLAlchemyEnum(ParentRelationship), nullable=False, default=ParentRelationship.OTHER)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ))
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ), onupdate=lambda: datetime.now(SINGAPORE_TZ))
+
+
+class TeacherStudent(Base):
+    __tablename__ = "teacher_students"
+
+    id = Column(Integer, primary_key=True, index=True)
+    teacher_id = Column(Integer, ForeignKey("teachers.id"), nullable=False)
+    student_id = Column(Integer, ForeignKey("students.id"), nullable=False)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ))
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ), onupdate=lambda: datetime.now(SINGAPORE_TZ))
 
 
 class Teacher(Base):
@@ -163,6 +174,21 @@ class Teacher(Base):
     gender = Column(SQLAlchemyEnum(GenderEnum), nullable=True, default=GenderEnum.OTHER)
     assigned_groups = Column(Text, nullable=True)
     user_id = Column(Integer, ForeignKey("user_accounts.id"), nullable=True)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ))
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ), onupdate=lambda: datetime.now(SINGAPORE_TZ))
+
+
+class StudentResult(Base):
+    __tablename__ = "student_results"
+
+    id = Column(Integer, primary_key=True, index=True)
+    student_id = Column(Integer, ForeignKey("students.id"), nullable=False)
+    subject = Column(String(100), nullable=False)
+    grade = Column(String(10), nullable=True)
+    score = Column(Integer, nullable=True)  # Using integer for 0-100 score
+    term = Column(String(50), nullable=False)
+    year = Column(Integer, nullable=False)
+    teacher_id = Column(Integer, ForeignKey("teachers.id"), nullable=False)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ))
     updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ), onupdate=lambda: datetime.now(SINGAPORE_TZ))
 

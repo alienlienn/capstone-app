@@ -3,7 +3,7 @@ from starlette import status
 from pydantic import BaseModel, EmailStr
 from datetime import date
 from utils.utils import db_dependency, hash_password
-from models import UserAccount, UserRole, School, Student, Parent, Teacher, ParentStudent, GenderEnum, ParentRelationship
+from models import UserAccount, UserRole, School, Student, Parent, Teacher, ParentStudent, TeacherStudent, GenderEnum, ParentRelationship
 
 
 router = APIRouter(prefix="/superadmin", tags=["superadmin"])
@@ -16,6 +16,7 @@ class CreateAccountRequest(BaseModel):
     last_name: str
     school_id: int | None = None
     mobile_number: str | None = None
+
 
 class CreateAccountResponse(BaseModel):
     response_message: str
@@ -71,32 +72,51 @@ class CreateParentStudentRequest(BaseModel):
     relationship: ParentRelationship
 
 
+class CreateTeacherStudentRequest(BaseModel):
+    teacher_id: int
+    student_id: int
+
+
 # POST request - account creation
 @router.post("/create_account", status_code=status.HTTP_201_CREATED)
-def create_account(request: CreateAccountRequest, db: db_dependency):
-    existing_user = db.query(UserAccount).filter(UserAccount.email == request.email).first()
-    if existing_user:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User already exists")
+def create_account(request: CreateAccountRequest | list[CreateAccountRequest], db: db_dependency):
+    requests = request if isinstance(request, list) else [request]
+    created_accounts = []
     
-    # Create new user account
-    new_user = UserAccount(
-        email=request.email,
-        password_hash=hash_password(request.password),
-        role=request.role,
-        first_name=request.first_name,
-        last_name=request.last_name,
-        mobile_number=request.mobile_number
-    )
-    db.add(new_user)
+    for req in requests:
+        existing_user = db.query(UserAccount).filter(UserAccount.email == req.email).first()
+        if existing_user:
+            if not isinstance(request, list):
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User already exists")
+            continue
+            
+        # Create new user account
+        new_user = UserAccount(
+            email=req.email,
+            password_hash=hash_password(req.password),
+            role=req.role,
+            first_name=req.first_name,
+            last_name=req.last_name,
+            mobile_number=req.mobile_number
+        )
+        db.add(new_user)
+        created_accounts.append(new_user)
+        
     db.commit()
-    db.refresh(new_user)
+    for user in created_accounts:
+        db.refresh(user)
     
-    return {
-        "message": "User account created successfully",
-        "user_id": new_user.id,
-        "email": new_user.email,
-        "role": new_user.role
-    }
+    result = [
+        {
+            "message": "User account created successfully",
+            "user_id": user.id,
+            "email": user.email,
+            "role": user.role
+        }
+        for user in created_accounts
+    ]
+    
+    return result if isinstance(request, list) else (result[0] if result else None)
 
 
 # GET request - view all user accounts
@@ -121,137 +141,207 @@ def get_all_accounts(db: db_dependency):
 
 # POST request - add schools
 @router.post("/add_school", status_code=status.HTTP_201_CREATED)
-def add_school(request: CreateSchoolRequest, db: db_dependency):
-    existing_school = db.query(School).filter(School.school_name == request.school_name).first()
-    if existing_school:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="School already exists")
+def add_school(request: CreateSchoolRequest | list[CreateSchoolRequest], db: db_dependency):
+    requests = request if isinstance(request, list) else [request]
+    created_schools = []
     
-    new_school = School(
-        school_name=request.school_name,
-        address=request.address,
-        contact_email=request.contact_email
-    )
-    db.add(new_school)
+    for req in requests:
+        existing_school = db.query(School).filter(School.school_name == req.school_name).first()
+        if existing_school:
+            if not isinstance(request, list):
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="School already exists")
+            continue
+            
+        new_school = School(
+            school_name=req.school_name,
+            address=req.address,
+            contact_email=req.contact_email
+        )
+        db.add(new_school)
+        created_schools.append(new_school)
+        
     db.commit()
-    db.refresh(new_school)
+    for school in created_schools:
+        db.refresh(school)
+        
+    result = [
+        {
+            "message": "School added successfully",
+            "school_id": school.id,
+            "school_name": school.school_name
+        }
+        for school in created_schools
+    ]
     
-    return {
-        "message": "School added successfully",
-        "school_id": new_school.id,
-        "school_name": new_school.school_name
-    }
+    return result if isinstance(request, list) else (result[0] if result else None)
     
 
 # POST request - add students
 @router.post('/add_student', status_code=status.HTTP_201_CREATED)
-def add_student(request: CreateStudentRequest, db: db_dependency):
-    existing_student = db.query(Student).filter(Student.nric == request.nric).first()
-    if existing_student:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Student already exists')
+def add_student(request: CreateStudentRequest | list[CreateStudentRequest], db: db_dependency):
+    requests = request if isinstance(request, list) else [request]
+    created_students = []
     
-    new_student = Student(
-        nric=request.nric,
-        school_id=request.school_id,
-        first_name=request.first_name,
-        last_name=request.last_name,
-        date_of_birth=request.date_of_birth,
-        gender=request.gender,
-        assigned_groups=request.assigned_groups,
-        enrollment_year=request.enrollment_year,
-        parent_contact_email=request.parent_contact_email,
-        parent_contact_number=request.parent_contact_number
-    )
-    db.add(new_student)
+    for req in requests:
+        existing_student = db.query(Student).filter(Student.nric == req.nric).first()
+        if existing_student:
+            if not isinstance(request, list):
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Student already exists')
+            continue
+            
+        new_student = Student(
+            nric=req.nric,
+            school_id=req.school_id,
+            first_name=req.first_name,
+            last_name=req.last_name,
+            date_of_birth=req.date_of_birth,
+            gender=req.gender,
+            assigned_groups=req.assigned_groups,
+            enrollment_year=req.enrollment_year,
+            parent_contact_email=req.parent_contact_email,
+            parent_contact_number=req.parent_contact_number
+        )
+        db.add(new_student)
+        created_students.append(new_student)
+        
     db.commit()
-    db.refresh(new_student)
+    for student in created_students:
+        db.refresh(student)
+        
+    result = [
+        {
+            'message': 'Student added successfully',
+            'student_id': student.id,
+            'nric': student.nric
+        }
+        for student in created_students
+    ]
     
-    return {
-        'message': 'Student added successfully',
-        'student_id': new_student.id,
-        'nric': new_student.nric
-    }
+    return result if isinstance(request, list) else (result[0] if result else None)
 
 
 # POST request - add parent
 @router.post('/add_parent', status_code=status.HTTP_201_CREATED)
-def add_parent(request: CreateParentRequest, db: db_dependency):
-    existing_parent = db.query(Parent).filter(Parent.nric == request.nric).first()
-    if existing_parent:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Parent already exists')
+def add_parent(request: CreateParentRequest | list[CreateParentRequest], db: db_dependency):
+    requests = request if isinstance(request, list) else [request]
+    created_parents = []
     
-    new_parent = Parent(
-        nric=request.nric,
-        first_name=request.first_name,
-        last_name=request.last_name,
-        email=request.email,
-        mobile_number=request.mobile_number,
-        gender=request.gender,
-        user_id=request.user_id
-    )
-    db.add(new_parent)
+    for req in requests:
+        existing_parent = db.query(Parent).filter(Parent.nric == req.nric).first()
+        if existing_parent:
+            if not isinstance(request, list):
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Parent already exists')
+            continue
+            
+        new_parent = Parent(
+            nric=req.nric,
+            first_name=req.first_name,
+            last_name=req.last_name,
+            email=req.email,
+            mobile_number=req.mobile_number,
+            gender=req.gender,
+            user_id=req.user_id
+        )
+        db.add(new_parent)
+        created_parents.append(new_parent)
+        
     db.commit()
-    db.refresh(new_parent)
+    for parent in created_parents:
+        db.refresh(parent)
+        
+    result = [
+        {
+            'message': 'Parent added successfully',
+            'parent_id': parent.id,
+            'nric': parent.nric
+        }
+        for parent in created_parents
+    ]
     
-    return {
-        'message': 'Parent added successfully',
-        'parent_id': new_parent.id,
-        'nric': new_parent.nric
-    }
+    return result if isinstance(request, list) else (result[0] if result else None)
     
 
 # POST request - add teacher
 @router.post('/add_teacher', status_code=status.HTTP_201_CREATED)
-def add_teacher(request: CreateTeacherRequest, db: db_dependency):
-    existing_teacher = db.query(Teacher).filter(Teacher.nric == request.nric).first()
-    if existing_teacher:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Teacher already exists')
+def add_teacher(request: CreateTeacherRequest | list[CreateTeacherRequest], db: db_dependency):
+    requests = request if isinstance(request, list) else [request]
+    created_teachers = []
     
-    new_teacher = Teacher(
-        nric=request.nric,
-        school_id=request.school_id,
-        first_name=request.first_name,
-        last_name=request.last_name,
-        email=request.email,
-        mobile_number=request.mobile_number,
-        gender=request.gender,
-        assigned_groups=request.assigned_groups,
-        user_id=request.user_id
-    )
-    db.add(new_teacher)
+    for req in requests:
+        existing_teacher = db.query(Teacher).filter(Teacher.nric == req.nric).first()
+        if existing_teacher:
+            if not isinstance(request, list):
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Teacher already exists')
+            continue
+            
+        new_teacher = Teacher(
+            nric=req.nric,
+            school_id=req.school_id,
+            first_name=req.first_name,
+            last_name=req.last_name,
+            email=req.email,
+            mobile_number=req.mobile_number,
+            gender=req.gender,
+            assigned_groups=req.assigned_groups,
+            user_id=req.user_id
+        )
+        db.add(new_teacher)
+        created_teachers.append(new_teacher)
+        
     db.commit()
-    db.refresh(new_teacher)
+    for teacher in created_teachers:
+        db.refresh(teacher)
+        
+    result = [
+        {
+            'message': 'Teacher added successfully',
+            'teacher_id': teacher.id,
+            'nric': teacher.nric
+        }
+        for teacher in created_teachers
+    ]
     
-    return {
-        'message': 'Teacher added successfully',
-        'teacher_id': new_teacher.id,
-        'nric': new_teacher.nric
-    }
+    return result if isinstance(request, list) else (result[0] if result else None)
     
     
 # POST request - link parent and student
 @router.post('/add_parent_student', status_code=status.HTTP_201_CREATED)
-def add_parent_student(request: CreateParentStudentRequest, db: db_dependency):
-    existing_link = db.query(ParentStudent).filter(
-        ParentStudent.parent_id == request.parent_id,
-        ParentStudent.student_id == request.student_id
-    ).first()
+def add_parent_student(request: CreateParentStudentRequest | list[CreateParentStudentRequest], db: db_dependency):
+    requests = request if isinstance(request, list) else [request]
+    created_links = []
     
-    if existing_link:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Link already exists')
-    
-    new_link = ParentStudent(
-        parent_id=request.parent_id,
-        student_id=request.student_id,
-        relationship=request.relationship
-    )
-    db.add(new_link)
+    for req in requests:
+        existing_link = db.query(ParentStudent).filter(
+            ParentStudent.parent_id == req.parent_id,
+            ParentStudent.student_id == req.student_id
+        ).first()
+        
+        if existing_link:
+            if not isinstance(request, list):
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Link already exists')
+            continue
+            
+        new_link = ParentStudent(
+            parent_id=req.parent_id,
+            student_id=req.student_id,
+            relationship=req.relationship
+        )
+        db.add(new_link)
+        created_links.append(new_link)
+        
     db.commit()
-    db.refresh(new_link)
+    for link in created_links:
+        db.refresh(link)
+        
+    result = [
+        {
+            'message': 'Parent and student linked successfully',
+            'link_id': link.id
+        }
+        for link in created_links
+    ]
     
-    return {
-        'message': 'Parent and student linked successfully',
-        'link_id': new_link.id
-    }
+    return result if isinstance(request, list) else (result[0] if result else None)
     
 
 # GET request - view all schools
@@ -287,3 +377,49 @@ def get_all_teachers(db: db_dependency):
 def get_all_parent_students(db: db_dependency):
     links = db.query(ParentStudent).all()
     return {'parent_student_links': links}
+
+
+# POST request - link teacher and student
+@router.post('/add_teacher_student', status_code=status.HTTP_201_CREATED)
+def add_teacher_student(request: CreateTeacherStudentRequest | list[CreateTeacherStudentRequest], db: db_dependency):
+    requests = request if isinstance(request, list) else [request]
+    created_links = []
+    
+    for req in requests:
+        existing_link = db.query(TeacherStudent).filter(
+            TeacherStudent.teacher_id == req.teacher_id,
+            TeacherStudent.student_id == req.student_id
+        ).first()
+        
+        if existing_link:
+            if not isinstance(request, list):
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Link already exists')
+            continue
+            
+        new_link = TeacherStudent(
+            teacher_id=req.teacher_id,
+            student_id=req.student_id
+        )
+        db.add(new_link)
+        created_links.append(new_link)
+        
+    db.commit()
+    for link in created_links:
+        db.refresh(link)
+        
+    result = [
+        {
+            'message': 'Teacher and student linked successfully',
+            'link_id': link.id
+        }
+        for link in created_links
+    ]
+    
+    return result if isinstance(request, list) else (result[0] if result else None)
+
+
+# GET request - view all teacher-student links
+@router.get('/all_teacher_students', status_code=status.HTTP_200_OK)
+def get_all_teacher_students(db: db_dependency):
+    links = db.query(TeacherStudent).all()
+    return {'teacher_student_links': links}
