@@ -3,7 +3,7 @@ from starlette import status
 from pydantic import BaseModel
 from typing import Optional
 from utils.utils import db_dependency, verify_password, hash_password
-from models import UserAccount, GenderEnum, Teacher, TeacherStudent, Parent, ParentStudent, Student, UserRole, StudentResult
+from models import UserAccount, GenderEnum, Teacher, Parent, ParentStudent, Student, UserRole
 import uuid, os, shutil
 
 
@@ -175,95 +175,6 @@ async def upload_avatar(db: db_dependency, user_id: int, file: UploadFile = File
 
     return {"profile_image_url": user.profile_image_url}
 
-@router.get("/get_students/{user_id}", status_code=status.HTTP_200_OK)
-async def get_students(user_id: int, db: db_dependency):
-    parent = db.query(Parent).filter(Parent.user_id == user_id).first()
-    if not parent:
-        return []
-    
-    student_links = db.query(ParentStudent).filter(ParentStudent.parent_id == parent.id).all()
-    student_ids = [link.student_id for link in student_links]
-    
-    students = db.query(Student).filter(Student.id.in_(student_ids)).all()
-    
-    return [
-        {
-            "id": s.id,
-            "first_name": s.first_name,
-            "last_name": s.last_name,
-            "assigned_groups": s.assigned_groups,
-            "school_id": s.school_id,
-        }
-        for s in students
-    ]
-
-    return [
-        {
-            "id": s.id,
-            "first_name": s.first_name,
-            "last_name": s.last_name,
-            "assigned_groups": s.assigned_groups,
-            "school_id": s.school_id,
-        }
-        for s in students
-    ]
-
-# GET request - fetch student by ID
-@router.get("/student_details/{student_id}", status_code=status.HTTP_200_OK)
-async def get_student_by_id(student_id: int, db: db_dependency):
-    student = db.query(Student).filter(Student.id == student_id).first()
-    if not student:
-        raise HTTPException(status_code=404, detail="Student not found")
-    
-    return {
-        "id": student.id,
-        "nric": student.nric,
-        "first_name": student.first_name,
-        "last_name": student.last_name,
-        "date_of_birth": student.date_of_birth,
-        "gender": student.gender,
-        "assigned_groups": student.assigned_groups,
-        "enrollment_year": student.enrollment_year,
-        "school_id": student.school_id,
-    }
 
 
-# POST request - add results (bulk)
-@router.post("/add_results", status_code=status.HTTP_201_CREATED)
-async def add_results(request: CreateResultRequest | list[CreateResultRequest], db: db_dependency):
-    requests = request if isinstance(request, list) else [request]
-    created_results = []
-    
-    for req in requests:
-        # Check if student exists
-        student = db.query(Student).filter(Student.id == req.student_id).first()
-        if not student:
-            if not isinstance(request, list):
-                # Skip in bulk mode if studentId is invalid? Usually we do
-                continue
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Student ID {req.student_id} not found")
-            
-        new_result = StudentResult(
-            student_id=req.student_id,
-            subject=req.subject,
-            grade=req.grade,
-            score=req.score,
-            term=req.term,
-            year=req.year,
-            teacher_id=req.teacher_id
-        )
-        db.add(new_result)
-        created_results.append(new_result)
-        
-    db.commit()
-    for res in created_results:
-        db.refresh(res)
-        
-    return created_results if isinstance(request, list) else (created_results[0] if created_results else None)
 
-
-# GET request - fetch results for student
-@router.get("/get_student_results/{student_id}", status_code=status.HTTP_200_OK)
-async def get_student_results(student_id: int, db: db_dependency):
-    results = db.query(StudentResult).filter(StudentResult.student_id == student_id).all()
-    return results

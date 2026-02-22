@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from routers import superadmin, account, lookup, event
+from routers import superadmin, account, lookup, event, result
 from database import Base, engine
 
 app = FastAPI()
@@ -26,3 +26,4 @@ app.include_router(account.router)
 app.include_router(superadmin.router)
 app.include_router(lookup.router)
 app.include_router(event.router)
+app.include_router(result.router)

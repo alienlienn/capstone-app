@@ -1,6 +1,6 @@
 from database import Base
 from enum import Enum
-from sqlalchemy import Column, Integer, String, Text, ForeignKey, Date, DateTime, Enum as SQLAlchemyEnum
+from sqlalchemy import Column, Integer, String, Text, ForeignKey, Date, DateTime, Float, Enum as SQLAlchemyEnum
 from datetime import datetime
 from zoneinfo import ZoneInfo 
 
@@ -29,6 +29,19 @@ class GenderEnum(str, Enum):
     MALE = "male"
     FEMALE = "female"
     OTHER = "other"
+
+class ConductEnum(str, Enum):
+    VERY_BAD = "very bad"
+    BAD = "bad"
+    GOOD = "good"
+    VERY_GOOD = "very good"
+    EXCELLENT = "excellent"
+
+class TermEnum(str, Enum):
+    AY2026_T1 = "AY2026 Term 1"
+    AY2026_T2 = "AY2026 Term 2"
+    AY2026_T3 = "AY2026 Term 3"
+    AY2026_T4 = "AY2026 Term 4"
 
 class ParentRelationship(str, Enum):
     MOTHER = "mother"
@@ -178,17 +191,50 @@ class Teacher(Base):
     updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ), onupdate=lambda: datetime.now(SINGAPORE_TZ))
 
 
+class Subject(Base):
+    __tablename__ = "subjects"
+
+    id = Column(Integer, primary_key=True, index=True)
+    subject_name = Column(String(100), unique=True, nullable=False)
+    subject_code = Column(String(20), unique=True, nullable=False)
+    description = Column(Text, nullable=True)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ))
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ), onupdate=lambda: datetime.now(SINGAPORE_TZ))
+
+
 class StudentResult(Base):
     __tablename__ = "student_results"
 
     id = Column(Integer, primary_key=True, index=True)
     student_id = Column(Integer, ForeignKey("students.id"), nullable=False)
-    subject = Column(String(100), nullable=False)
+    subject_id = Column(Integer, ForeignKey("subjects.id"), nullable=False)
     grade = Column(String(10), nullable=True)
-    score = Column(Integer, nullable=True)  # Using integer for 0-100 score
-    term = Column(String(50), nullable=False)
-    year = Column(Integer, nullable=False)
+    score = Column(Float, nullable=True) 
+    term = Column(SQLAlchemyEnum(TermEnum), nullable=False)
     teacher_id = Column(Integer, ForeignKey("teachers.id"), nullable=False)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ))
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ), onupdate=lambda: datetime.now(SINGAPORE_TZ))
+
+
+class StudentPerformanceSummary(Base):
+    __tablename__ = "student_performance_summaries"
+
+    id = Column(Integer, primary_key=True, index=True)
+    student_id = Column(Integer, ForeignKey("students.id"), nullable=False)
+    term = Column(SQLAlchemyEnum(TermEnum), nullable=False)
+    overall_percentage = Column(Float, nullable=True)
+    total_marks = Column(Integer, nullable=True)
+    total_max_marks = Column(Integer, nullable=True)
+    class_position = Column(Integer, nullable=True)
+    class_total = Column(Integer, nullable=True)
+    level_position = Column(Integer, nullable=True)
+    level_total = Column(Integer, nullable=True)
+    l1r4 = Column(Integer, nullable=True)
+    l1r5 = Column(Integer, nullable=True)
+    attendance_present = Column(Integer, nullable=True)
+    attendance_total = Column(Integer, nullable=True)
+    conduct = Column(SQLAlchemyEnum(ConductEnum), default=ConductEnum.GOOD)
+    teacher_comments = Column(Text, nullable=True)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ))
     updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ), onupdate=lambda: datetime.now(SINGAPORE_TZ))
 

@@ -3,7 +3,11 @@ from starlette import status
 from pydantic import BaseModel, EmailStr
 from datetime import date
 from utils.utils import db_dependency, hash_password
-from models import UserAccount, UserRole, School, Student, Parent, Teacher, ParentStudent, TeacherStudent, GenderEnum, ParentRelationship
+from models import (
+    UserAccount, UserRole, School, Student, Parent, Teacher, ParentStudent, 
+    TeacherStudent, GenderEnum, ParentRelationship, Subject, StudentResult, 
+    StudentPerformanceSummary, TermEnum, ConductEnum
+)
 
 
 router = APIRouter(prefix="/superadmin", tags=["superadmin"])
@@ -75,6 +79,40 @@ class CreateParentStudentRequest(BaseModel):
 class CreateTeacherStudentRequest(BaseModel):
     teacher_id: int
     student_id: int
+
+
+class CreateSubjectRequest(BaseModel):
+    subject_name: str
+    subject_code: str
+    description: str | None = None
+
+
+class CreateStudentResultRequest(BaseModel):
+    student_id: int
+    subject_id: int
+    grade: str | None = None
+    score: float | None = None
+    term: TermEnum
+    teacher_id: int
+
+
+class CreatePerformanceSummaryRequest(BaseModel):
+    student_id: int
+    term: TermEnum
+    overall_percentage: float | None = None
+    overall_grade: str | None = None
+    total_marks: int | None = None
+    total_max_marks: int | None = None
+    class_position: int | None = None
+    class_total: int | None = None
+    level_position: int | None = None
+    level_total: int | None = None
+    l1r4: int | None = None
+    l1r5: int | None = None
+    attendance_present: int | None = None
+    attendance_total: int | None = None
+    conduct: ConductEnum = ConductEnum.GOOD
+    teacher_comments: str | None = None
 
 
 # POST request - account creation
@@ -344,41 +382,6 @@ def add_parent_student(request: CreateParentStudentRequest | list[CreateParentSt
     return result if isinstance(request, list) else (result[0] if result else None)
     
 
-# GET request - view all schools
-@router.get('/all_schools', status_code=status.HTTP_200_OK)
-def get_all_schools(db: db_dependency):
-    schools = db.query(School).all()
-    return {'schools': schools}
-
-
-# GET request - view all students
-@router.get('/all_students', status_code=status.HTTP_200_OK)
-def get_all_students(db: db_dependency):
-    students = db.query(Student).all()
-    return {'students': students}
-
-
-# GET request - view all parents
-@router.get('/all_parents', status_code=status.HTTP_200_OK)
-def get_all_parents(db: db_dependency):
-    parents = db.query(Parent).all()
-    return {'parents': parents}
-
-
-# GET request - view all teachers
-@router.get('/all_teachers', status_code=status.HTTP_200_OK)
-def get_all_teachers(db: db_dependency):
-    teachers = db.query(Teacher).all()
-    return {'teachers': teachers}
-
-
-# GET request - view all parent-student links
-@router.get('/all_parent_students', status_code=status.HTTP_200_OK)
-def get_all_parent_students(db: db_dependency):
-    links = db.query(ParentStudent).all()
-    return {'parent_student_links': links}
-
-
 # POST request - link teacher and student
 @router.post('/add_teacher_student', status_code=status.HTTP_201_CREATED)
 def add_teacher_student(request: CreateTeacherStudentRequest | list[CreateTeacherStudentRequest], db: db_dependency):
@@ -418,8 +421,88 @@ def add_teacher_student(request: CreateTeacherStudentRequest | list[CreateTeache
     return result if isinstance(request, list) else (result[0] if result else None)
 
 
+# POST request - add subjects
+@router.post("/add_subject", status_code=status.HTTP_201_CREATED)
+def add_subject(request: CreateSubjectRequest | list[CreateSubjectRequest], db: db_dependency):
+    requests = request if isinstance(request, list) else [request]
+    created_subjects = []
+    
+    for req in requests:
+        existing_subject = db.query(Subject).filter(Subject.subject_code == req.subject_code).first()
+        if existing_subject:
+            if not isinstance(request, list):
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Subject with this code already exists")
+            continue
+            
+        new_subject = Subject(
+            subject_name=req.subject_name,
+            subject_code=req.subject_code,
+            description=req.description
+        )
+        db.add(new_subject)
+        created_subjects.append(new_subject)
+        
+    db.commit()
+    for subject in created_subjects:
+        db.refresh(subject)
+        
+    result = [
+        {
+            "message": "Subject added successfully",
+            "subject_id": subject.id,
+            "subject_code": subject.subject_code
+        }
+        for subject in created_subjects
+    ]
+    
+    return result if isinstance(request, list) else (result[0] if result else None)
+
+
+# GET request - view all schools
+@router.get('/all_schools', status_code=status.HTTP_200_OK)
+def get_all_schools(db: db_dependency):
+    schools = db.query(School).all()
+    return {'schools': schools}
+
+
+# GET request - view all students
+@router.get('/all_students', status_code=status.HTTP_200_OK)
+def get_all_students(db: db_dependency):
+    students = db.query(Student).all()
+    return {'students': students}
+
+
+# GET request - view all parents
+@router.get('/all_parents', status_code=status.HTTP_200_OK)
+def get_all_parents(db: db_dependency):
+    parents = db.query(Parent).all()
+    return {'parents': parents}
+
+
+# GET request - view all teachers
+@router.get('/all_teachers', status_code=status.HTTP_200_OK)
+def get_all_teachers(db: db_dependency):
+    teachers = db.query(Teacher).all()
+    return {'teachers': teachers}
+
+
+# GET request - view all parent-student links
+@router.get('/all_parent_students', status_code=status.HTTP_200_OK)
+def get_all_parent_students(db: db_dependency):
+    links = db.query(ParentStudent).all()
+    return {'parent_student_links': links}
+
+
+# GET request - view all subjects
+@router.get('/all_subjects', status_code=status.HTTP_200_OK)
+def get_all_subjects(db: db_dependency):
+    subjects = db.query(Subject).all()
+    return {'subjects': subjects}
+
+
 # GET request - view all teacher-student links
 @router.get('/all_teacher_students', status_code=status.HTTP_200_OK)
 def get_all_teacher_students(db: db_dependency):
     links = db.query(TeacherStudent).all()
     return {'teacher_student_links': links}
+
