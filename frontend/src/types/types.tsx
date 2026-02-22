@@ -101,9 +101,31 @@ export interface StudentResult {
   subject: string;
   grade?: string;
   score?: number;
+  max_score?: number;
+  remarks?: string;
   term: string;
   year: number;
   teacher_id: number;
+}
+
+export interface StudentPerformanceSummary {
+  id?: number;
+  student_id: number;
+  term: string;
+  year: number;
+  overall_percentage?: number;
+  total_marks?: number;
+  total_max_marks?: number;
+  class_position?: number;
+  class_total?: number;
+  level_position?: number;
+  level_total?: number;
+  l1r4?: number;
+  l1r5?: number;
+  attendance_present?: number;
+  attendance_total?: number;
+  conduct?: string;
+  teacher_comments?: string;
 }
 
 

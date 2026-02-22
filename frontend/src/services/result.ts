@@ -1,28 +1,36 @@
 import { ENV } from "../config/environment";
-import { StudentResult } from "../types/types";
 
-export const addResults = async (results: StudentResult | StudentResult[]) => {
-  try {
-    const response = await fetch(`${ENV.API_BASE_URL}/account/add_results`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(results),
-    });
-    if (!response.ok) throw new Error("Failed to add results");
-    return await response.json();
-  } catch (error) {
-    console.error("Error adding results:", error);
-    throw error;
-  }
+
+export const getTeacherStudents = async (userId: number) => {
+    try {
+        const response = await fetch(`${ENV.API_BASE_URL}/result/get_teacher_students/${userId}`);
+        if (!response.ok) throw new Error("Failed to fetch teacher students");
+        return await response.json();
+    } catch (error) {
+        console.error("Error fetching teacher students:", error);
+        throw error;
+    }
 };
 
-export const getStudentResults = async (studentId: number) => {
-  try {
-    const response = await fetch(`${ENV.API_BASE_URL}/account/get_student_results/${studentId}`);
-    if (!response.ok) throw new Error("Failed to fetch student results");
-    return await response.json();
-  } catch (error) {
-    console.error("Error fetching student results:", error);
-    throw error;
-  }
+export const getParentStudents = async (userId: number) => {
+    try {
+        const response = await fetch(`${ENV.API_BASE_URL}/result/get_students/${userId}`);
+        if (!response.ok) throw new Error("Failed to fetch parent students");
+        return await response.json();
+    } catch (error) {
+        console.error("Error fetching parent students:", error);
+        throw error;
+    }
 };
+
+export const fetchStudentResults = async (studentId: number, term: string) => {
+    try {
+        const response = await fetch(`${ENV.API_BASE_URL}/result/student/${studentId}?term=${encodeURIComponent(term)}`);
+        if (!response.ok) throw new Error("Failed to fetch student results");
+        return await response.json();
+    } catch (error) {
+        console.error("Error fetching student results:", error);
+        throw error;
+    }
+};
+

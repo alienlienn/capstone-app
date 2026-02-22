@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Text, ActivityIndicator, Image } from "react-native";
+import { View, StyleSheet, Text, ActivityIndicator, Image, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import Dropdown from "../atoms/Dropdown";
 import UserInput from "../atoms/UserInput";
 import StudentCard from "../molecules/StudentCard";
+import Button from "../atoms/Button";
 import { colors } from "../styles/colors";
 import { ENV } from "../config/environment";
 import { styles } from "../styles/styles";
@@ -42,8 +43,9 @@ export default function ResultsFilterForm({
       const fetchStudents = async () => {
         setLoading(true);
         try {
+          // Pointing to /result/ endpoint instead of /account/
           const response = await fetch(
-            `${ENV.API_BASE_URL}/account/get_teacher_students/${currentUser.id}`,
+            `${ENV.API_BASE_URL}/result/get_teacher_students/${currentUser.id}`,
           );
           if (response.ok) {
             const data = await response.json();
@@ -90,11 +92,6 @@ export default function ResultsFilterForm({
       return matchesSearch;
     }
 
-    // Must have same school_id
-    if (student.school_id !== currentUser?.school_id) {
-      return false;
-    }
-
     // Must match assigned_groups
     if (!student.assigned_groups) {
       return false;
@@ -105,6 +102,8 @@ export default function ResultsFilterForm({
       .toLowerCase()
       .split(",")
       .map((g) => g.trim());
+    
+    // Logic: if level is selected, check if student belongs to that level
     const matchesLevel = groups.some((g) =>
       g.includes(selectedLevel.toLowerCase()),
     );
@@ -138,6 +137,15 @@ export default function ResultsFilterForm({
           </View>
         </View>
 
+        <View style={localStyles.uploadSection}>
+            <Button 
+                buttonTitle="Upload Results (Excel)"
+                onPressButton={() => Alert.alert("Upload", "Bulk Excel Upload feature coming soon!")}
+                buttonStyle={localStyles.uploadButton}
+                iconSource={require("../../assets/result_icon.png")}
+            />
+        </View>
+
         <View style={localStyles.studentsList}>
           <Text style={[localStyles.studentListHeader, {marginLeft: 2}]}>
             Select a student to view/edit their results:
@@ -165,13 +173,14 @@ export default function ResultsFilterForm({
   );
 }
 
+
 const localStyles = StyleSheet.create({
   formContainer: {
     width: "97%",
 		alignSelf: "center",
   },
   studentsList: {
-    marginTop: 24,
+    marginTop: 20,
   },
   studentListHeader: {
     fontSize: 14,
@@ -186,4 +195,13 @@ const localStyles = StyleSheet.create({
     textAlign: "center",
     marginTop: 20,
   },
+  uploadSection: {
+    marginTop: 4,
+    paddingBottom: 20,
+    alignItems: "center",
+  },
+  uploadButton: {
+    backgroundColor: colors.primary_500,
+    width: "97%",
+  }
 });
