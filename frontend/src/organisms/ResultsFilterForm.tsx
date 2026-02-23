@@ -5,7 +5,7 @@ import { useNavigation } from "@react-navigation/native";
 import Dropdown from "../atoms/Dropdown";
 import UserInput from "../atoms/UserInput";
 import StudentCard from "../molecules/StudentCard";
-import Button from "../atoms/Button";
+import FloatingButton from "../atoms/FloatingButton";
 import { colors } from "../styles/colors";
 import { ENV } from "../config/environment";
 import { styles } from "../styles/styles";
@@ -112,43 +112,31 @@ export default function ResultsFilterForm({
   });
 
   return (
-    <SafeAreaView edges={["top"]}>
+    <SafeAreaView edges={["top"]} style={{ flex: 1 }}>
       <View style={localStyles.formContainer}>
-        <Dropdown
-          value={selectedLevel}
-          placeholder="Select Level"
-          options={levelOptions}
-          onSelect={handleLevelSelect}
-        />
+        <View style={localStyles.filterRow}>
+          <UserInput
+            inputValue={searchText}
+            placeholder="Search Student"
+            onChangeInputText={handleSearchChange}
+            rightIconSource={require("../../assets/search_icon.png")}
+            rightIconStyle={{ width: 15, height: 15 }}
+            containerStyle={localStyles.searchBox}
+            inputStyle={{marginBottom: -1}}
+          />
 
-        <View style={[styles.eventSearchRow, { marginTop: 12 }]}>
-          <View style={styles.eventSearchContainer}>
-            <UserInput
-              containerStyle={styles.eventCustomSearchBox}
-              inputValue={searchText}
-              placeholder="Search Student Name"
-              onChangeInputText={handleSearchChange}
-              inputStyle={styles.eventSearchText}
-            />
-            <Image
-              source={require("../../assets/search_icon.png")}
-              style={styles.eventSearchIcon}
-            />
-          </View>
-        </View>
-
-        <View style={localStyles.uploadSection}>
-            <Button 
-                buttonTitle="Upload Results (Excel)"
-                onPressButton={() => Alert.alert("Upload", "Bulk Excel Upload feature coming soon!")}
-                buttonStyle={localStyles.uploadButton}
-                iconSource={require("../../assets/result_icon.png")}
-            />
+          <Dropdown
+            value={selectedLevel}
+            placeholder="Filter Level"
+            options={levelOptions}
+            onSelect={handleLevelSelect}
+            containerStyle={localStyles.levelDropdown}
+          />
         </View>
 
         <View style={localStyles.studentsList}>
-          <Text style={[localStyles.studentListHeader, {marginLeft: 2}]}>
-            Select a student to view/edit their results:
+          <Text style={localStyles.studentListHeader}>
+            Choose a student to view/edit their results:
           </Text>
           {loading ? (
             <ActivityIndicator size="small" color={colors.primary_500} />
@@ -169,6 +157,14 @@ export default function ResultsFilterForm({
           )}
         </View>
       </View>
+
+      <FloatingButton 
+        label="Upload Results"
+        onPress={() => Alert.alert("Upload", "Bulk Excel Upload feature coming soon!")}
+        iconSource={require("../../assets/upload_icon.png")}
+        style={localStyles.bulkUploadBtn}
+        iconStyle={{ width: 14, height: 14 }}
+      />
     </SafeAreaView>
   );
 }
@@ -177,16 +173,36 @@ export default function ResultsFilterForm({
 const localStyles = StyleSheet.create({
   formContainer: {
     width: "97%",
-		alignSelf: "center",
+    padding: 20,
+    alignSelf: "center",
+  },
+  filterRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 8,
+    marginBottom: 16,
+  },
+  searchBox: {
+    flex: 1.9,
+    marginRight: 6,
+    marginBottom: 0,
+    height: 42,
+  },
+  levelDropdown: {
+    flex: 1.1,
+    marginBottom: 0,
+    height: 42,
   },
   studentsList: {
-    marginTop: 20,
+    marginTop: 10,
   },
   studentListHeader: {
     fontSize: 14,
     fontStyle: "italic",
     color: colors.primary_850,
     marginBottom: 8,
+    marginLeft: 2,
   },
   noStudents: {
     fontSize: 12,
@@ -195,13 +211,8 @@ const localStyles = StyleSheet.create({
     textAlign: "center",
     marginTop: 20,
   },
-  uploadSection: {
-    marginTop: 4,
-    paddingBottom: 20,
-    alignItems: "center",
-  },
-  uploadButton: {
-    backgroundColor: colors.primary_500,
-    width: "97%",
+  bulkUploadBtn: {
+    bottom: -317,
+    right: 16,
   }
 });

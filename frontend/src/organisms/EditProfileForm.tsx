@@ -110,7 +110,7 @@ function EditProfileForm({ user }: ProfileDetailsFormProps) {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background_color }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background_color, marginBottom: -16 }}>
       <View style={styles.screenTopHeader}>
         <Pressable
           style={{ padding: 8 }}

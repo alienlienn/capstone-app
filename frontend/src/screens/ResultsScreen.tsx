@@ -56,33 +56,35 @@ function ResultsScreen() {
   if (isParent) {
     return (
       <View style={localStyles.screenContainer}>
-        <Text style={styles.screenTopHeaderLabel}>Student Results</Text>
-        
-        <View style={localStyles.parentDropdowns}>
-          <Dropdown
-            placeholder="Select Student"
-            options={students}
-            value={selectedStudent}
-            onSelect={setSelectedStudent}
-          />
-          <View style={{ height: 12 }} />
-          <Dropdown
-            placeholder="Select Trimester"
-            options={trimesterOptions}
-            value={selectedTerm}
-            onSelect={setSelectedTerm}
-          />
+        <View style={{ padding: 20, flex: 1 }}>
+          <Text style={styles.screenTopHeaderLabel}>Student Results</Text>
           
-          <Button 
-            buttonTitle="View Results"
-            onPressButton={() => Alert.alert("Feature coming soon", "Performance summary view is being updated.")}
-            buttonStyle={localStyles.viewButton}
-            disabled={loading}
-          />
-        </View>
+          <View style={localStyles.parentDropdowns}>
+            <Dropdown
+              placeholder="Select Student"
+              options={students}
+              value={selectedStudent}
+              onSelect={setSelectedStudent}
+            />
+            <View style={{ height: 12 }} />
+            <Dropdown
+              placeholder="Select Trimester"
+              options={trimesterOptions}
+              value={selectedTerm}
+              onSelect={setSelectedTerm}
+            />
+            
+            <Button 
+              buttonTitle="View Results"
+              onPressButton={() => Alert.alert("Feature coming soon", "Performance summary view is being updated.")}
+              buttonStyle={localStyles.viewButton}
+              disabled={loading}
+            />
+          </View>
 
-        <View style={localStyles.emptyContainer}>
-          <Text style={localStyles.emptyText}>Select student and term to view results</Text>
+          <View style={localStyles.emptyContainer}>
+            <Text style={localStyles.emptyText}>Select student and term to view results</Text>
+          </View>
         </View>
       </View>
     );
@@ -102,10 +104,10 @@ const localStyles = StyleSheet.create({
   screenContainer: {
     flex: 1,
     backgroundColor: colors.background_color,
-    padding: 20,
   },
   parentDropdowns: {
     marginVertical: 16,
+    paddingHorizontal: 20,
     zIndex: 100, // Important for dropdown visibility
   },
   viewButton: {
@@ -117,6 +119,7 @@ const localStyles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    paddingHorizontal: 20,
   },
   emptyText: {
     color: colors.gray_500,

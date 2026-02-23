@@ -9,6 +9,7 @@ export interface UserInputProps {
   secureInputTextEntry?: boolean;
   rightIconSource?: any;
   onPressRightIcon?: () => void;
+  rightIconStyle?: ImageStyle;
 };
 
 export interface DropdownProps {
@@ -17,6 +18,7 @@ export interface DropdownProps {
   options: DropdownOption[];
   onSelect: (value: string) => void;
   height?: number;
+  containerStyle?: ViewStyle;
 }
 
 export interface DropdownOption {
@@ -64,6 +66,7 @@ export interface FloatingButtonProps {
   style?: ViewStyle;
   textStyle?: TextStyle;
   iconSource?: any; 
+  iconStyle?: ImageStyle;
 }
 
 export interface ActionMenuItemProps {

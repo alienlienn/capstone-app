@@ -167,7 +167,7 @@ export default function ChildCalendarSection({ refreshKey }: { refreshKey?: numb
 
         <View style={[
           styles.segmentedToggle, 
-          !isParent && { flex: 1, height: 40, marginLeft: 0 }
+          !isParent && { flex: 1, height: 40, marginLeft: 0, marginTop: 8 }
         ]}>
           <Pressable
             style={[

@@ -10,7 +10,8 @@ function UserInput({
   containerStyle, 
   inputStyle,
   rightIconSource,
-  onPressRightIcon }: UserInputProps & { containerStyle?: any; inputStyle?: any }) {
+  onPressRightIcon,
+  rightIconStyle }: UserInputProps & { containerStyle?: any; inputStyle?: any }) {
 
   return (
     <View style={[styles.userInputContainer, containerStyle]}>
@@ -23,7 +24,7 @@ function UserInput({
       />
       {rightIconSource && (
         <Pressable onPress={onPressRightIcon}>
-          <Image source={rightIconSource} style={styles.userInputIcon} />
+          <Image source={rightIconSource} style={[styles.userInputIcon, rightIconStyle]} />
         </Pressable>
       )}
     </View>

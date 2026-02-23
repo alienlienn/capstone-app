@@ -141,7 +141,7 @@ export default function CreateEventForm() {
   }
 
   return (
-    <SafeAreaView style={styles.pageContainer}>
+    <SafeAreaView style={[styles.pageContainer, {marginBottom: -24}]}>
       <View style={styles.screenTopHeader}>
         <Pressable 
           onPress={() => navigation.goBack()} 

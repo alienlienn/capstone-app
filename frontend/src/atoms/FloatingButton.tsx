@@ -3,7 +3,7 @@ import { FloatingButtonProps } from "../types/types";
 import { styles } from "../styles/styles";
 
 
-function FloatingButton({label, onPress, style, textStyle, iconSource}: FloatingButtonProps) {
+function FloatingButton({label, onPress, style, textStyle, iconSource, iconStyle}: FloatingButtonProps) {
   return (
     <Pressable
       style={[styles.floatingButtonContainer, style]}
@@ -12,7 +12,7 @@ function FloatingButton({label, onPress, style, textStyle, iconSource}: Floating
       {iconSource && (
         <Image
           source={iconSource}
-          style={styles.floatingButtonIcon}
+          style={[styles.floatingButtonIcon, iconStyle]}
         />
       )}
       <Text

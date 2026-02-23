@@ -4,7 +4,7 @@ import { DropdownProps } from "../types/types";
 import { styles } from "../styles/styles";
 
 
-function Dropdown({ value, placeholder, options, onSelect, height }: DropdownProps) {
+function Dropdown({ value, placeholder, options, onSelect, height, containerStyle }: DropdownProps) {
   const [open, setOpen] = useState(false);
   const [menuPos, setMenuPos] = useState({ x: 0, y: 0, width: 0, height: 0 });
   const buttonRef = useRef<any>(null);
@@ -29,7 +29,7 @@ function Dropdown({ value, placeholder, options, onSelect, height }: DropdownPro
   };
 
   return (
-    <View style={styles.userInputContainer}>
+    <View style={[styles.userInputContainer, containerStyle]}>
       <Pressable
         ref={buttonRef}
         style={[styles.dropdownContainer, height ? { height } : {}]}
