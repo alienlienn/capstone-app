@@ -6,6 +6,7 @@ import Dropdown from "../atoms/Dropdown";
 import UserInput from "../atoms/UserInput";
 import StudentCard from "../molecules/StudentCard";
 import FloatingButton from "../atoms/FloatingButton";
+import BulkUploadModal from "./BulkUploadModal";
 import { colors } from "../styles/colors";
 import { ENV } from "../config/environment";
 import { styles } from "../styles/styles";
@@ -34,6 +35,7 @@ export default function ResultsFilterForm({
   const [searchText, setSearchText] = useState(initialSearch);
   const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(false);
+  const [showUploadModal, setShowUploadModal] = useState(false);
 
   const currentUser = (global as any).loggedInUser;
   const isUserNotUser = currentUser?.role !== "user";
@@ -160,10 +162,15 @@ export default function ResultsFilterForm({
 
       <FloatingButton 
         label="Upload Results"
-        onPress={() => Alert.alert("Upload", "Bulk Excel Upload feature coming soon!")}
+        onPress={() => setShowUploadModal(true)}
         iconSource={require("../../assets/upload_icon.png")}
         style={localStyles.bulkUploadBtn}
-        iconStyle={{ width: 14, height: 14 }}
+        iconStyle={{ width: 13, height: 13 }}
+      />
+
+      <BulkUploadModal 
+        visible={showUploadModal} 
+        onClose={() => setShowUploadModal(false)}
       />
     </SafeAreaView>
   );

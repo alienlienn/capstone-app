@@ -6,8 +6,8 @@ import Button from "../atoms/Button";
 import { colors } from "../styles/colors";
 import { styles } from "../styles/styles";
 import { StudentResult, StudentPerformanceSummary, DropdownOption } from "../types/types";
-import { fetchTermOptions } from "../services/lookup";
-import { fetchStudentResults } from "../services/result";
+import { fetchTermOptions, fetchConductOptions } from "../services/lookup";
+import { fetchStudentResults, updateStudentResults } from "../services/result";
 
 interface EditResultsFormProps {
   studentId: number;
@@ -17,13 +17,23 @@ export default function EditResultsForm({ studentId }: EditResultsFormProps) {
   const navigation = useNavigation<any>();
   const [selectedTerm, setSelectedTerm] = useState("");
   const [termOptions, setTermOptions] = useState<DropdownOption[]>([]);
+  const [conductOptions, setConductOptions] = useState<DropdownOption[]>([]);
   const [year, setYear] = useState("2026");
   const [loading, setLoading] = useState(false);
   const [hasExistingResults, setHasExistingResults] = useState(false);
-  
+
   // Results form state
   const [results, setResults] = useState<StudentResult[]>([]);
   const [summary, setSummary] = useState<Partial<StudentPerformanceSummary>>({});
+
+  useEffect(() => {
+    if (results.length > 0) {
+      setSummary(prev => ({
+        ...prev,
+        total_max_marks: results.length * 100
+      }));
+    }
+  }, [results.length]);
 
   useFocusEffect(
     useCallback(() => {
@@ -35,8 +45,12 @@ export default function EditResultsForm({ studentId }: EditResultsFormProps) {
 
   useEffect(() => {
     const getOptions = async () => {
-      const options = await fetchTermOptions();
-      setTermOptions(options);
+      const [terms, conducts] = await Promise.all([
+        fetchTermOptions(),
+        fetchConductOptions()
+      ]);
+      setTermOptions(terms);
+      setConductOptions(conducts);
     };
     getOptions();
   }, []);
@@ -105,15 +119,27 @@ export default function EditResultsForm({ studentId }: EditResultsFormProps) {
   };
 
   const handleSave = async () => {
-    if (!selectedTerm) return;
+    if (!selectedTerm) {
+      Alert.alert("Error", "Please select a term before saving.");
+      return;
+    }
     
     setLoading(true);
     try {
-      // updateTermReport code removed as requested
-      Alert.alert("Success", "Results update pending implementation!");
+      // Prepare results for backend - mapping only required fields
+      const resultsToSave = results.map(res => ({
+        subject: res.subject,
+        score: res.score,
+        grade: res.grade,
+        teacher_id: res.teacher_id
+      }));
+
+      await updateStudentResults(studentId, selectedTerm, resultsToSave, summary);
+      
+      Alert.alert("Success", "Student results have been saved successfully.");
       navigation.navigate("Results");
-    } catch (error) {
-      Alert.alert("Error", "Failed to process results.");
+    } catch (error: any) {
+      Alert.alert("Error", error.message || "Failed to save results.");
     } finally {
       setLoading(false);
     }
@@ -178,9 +204,12 @@ export default function EditResultsForm({ studentId }: EditResultsFormProps) {
                       />
                      <TextInput 
                         style={[localStyles.tableInput, { flex: 1.1 }]}
-                        value={res.score?.toString()}
+                        value={res.score !== undefined && res.score !== null && !isNaN(res.score) ? res.score.toString() : ""}
                         keyboardType="numeric"
-                        onChangeText={(val) => handleUpdateResult(index, "score", parseFloat(val))}
+                        onChangeText={(val) => {
+                           const parsed = parseFloat(val);
+                           handleUpdateResult(index, "score", isNaN(parsed) ? undefined : parsed);
+                        }}
                         placeholder="Score"
                       />
                      <TextInput 
@@ -209,25 +238,90 @@ export default function EditResultsForm({ studentId }: EditResultsFormProps) {
               {/* Summary Data Section */}
               <View style={[localStyles.sectionContainer, { marginTop: 20 }]}>
                  <Text style={localStyles.sectionTitle}>Performance Summary</Text>
+                 
                  <View style={localStyles.row}>
+                   <View style={localStyles.halfWidth}>
+                     <Text style={localStyles.smallLabel}>Total Marks (/{summary.total_max_marks})</Text>
+                     <TextInput 
+                        style={localStyles.input}
+                        value={summary.total_marks !== undefined && summary.total_marks !== null && !isNaN(summary.total_marks) ? summary.total_marks.toString() : ""}
+                        keyboardType="numeric"
+                        onChangeText={(val) => {
+                           const parsed = parseFloat(val);
+                           setSummary({...summary, total_marks: isNaN(parsed) ? undefined : parsed});
+                        }}
+                        placeholder="e.g. 620"
+                      />
+                   </View>
                    <View style={localStyles.halfWidth}>
                      <Text style={localStyles.smallLabel}>Overall %</Text>
                      <TextInput 
                         style={localStyles.input}
-                        value={summary.overall_percentage?.toString()}
+                        value={summary.overall_percentage !== undefined && summary.overall_percentage !== null && !isNaN(summary.overall_percentage) ? summary.overall_percentage.toString() : ""}
                         keyboardType="numeric"
-                        onChangeText={(val) => setSummary({...summary, overall_percentage: parseFloat(val)})}
+                        onChangeText={(val) => {
+                           const parsed = parseFloat(val);
+                           setSummary({...summary, overall_percentage: isNaN(parsed) ? undefined : parsed});
+                        }}
                         placeholder="e.g. 89.4"
                       />
                    </View>
+                 </View>
+
+                 <View style={localStyles.row}>
                    <View style={localStyles.halfWidth}>
                      <Text style={localStyles.smallLabel}>Class Rank</Text>
                      <TextInput 
                         style={localStyles.input}
-                        value={summary.class_position?.toString()}
+                        value={summary.class_position !== undefined && summary.class_position !== null && !isNaN(summary.class_position) ? summary.class_position.toString() : ""}
                         keyboardType="numeric"
-                        onChangeText={(val) => setSummary({...summary, class_position: parseInt(val)})}
+                        onChangeText={(val) => {
+                           const parsed = parseInt(val);
+                           setSummary({...summary, class_position: isNaN(parsed) ? undefined : parsed});
+                        }}
                         placeholder="e.g. 6"
+                      />
+                   </View>
+                   <View style={localStyles.halfWidth}>
+                     <Text style={localStyles.smallLabel}>Class Total Student</Text>
+                     <TextInput 
+                        style={localStyles.input}
+                        value={summary.class_total !== undefined && summary.class_total !== null && !isNaN(summary.class_total) ? summary.class_total.toString() : ""}
+                        keyboardType="numeric"
+                        onChangeText={(val) => {
+                           const parsed = parseInt(val);
+                           setSummary({...summary, class_total: isNaN(parsed) ? undefined : parsed});
+                        }}
+                        placeholder="e.g. 40"
+                      />
+                   </View>
+                 </View>
+
+                 <View style={localStyles.row}>
+                   <View style={localStyles.halfWidth}>
+                     <Text style={localStyles.smallLabel}>Level Rank</Text>
+                     <TextInput 
+                        style={localStyles.input}
+                        value={summary.level_position !== undefined && summary.level_position !== null && !isNaN(summary.level_position) ? summary.level_position.toString() : ""}
+                        keyboardType="numeric"
+                        onChangeText={(val) => {
+                           const parsed = parseInt(val);
+                           setSummary({...summary, level_position: isNaN(parsed) ? undefined : parsed});
+                        }}
+                        placeholder="e.g. 15"
+                      />
+                   </View>
+                   <View style={localStyles.halfWidth}>
+                     <Text style={localStyles.smallLabel}>Level Total Student</Text>
+                     <TextInput 
+                        style={localStyles.input}
+                        value={summary.level_total !== undefined && summary.level_total !== null && !isNaN(summary.level_total) ? summary.level_total.toString() : ""}
+                        keyboardType="numeric"
+                        onChangeText={(val) => {
+                           const parsed = parseInt(val);
+                           setSummary({...summary, level_total: isNaN(parsed) ? undefined : parsed});
+                        }}
+                        placeholder="e.g. 200"
                       />
                    </View>
                  </View>
@@ -237,10 +331,26 @@ export default function EditResultsForm({ studentId }: EditResultsFormProps) {
                      <Text style={localStyles.smallLabel}>Attendance (Present)</Text>
                      <TextInput 
                         style={localStyles.input}
-                        value={summary.attendance_present?.toString()}
+                        value={summary.attendance_present !== undefined && summary.attendance_present !== null && !isNaN(summary.attendance_present) ? summary.attendance_present.toString() : ""}
                         keyboardType="numeric"
-                        onChangeText={(val) => setSummary({...summary, attendance_present: parseInt(val)})}
+                        onChangeText={(val) => {
+                           const parsed = parseInt(val);
+                           setSummary({...summary, attendance_present: isNaN(parsed) ? undefined : parsed});
+                        }}
                         placeholder="e.g. 96"
+                      />
+                   </View>
+                   <View style={localStyles.halfWidth}>
+                     <Text style={localStyles.smallLabel}>Total School Days</Text>
+                     <TextInput 
+                        style={localStyles.input}
+                        value={summary.attendance_total !== undefined && summary.attendance_total !== null && !isNaN(summary.attendance_total) ? summary.attendance_total.toString() : ""}
+                        keyboardType="numeric"
+                        onChangeText={(val) => {
+                           const parsed = parseInt(val);
+                           setSummary({...summary, attendance_total: isNaN(parsed) ? undefined : parsed});
+                        }}
+                        placeholder="e.g. 100"
                       />
                    </View>
                  </View>
@@ -250,9 +360,12 @@ export default function EditResultsForm({ studentId }: EditResultsFormProps) {
                      <Text style={localStyles.smallLabel}>L1R4</Text>
                      <TextInput 
                         style={localStyles.input}
-                        value={summary.l1r4?.toString()}
+                        value={summary.l1r4 !== undefined && summary.l1r4 !== null && !isNaN(summary.l1r4) ? summary.l1r4.toString() : ""}
                         keyboardType="numeric"
-                        onChangeText={(val) => setSummary({...summary, l1r4: parseInt(val)})}
+                        onChangeText={(val) => {
+                           const parsed = parseInt(val);
+                           setSummary({...summary, l1r4: isNaN(parsed) ? undefined : parsed});
+                        }}
                         placeholder="e.g. 12"
                       />
                    </View>
@@ -260,15 +373,28 @@ export default function EditResultsForm({ studentId }: EditResultsFormProps) {
                      <Text style={localStyles.smallLabel}>L1R5</Text>
                      <TextInput 
                         style={localStyles.input}
-                        value={summary.l1r5?.toString()}
+                        value={summary.l1r5 !== undefined && summary.l1r5 !== null && !isNaN(summary.l1r5) ? summary.l1r5.toString() : ""}
                         keyboardType="numeric"
-                        onChangeText={(val) => setSummary({...summary, l1r5: parseInt(val)})}
+                        onChangeText={(val) => {
+                           const parsed = parseInt(val);
+                           setSummary({...summary, l1r5: isNaN(parsed) ? undefined : parsed});
+                        }}
                         placeholder="e.g. 15"
                       />
                    </View>
                  </View>
+
+                 <View style={{ marginBottom: 12 }}>
+                    <Text style={localStyles.smallLabel}>Conduct</Text>
+                    <Dropdown
+                      placeholder="Select Conduct"
+                      options={conductOptions}
+                      value={summary.conduct || ""}
+                      onSelect={(val) => setSummary({...summary, conduct: val})}
+                    />
+                 </View>
                  
-                 <View style={{ marginTop: 12 }}>
+                 <View style={{ marginTop: 6 }}>
                     <Text style={localStyles.smallLabel}>Teacher's Comments</Text>
                      <TextInput 
                         style={[localStyles.input, { height: 80, textAlignVertical: "top", paddingTop: 8 }]}
@@ -420,7 +546,7 @@ const localStyles = StyleSheet.create({
     backgroundColor: colors.gray_200,
   },
   cancelButtonText: {
-    color: colors.primary_850,
+    color: colors.gray_600,
   },
   noSelectionContainer: {
     alignItems: "center",

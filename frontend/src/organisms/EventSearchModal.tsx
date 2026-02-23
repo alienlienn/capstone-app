@@ -225,7 +225,7 @@ export default function EventSearchModal({ visible, onClose, onSelect }: EditEve
 
           <View style={styles.eventSearchButtonContainer}>
             <Pressable style={[styles.eventSearchButton, { backgroundColor: colors.gray_200 }]} onPress={onClose}>
-              <Text style={styles.eventSearchButtonText}>Cancel</Text>
+              <Text style={[styles.eventSearchButtonText, { color: colors.gray_600 }]}>Cancel</Text>
             </Pressable>
             <Pressable
               style={[

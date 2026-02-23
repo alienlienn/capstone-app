@@ -47,3 +47,9 @@ export async function fetchEventTimeOptions(): Promise<DropdownOption[]> {
 export async function fetchTermOptions(): Promise<DropdownOption[]> {
   return fetchLookup("/lookup/term_options")
 }
+
+
+// Conduct Options
+export async function fetchConductOptions(): Promise<DropdownOption[]> {
+  return fetchLookup("/lookup/conduct_options")
+}
