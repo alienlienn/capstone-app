@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from starlette import status
-from models import GenderEnum, EventType, AffectedGroup, EventTime, TermEnum
+from models import GenderEnum, EventType, AffectedGroup, EventTime, TermEnum, ConductEnum
 
 router = APIRouter(prefix="/lookup", tags=["lookup"])
 
@@ -61,4 +61,16 @@ def get_term_options():
         "value": term.value
       }
       for term in TermEnum
+    ]
+
+
+# GET request - get conduct options
+@router.get("/conduct_options", status_code=status.HTTP_200_OK)
+def get_conduct_options():
+    return [
+      {
+        "label": conduct.value.replace("_", " ").title(),
+        "value": conduct.value
+      }
+      for conduct in ConductEnum
     ]
