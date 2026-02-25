@@ -188,9 +188,9 @@ export default function EditResultsForm({ studentId }: EditResultsFormProps) {
                 <Text style={localStyles.sectionTitle}>Subject Results</Text>
                 
                 <View style={localStyles.tableHeader}>
-                   <Text style={[localStyles.th, { flex: 3.5, marginRight: 4, paddingHorizontal: 6 }]}>Subject</Text>
-                   <Text style={[localStyles.th, { flex: 1.1, marginRight: 4, paddingHorizontal: 6 }]}>Score</Text>
-                   <Text style={[localStyles.th, { flex: 1.1, marginRight: 4, paddingHorizontal: 6 }]}>Grade</Text>
+                   <Text style={[localStyles.th, { flex: 3.5, marginLeft: 2, }]}>Subject</Text>
+                   <Text style={[localStyles.th, { flex: 1.1, marginRight: 5, }]}>Score</Text>
+                   <Text style={[localStyles.th, { flex: 1, marginLeft: 2, }]}>Grade</Text>
                    <View style={{ width: 24, marginLeft: 4 }} /> 
                 </View>
 
@@ -213,7 +213,7 @@ export default function EditResultsForm({ studentId }: EditResultsFormProps) {
                         placeholder="Score"
                       />
                      <TextInput 
-                        style={[localStyles.tableInput, { flex: 1.1 }]}
+                        style={[localStyles.tableInput, { flex: 1 }]}
                         value={res.grade}
                         onChangeText={(val) => handleUpdateResult(index, "grade", val)}
                         placeholder="A1"
@@ -498,9 +498,11 @@ const localStyles = StyleSheet.create({
     paddingVertical: 8,
     fontSize: 14,
     color: "#333",
+    textAlignVertical: "center",
   },
   tableHeader: {
     flexDirection: "row",
+    alignItems: "center",
     paddingBottom: 8,
     borderBottomWidth: 1,
     borderBottomColor: "#EEE",
@@ -510,6 +512,7 @@ const localStyles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "bold",
     color: "#888",
+    textAlignVertical: "center",
   },
   subjectEditRow: {
     flexDirection: "row",
@@ -525,6 +528,7 @@ const localStyles = StyleSheet.create({
     paddingVertical: 4,
     fontSize: 13,
     marginRight: 4,
+    textAlignVertical: "center",
   },
   addSubjectBtn: {
     paddingVertical: 10,
@@ -546,7 +550,7 @@ const localStyles = StyleSheet.create({
     backgroundColor: colors.gray_200,
   },
   cancelButtonText: {
-    color: colors.gray_600,
+    color: colors.primary_850,
   },
   noSelectionContainer: {
     alignItems: "center",

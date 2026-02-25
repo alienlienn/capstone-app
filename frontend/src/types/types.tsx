@@ -19,6 +19,7 @@ export interface DropdownProps {
   onSelect: (value: string) => void;
   height?: number;
   containerStyle?: ViewStyle;
+  textStyle?: TextStyle;
 }
 
 export interface DropdownOption {

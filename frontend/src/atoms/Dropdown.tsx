@@ -4,7 +4,7 @@ import { DropdownProps } from "../types/types";
 import { styles } from "../styles/styles";
 
 
-function Dropdown({ value, placeholder, options, onSelect, height, containerStyle }: DropdownProps) {
+function Dropdown({ value, placeholder, options, onSelect, height, containerStyle, textStyle }: DropdownProps) {
   const [open, setOpen] = useState(false);
   const [menuPos, setMenuPos] = useState({ x: 0, y: 0, width: 0, height: 0 });
   const buttonRef = useRef<any>(null);
@@ -39,6 +39,7 @@ function Dropdown({ value, placeholder, options, onSelect, height, containerStyl
           style={[
             styles.dropdownSelectedText,
             !value && styles.dropdownPlaceholderText,
+            textStyle,
           ]}
         >
           {selectedLabel}
@@ -96,7 +97,7 @@ function Dropdown({ value, placeholder, options, onSelect, height, containerStyl
                         setOpen(false);
                       }}
                     >
-                      <Text style={styles.dropdownMenuOptionText}>{item.label}</Text>
+                      <Text style={[styles.dropdownMenuOptionText, textStyle]}>{item.label}</Text>
                     </Pressable>
                   );
                 })}

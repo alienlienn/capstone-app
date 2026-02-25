@@ -38,7 +38,7 @@ export async function fetchUserById(userId: string) {
 
 
 export async function fetchStudentsByUserId(userId: number) {
-  const response = await fetch(`${ENV.API_BASE_URL}/account/get_students/${userId}`, {
+  const response = await fetch(`${ENV.API_BASE_URL}/result/get_students/${userId}`, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
   });

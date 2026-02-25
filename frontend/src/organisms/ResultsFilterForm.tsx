@@ -124,7 +124,7 @@ export default function ResultsFilterForm({
             rightIconSource={require("../../assets/search_icon.png")}
             rightIconStyle={{ width: 15, height: 15 }}
             containerStyle={localStyles.searchBox}
-            inputStyle={{marginBottom: -1}}
+            inputStyle={{marginBottom: -1 }}
           />
 
           <Dropdown
@@ -133,6 +133,7 @@ export default function ResultsFilterForm({
             options={levelOptions}
             onSelect={handleLevelSelect}
             containerStyle={localStyles.levelDropdown}
+            textStyle={{ fontSize: 14 }}
           />
         </View>
 
@@ -191,13 +192,13 @@ const localStyles = StyleSheet.create({
     marginBottom: 16,
   },
   searchBox: {
-    flex: 1.9,
+    flex: 1.8,
     marginRight: 6,
     marginBottom: 0,
     height: 42,
   },
   levelDropdown: {
-    flex: 1.1,
+    flex: 1.2,
     marginBottom: 0,
     height: 42,
   },
