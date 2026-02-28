@@ -3,7 +3,7 @@ import { Modal, View, Text, StyleSheet, Pressable, Image, ActivityIndicator, Ale
 import * as DocumentPicker from "expo-document-picker";
 import { colors } from "../styles/colors";
 import Button from "../atoms/Button";
-import { bulkUploadResults } from "../services/result";
+import { bulkUploadResults, downloadResultsTemplate } from "../services/result";
 
 interface BulkUploadModalProps {
   visible: boolean;
@@ -66,6 +66,19 @@ export default function BulkUploadModal({ visible, onClose, onUploadSuccess }: B
             </Text>
 
             <Pressable 
+              style={localStyles.templateLink} 
+              onPress={async () => {
+                try {
+                  await downloadResultsTemplate();
+                } catch (error) {
+                  Alert.alert("Template Error", "Failed to download template.");
+                }
+              }}
+            >
+              <Text style={localStyles.templateLinkText}>Download Structure Template</Text>
+            </Pressable>
+
+            <Pressable 
               style={[localStyles.filePicker, selectedFile && !selectedFile.canceled ? localStyles.fileSelected : null]} 
               onPress={handleSelectFile}
             >
@@ -123,15 +136,14 @@ const localStyles = StyleSheet.create({
     elevation: 5,
   },
   header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+    marginBottom: 10,
     alignItems: "center",
-    marginBottom: 20,
   },
   title: {
     fontSize: 18,
     fontWeight: "bold",
     color: colors.primary_850,
+    textAlign: "center",
   },
   closeBtn: {
     padding: 5,
@@ -143,8 +155,23 @@ const localStyles = StyleSheet.create({
     fontSize: 14,
     color: colors.gray_600,
     textAlign: "center",
-    marginBottom: 20,
+    marginBottom: 10,
     lineHeight: 20,
+  },
+  templateLink: {
+    marginBottom: 16,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: colors.primary_100,
+    backgroundColor: colors.primary_50,
+  },
+  templateLinkText: {
+    fontSize: 12,
+    color: colors.primary_600,
+    fontWeight: "700",
+    textDecorationLine: "underline",
   },
   filePicker: {
     width: "100%",

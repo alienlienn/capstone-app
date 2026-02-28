@@ -53,3 +53,19 @@ export async function fetchTermOptions(): Promise<DropdownOption[]> {
 export async function fetchConductOptions(): Promise<DropdownOption[]> {
   return fetchLookup("/lookup/conduct_options")
 }
+
+
+// Subject Code Mapping
+export async function fetchSubjectOptions(): Promise<{ name: string; code: string }[]> {
+  try {
+    const response = await fetch(`${ENV.API_BASE_URL}/lookup/subject_options`);
+    if (!response.ok) {
+      throw new Error(`Subject lookup failed (${response.status})`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching subjects:", error);
+    return [];
+  }
+}
+

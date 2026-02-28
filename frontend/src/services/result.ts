@@ -1,4 +1,7 @@
 import { ENV } from "../config/environment";
+import * as FileSystem from "expo-file-system/legacy";
+import * as Sharing from "expo-sharing";
+import { Platform } from "react-native";
 
 
 export const getTeacherStudents = async (userId: number) => {
@@ -67,13 +70,10 @@ export const bulkUploadResults = async (fileUri: string, fileName: string) => {
             uri: fileUri,
             name: fileName,
             type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        });
+        } as any);
 
         const response = await fetch(`${ENV.API_BASE_URL}/result/bulk_upload_excel`, {
             method: "POST",
-            headers: {
-                "Accept": "application/json",
-            },
             body: formData,
         });
 
@@ -84,6 +84,30 @@ export const bulkUploadResults = async (fileUri: string, fileName: string) => {
         return await response.json();
     } catch (error) {
         console.error("Error bulk uploading results:", error);
+        throw error;
+    }
+};
+
+
+export const downloadResultsTemplate = async () => {
+    try {
+        const templateUrl = `${ENV.API_BASE_URL}/result/download_template`;
+        
+        if (Platform.OS === 'web') {
+            window.open(templateUrl, '_blank');
+            return;
+        }
+
+        const fileUri = `${FileSystem.cacheDirectory}results_template.xlsx`;
+        const { uri } = await FileSystem.downloadAsync(templateUrl, fileUri);
+
+        if (await Sharing.isAvailableAsync()) {
+            await Sharing.shareAsync(uri);
+        } else {
+            throw new Error("Sharing is not available on this device");
+        }
+    } catch (error) {
+        console.error("Error downloading template:", error);
         throw error;
     }
 };

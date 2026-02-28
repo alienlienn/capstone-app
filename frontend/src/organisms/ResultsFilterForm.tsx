@@ -220,7 +220,7 @@ const localStyles = StyleSheet.create({
     marginTop: 20,
   },
   bulkUploadBtn: {
-    bottom: -317,
+    bottom: 16,
     right: 16,
   }
 });

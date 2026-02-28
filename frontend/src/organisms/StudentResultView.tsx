@@ -134,13 +134,26 @@ export default function StudentResultView({ summary: initialSummary, results: in
   }
 
   const renderSubjectRow = (res: StudentResult, index: number, isLast: boolean) => {
-    // Subject color indicator (just for design, could be tied to subject category)
-    const subjectColors = [
-      "#4A90E2", "#7ED321", "#9013FE", "#F5A623", 
-      "#D0021B", "#50E3C2", "#417505", "#B8E986",
-      "#BD10E0", "#FF4081", "#03A9F4", "#8BC34A"
-    ];
-    const indicatorColor = subjectColors[index % subjectColors.length];
+    // Subject color indicator tied to subject category
+    const getCategoryColor = (category?: string) => {
+      switch (category?.toLowerCase()) {
+        case "languages":
+          return "#4A90E2"; // Blue
+        case "mathematics":
+          return "#7ED321"; // Green
+        case "sciences":
+          return "#9013FE"; // Purple
+        case "humanities":
+          return "#F5A623"; // Orange
+        case "electives":
+          return "#50E3C2"; // Teal/Cyan
+        case "others":
+        default:
+          return "#808080"; // Grey
+      }
+    };
+
+    const indicatorColor = getCategoryColor(res.category);
 
     return (
       <View key={index} style={[localStyles.subjectRow, isLast && { borderBottomWidth: 0 }]}>
@@ -164,22 +177,27 @@ export default function StudentResultView({ summary: initialSummary, results: in
       : 0;
 
   return (
-    <SafeAreaView edges={["top"]} style={{ flex: 1 }}>
-      <ScrollView style={localStyles.container}>
-       <View style={{ width: '95%', alignSelf: 'center', paddingHorizontal: 10, }}>
+    <SafeAreaView edges={["top"]} style={{ flex: 1, backgroundColor: colors.background_color }}>
+      <View style={styles.screenTopHeader}>
         {isParent && (
           <Pressable 
             onPress={() => setViewClicked(false)} 
-            style={localStyles.backLink}
+            style={{ padding: 8 }}
           >
             <Image 
                source={require("../../assets/chevron_icons/chevron_left.png")} 
-               style={{ width: 16, height: 16, tintColor: colors.gray_800 }}
+               style={{ width: 20, height: 20 }}
             />
-            <Text style={localStyles.backText}>Return to Student Selection</Text>
           </Pressable>
         )}
+        <Text style={[styles.screenTopHeaderLabel, isParent ? { marginRight: 28 } : { flex: 1, textAlign: 'center' }]}>
+          {isParent ? "Academic Results" : "Student Performance"}
+        </Text>
+      </View>
 
+      <ScrollView style={localStyles.container}>
+       <View style={{ width: '95%', alignSelf: 'center', paddingHorizontal: 10, }}>
+        
         {/* Overview Cards Row */}
         <View style={localStyles.overviewCards}>
           {/* Overall Average */}
@@ -296,12 +314,25 @@ export default function StudentResultView({ summary: initialSummary, results: in
           </Text>
         </View>
 
-        <Button 
-          buttonTitle="View Analytics"
-          onPressButton={() => Alert.alert("Coming Soon", "Analytics feature will be available in the next update.")}
-          buttonStyle={localStyles.analyticsButton}
-          textStyle={localStyles.analyticsButtonText}
-        />
+        <View style={localStyles.actionButtonsRow}>
+          <Button 
+            buttonTitle="View Analytics"
+            onPressButton={() => Alert.alert("Coming Soon", "Analytics feature will be available in the next update.")}
+            buttonStyle={[localStyles.buttonContainer, { flex: 1 }]}
+            textStyle={localStyles.buttonText}
+            iconSource={require("../../assets/dashboard_icon.png")}
+            iconStyle={localStyles.buttonIcon}
+          />
+
+          <Button 
+            buttonTitle="Print Report"
+            onPressButton={() => Alert.alert("Coming Soon", "Print feature will be available in the next update.")}
+            buttonStyle={[localStyles.buttonContainer, { flex: 1 }]}
+            textStyle={localStyles.buttonText}
+            iconSource={require("../../assets/print_icon.png")}
+            iconStyle={localStyles.buttonIcon}
+          />
+        </View>
         
         <View style={{ height: 40 }} />
        </View>
@@ -673,23 +704,41 @@ const localStyles = StyleSheet.create({
     fontWeight: "600",
     marginLeft: 8,
   },
-  analyticsButton: {
-    backgroundColor: colors.gray_300,
+  buttonContainer: {
+    backgroundColor: colors.gray_100,
     elevation: 2,
     shadowColor: colors.gray_900,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
-    paddingVertical: 8,
+    paddingVertical: 10,
     paddingHorizontal: 12,
-    borderRadius: 6,
-    marginTop: 16,
-    alignSelf: "flex-start",
-    width: 'auto',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: colors.gray_200,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "auto",
     height: "auto"
   },
-  analyticsButtonText: {
-    fontSize: 12,
+  buttonText: {
+    fontSize: 13,
     fontWeight: "600",
     color: colors.gray_800,
+  },
+  buttonIcon: {
+    width: 16,
+    height: 16,
+    marginRight: 6,
+    tintColor: colors.gray_800,
+  },
+  actionButtonsRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginTop: 4,
+    marginBottom: -4,
+    gap: 8,
+    width: "100%",
   },
 });

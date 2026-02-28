@@ -33,7 +33,7 @@ export interface ButtonProps {
   width?: DimensionValue;
   height?: number;
   disabled?: boolean;
-  buttonStyle?: ViewStyle;
+  buttonStyle?: ViewStyle | ViewStyle[];
   iconSource?: any;           
   iconStyle?: ImageStyle;    
   textStyle?: TextStyle;
@@ -103,6 +103,7 @@ export interface StudentResult {
   id?: number;
   student_id: number;
   subject: string;
+  category?: string;
   grade?: string;
   score?: number;
   max_score?: number;

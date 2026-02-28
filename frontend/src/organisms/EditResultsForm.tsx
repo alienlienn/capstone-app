@@ -3,6 +3,7 @@ import { View, Text, Pressable, Image, ScrollView, StyleSheet, Alert, TextInput,
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import Dropdown from "../atoms/Dropdown";
 import Button from "../atoms/Button";
+import SubjectCodeModal from "../molecules/SubjectCodeModal";
 import { colors } from "../styles/colors";
 import { styles } from "../styles/styles";
 import { StudentResult, StudentPerformanceSummary, DropdownOption } from "../types/types";
@@ -21,6 +22,7 @@ export default function EditResultsForm({ studentId }: EditResultsFormProps) {
   const [year, setYear] = useState("2026");
   const [loading, setLoading] = useState(false);
   const [hasExistingResults, setHasExistingResults] = useState(false);
+  const [showSubjectModal, setShowSubjectModal] = useState(false);
 
   // Results form state
   const [results, setResults] = useState<StudentResult[]>([]);
@@ -175,6 +177,14 @@ export default function EditResultsForm({ studentId }: EditResultsFormProps) {
             onSelect={setSelectedTerm}
           />
         </View>
+
+        {selectedTerm && (
+          <View style={localStyles.referenceRow}>
+             <Pressable onPress={() => setShowSubjectModal(true)}>
+               <Text style={localStyles.referenceLink}>Subject Code List</Text>
+             </Pressable>
+          </View>
+        )}
 
         {selectedTerm ? (
           loading ? (
@@ -453,6 +463,11 @@ export default function EditResultsForm({ studentId }: EditResultsFormProps) {
           </View>
         )}
       </ScrollView>
+
+      <SubjectCodeModal
+        visible={showSubjectModal}
+        onClose={() => setShowSubjectModal(false)}
+      />
     </View>
   );
 }
@@ -484,6 +499,20 @@ const localStyles = StyleSheet.create({
   },
   halfWidth: {
     width: "48%",
+  },
+  referenceRow: {
+    width: "100%",
+    alignItems: "flex-end",
+    marginTop: -4,
+    marginBottom: 8,
+    paddingRight: 4,
+  },
+  referenceLink: {
+    fontSize: 12,
+    color: colors.primary_600,
+    fontWeight: "600",
+    textDecorationLine: "underline",
+    marginBottom: 2,
   },
   smallLabel: {
     fontSize: 12,
