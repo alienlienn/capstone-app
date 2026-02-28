@@ -5,8 +5,8 @@ from datetime import date
 from utils.utils import db_dependency, hash_password
 from models import (
     UserAccount, UserRole, School, Student, Parent, Teacher, ParentStudent, 
-    TeacherStudent, GenderEnum, ParentRelationship, Subject, StudentResult, 
-    StudentPerformanceSummary, TermEnum, ConductEnum
+    TeacherStudent, GenderEnum, ParentRelationship, Subject, TermEnum, ConductEnum, 
+    SubjectCategoryEnum
 )
 
 
@@ -84,6 +84,7 @@ class CreateTeacherStudentRequest(BaseModel):
 class CreateSubjectRequest(BaseModel):
     subject_name: str
     subject_code: str
+    subject_category: SubjectCategoryEnum | None = SubjectCategoryEnum.OTHERS
     description: str | None = None
 
 
@@ -437,6 +438,7 @@ def add_subject(request: CreateSubjectRequest | list[CreateSubjectRequest], db: 
         new_subject = Subject(
             subject_name=req.subject_name,
             subject_code=req.subject_code,
+            subject_category=req.subject_category,
             description=req.description
         )
         db.add(new_subject)

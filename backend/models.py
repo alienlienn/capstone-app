@@ -37,6 +37,14 @@ class ConductEnum(str, Enum):
     VERY_GOOD = "very good"
     EXCELLENT = "excellent"
 
+class SubjectCategoryEnum(str, Enum):
+    LANGUAGES = "languages"
+    MATHEMATICS = "mathematics"
+    SCIENCES = "sciences"
+    HUMANITIES = "humanities"
+    ELECTIVES = "electives"
+    OTHERS = "others"
+
 class TermEnum(str, Enum):
     AY2026_T1 = "AY2026 Term 1"
     AY2026_T2 = "AY2026 Term 2"
@@ -197,6 +205,7 @@ class Subject(Base):
     id = Column(Integer, primary_key=True, index=True)
     subject_name = Column(String(100), unique=True, nullable=False)
     subject_code = Column(String(20), unique=True, nullable=False)
+    subject_category = Column(SQLAlchemyEnum(SubjectCategoryEnum), nullable=True, default=SubjectCategoryEnum.OTHERS)
     description = Column(Text, nullable=True)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ))
     updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ), onupdate=lambda: datetime.now(SINGAPORE_TZ))

@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException, UploadFile, File, Depends
+from fastapi.responses import StreamingResponse
 from starlette import status
 from utils.utils import db_dependency
 from pydantic import BaseModel
@@ -6,7 +7,7 @@ from typing import List, Optional
 import io
 import pandas as pd
 from sqlalchemy.orm import Session
-from models import Parent, Student, ParentStudent, Teacher, TeacherStudent, StudentResult, StudentPerformanceSummary, Subject
+from models import Parent, Student, ParentStudent, Teacher, TeacherStudent, StudentResult, StudentPerformanceSummary, Subject, SubjectCategoryEnum
 
 
 router = APIRouter(prefix="/result", tags=["result"])
@@ -96,8 +97,8 @@ async def get_student_results(student_id: int, term: str, db: db_dependency):
         StudentPerformanceSummary.term == term
     ).first()
 
-    # Fetch results with Subject Name
-    results = db.query(StudentResult, Subject.subject_name).join(
+    # Fetch results with Subject Name and Category
+    results = db.query(StudentResult, Subject.subject_name, Subject.subject_category).join(
         Subject, StudentResult.subject_id == Subject.id
     ).filter(
         StudentResult.student_id == student_id,
@@ -106,7 +107,7 @@ async def get_student_results(student_id: int, term: str, db: db_dependency):
 
     # Format results list
     results_list = []
-    for result, subject_name in results:
+    for result, subject_name, subject_category in results:
         # Extract year from term string "AY2026 Term 1" -> 2026
         try:
             year_str = result.term.split()[0][2:] # "2026"
@@ -118,6 +119,7 @@ async def get_student_results(student_id: int, term: str, db: db_dependency):
             "id": result.id,
             "student_id": result.student_id,
             "subject": subject_name,
+            "category": subject_category.value if subject_category else "others",
             "grade": result.grade,
             "score": result.score,
             "max_score": 100, # Default
@@ -278,9 +280,22 @@ async def update_student_results(request: ResultsSaveRequest, db: db_dependency)
                 subject_code = res_data.subject.strip().upper().replace(" ", "_")
                 subject = db.query(Subject).filter(Subject.subject_code == subject_code).first()
                 if not subject:
+                    # Basic auto-categorization
+                    name_lower = res_data.subject.strip().lower()
+                    category = SubjectCategoryEnum.OTHERS
+                    if any(kw in name_lower for kw in ["english", "chinese", "malay", "tamil", "language", "mother tongue"]):
+                        category = SubjectCategoryEnum.LANGUAGES
+                    elif any(kw in name_lower for kw in ["math", "calculus", "algebra", "stats"]):
+                        category = SubjectCategoryEnum.MATHEMATICS
+                    elif any(kw in name_lower for kw in ["science", "physics", "chemistry", "biology", "sci"]):
+                        category = SubjectCategoryEnum.SCIENCES
+                    elif any(kw in name_lower for kw in ["history", "geography", "literature", "social studies", "humanities"]):
+                        category = SubjectCategoryEnum.HUMANITIES
+
                     subject = Subject(
                         subject_name=res_data.subject.strip(), 
-                        subject_code=subject_code
+                        subject_code=subject_code,
+                        subject_category=category
                     )
                     db.add(subject)
                     db.flush()
@@ -316,3 +331,30 @@ async def update_student_results(request: ResultsSaveRequest, db: db_dependency)
         raise HTTPException(status_code=400, detail=str(e))
     
     
+@router.get("/download_template")
+async def download_template():
+    output = io.BytesIO()
+    
+    # Create empty DataFrames for the two sheets
+    results_cols = ['student_id', 'subject_code', 'term', 'score', 'grade', 'teacher_id']
+    summaries_cols = [
+        'student_id', 'term', 'overall_percentage', 'total_marks', 'total_max_marks', 
+        'class_position', 'class_total', 'level_position', 'level_total', 
+        'l1r4', 'l1r5', 'attendance_present', 'attendance_total', 
+        'conduct', 'teacher_comments'
+    ]
+    
+    df_results = pd.DataFrame(columns=results_cols)
+    df_summaries = pd.DataFrame(columns=summaries_cols)
+    
+    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+        df_results.to_excel(writer, sheet_name='results', index=False)
+        df_summaries.to_excel(writer, sheet_name='summaries', index=False)
+        
+    output.seek(0)
+    
+    return StreamingResponse(
+        output,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": "attachment; filename=results_template.xlsx"}
+    )

@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 from starlette import status
-from models import GenderEnum, EventType, AffectedGroup, EventTime, TermEnum, ConductEnum
+from utils.utils import db_dependency
+from models import GenderEnum, EventType, AffectedGroup, EventTime, TermEnum, ConductEnum, Subject
 
 router = APIRouter(prefix="/lookup", tags=["lookup"])
 
@@ -73,4 +74,18 @@ def get_conduct_options():
         "value": conduct.value
       }
       for conduct in ConductEnum
+    ]
+
+
+# GET request - get subject options (name and code)
+@router.get("/subject_options", status_code=status.HTTP_200_OK)
+def get_subject_options(db: db_dependency):
+    subjects = db.query(Subject).all()
+    return [
+      {
+        "name": subject.subject_name,
+        "code": subject.subject_code,
+        "category": subject.subject_category.value if subject.subject_category else "others"
+      }
+      for subject in subjects
     ]
