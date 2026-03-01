@@ -12,7 +12,6 @@ SINGAPORE_TZ = ZoneInfo("Asia/Singapore")
 class UserRole(str, Enum):
     SUPER_ADMIN = "super_admin"
     ADMIN = "admin"
-    TEACHER = "teacher"
     USER = "user"   
 
 class AccountStatus(str, Enum):
@@ -193,6 +192,7 @@ class Teacher(Base):
     email = Column(String(255), nullable=True)
     mobile_number = Column(String(20), nullable=True)
     gender = Column(SQLAlchemyEnum(GenderEnum), nullable=True, default=GenderEnum.OTHER)
+    school_role = Column(String(100), nullable=True)
     assigned_groups = Column(Text, nullable=True)
     user_id = Column(Integer, ForeignKey("user_accounts.id"), nullable=True)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ))
@@ -263,16 +263,6 @@ class UserAccount(Base):
     status = Column(SQLAlchemyEnum(AccountStatus), default=AccountStatus.ACTIVE)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ))
     updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ), onupdate=lambda: datetime.now(SINGAPORE_TZ))
-    
-
-class UserPermission(Base):
-    __tablename__ = "user_permissions"
-
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("user_accounts.id"), nullable=False)
-    permission = Column(SQLAlchemyEnum(PermissionType), nullable=False)
-    granted_by = Column(Integer, ForeignKey("user_accounts.id"), nullable=True)
-    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ))
 
 
 class EventItem(Base):

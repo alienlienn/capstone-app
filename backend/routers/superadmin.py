@@ -66,6 +66,7 @@ class CreateTeacherRequest(BaseModel):
     email: EmailStr | None = None
     mobile_number: str | None = None
     gender: GenderEnum | None = GenderEnum.OTHER
+    school_role: str | None = None
     assigned_groups: str | None = None
     user_id: int | None = None
 
@@ -321,6 +322,7 @@ def add_teacher(request: CreateTeacherRequest | list[CreateTeacherRequest], db: 
             email=req.email,
             mobile_number=req.mobile_number,
             gender=req.gender,
+            school_role=req.school_role,
             assigned_groups=req.assigned_groups,
             user_id=req.user_id
         )

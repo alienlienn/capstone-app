@@ -3,7 +3,7 @@ from starlette import status
 from pydantic import BaseModel
 from typing import Optional
 from utils.utils import db_dependency, verify_password, hash_password
-from models import UserAccount, GenderEnum, Teacher, Parent, ParentStudent, Student, UserRole
+from models import UserAccount, GenderEnum, School, Teacher, Parent, ParentStudent, Student, UserRole, TeacherStudent
 import uuid, os, shutil
 
 
@@ -171,10 +171,79 @@ async def upload_avatar(db: db_dependency, user_id: int, file: UploadFile = File
 
     # Store relative path
     user.profile_image_url = f"/uploads/{filename}"
+    db.add(user)
     db.commit()
+    db.refresh(user)
 
     return {"profile_image_url": user.profile_image_url}
 
+
+# GET request - fetch relevant contacts (Admins & Student's Teachers)
+@router.get("/get_contacts/{user_id}", status_code=status.HTTP_200_OK)
+async def get_contacts(user_id: int, db: db_dependency):
+    # 1. Identify all students associated with the parent (user_id)
+    parent = db.query(Parent).filter(Parent.user_id == user_id).first()
+    
+    student_ids = []
+    school_ids = set()
+
+    if parent:
+        # Get all linked students
+        student_links = db.query(ParentStudent).filter(ParentStudent.parent_id == parent.id).all()
+        for link in student_links:
+            student_ids.append(link.student_id)
+            student = db.query(Student).filter(Student.id == link.student_id).first()
+            if student:
+                school_ids.add(student.school_id)
+    else:
+        # If not a parent, fallback to getting school admins if they have a teacher record
+        teacher_me = db.query(Teacher).filter(Teacher.user_id == user_id).first()
+        if teacher_me:
+            school_ids.add(teacher_me.school_id)
+
+    if not school_ids:
+        return []
+
+    # Use a dictionary to avoid duplicates
+    contact_map = {}
+
+    def add_to_contacts(res_list):
+        for user, teacher, school_name in res_list:
+            # We want to keep the most relevant role if duplicate
+            # Or just set a default record
+            contact_map[user.id] = {
+                "id": user.id,
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+                "email": user.email,
+                "profile_image_url": user.profile_image_url,
+                "mobile_number": user.mobile_number,
+                "school_name": school_name,
+                "school_role": teacher.school_role or ("Admin" if user.role == UserRole.ADMIN else "Teacher"),
+            }
+
+    # 2. Get all Admins for all relevant schools
+    for sid in school_ids:
+        # Expire any existing objects to ensure we get fresh data from DB
+        db.expire_all()
+        admins = db.query(UserAccount, Teacher, School.school_name)\
+            .join(Teacher, Teacher.user_id == UserAccount.id)\
+            .join(School, School.id == Teacher.school_id)\
+            .filter(Teacher.school_id == sid)\
+            .filter(UserAccount.role == UserRole.ADMIN).all()
+        add_to_contacts(admins)
+
+    # 3. Get all Teachers assigned to all associated students
+    for stid in student_ids:
+        db.expire_all()
+        student_teachers = db.query(UserAccount, Teacher, School.school_name)\
+            .join(Teacher, Teacher.user_id == UserAccount.id)\
+            .join(School, School.id == Teacher.school_id)\
+            .join(TeacherStudent, TeacherStudent.teacher_id == Teacher.id)\
+            .filter(TeacherStudent.student_id == stid).all()
+        add_to_contacts(student_teachers)
+
+    return list(contact_map.values())
 
 
 
