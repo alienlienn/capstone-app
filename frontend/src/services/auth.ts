@@ -49,3 +49,17 @@ export async function fetchStudentsByUserId(userId: number) {
 
   return response.json();
 }
+
+
+export async function fetchAdminsBySchool(userId: number) {
+  const response = await fetch(`${ENV.API_BASE_URL}/account/get_contacts/${userId}`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch relevant contacts");
+  }
+
+  return response.json();
+}

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { View, ScrollView, Text, StyleSheet } from "react-native";
 import { Calendar, LocaleConfig } from "react-native-calendars";
 import EventListCard from "../molecules/EventListCard";
-import EventDetailsModal from "./EventDetailsModal";
+import EventDetailsModal from "../molecules/EventDetailsModal";
 import { CalendarViewProps, Day, CalendarEvent } from "../types/types";
 import { calendarStyles, calendarTheme, calendarMarkedDates } from "../styles/calendarstyles";
 import EventTypeLegend from "../molecules/EventTypeLegend";

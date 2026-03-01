@@ -194,7 +194,14 @@ export type User = {
   profile_image_url?: string;
   role?: string;
   school_id?: number;
+  school_name?: string;
+  school_role?: string;
 };
+
+export interface TeacherCardProps {
+  user: User;
+  onPress?: () => void;
+}
 
 export type ProfileDetailsFormProps = {
   user: User;

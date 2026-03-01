@@ -31,10 +31,21 @@ const TABS: TabItem[] = [
 function BottomNavbar({ route }: { route: any }) {
   const navigation = useNavigation<NativeStackNavigationProp<any>>();
   const currentRouteName = getFocusedRouteNameFromRoute(route) || "Home";
+  
+  const loggedInUser = (global as any).loggedInUser;
+  const userRole = loggedInUser?.role;
+
+  // Filter out "Contact Us" for admins
+  const filteredTabs = TABS.filter(tab => {
+    if (tab.route === "ContactUs" && userRole === "admin") {
+      return false;
+    }
+    return true;
+  });
 
   return (
     <View style={styles.navBarContainer}>
-      {TABS.map((tab) => {
+      {filteredTabs.map((tab) => {
         const isActive = currentRouteName === tab.route;
 
         return (
