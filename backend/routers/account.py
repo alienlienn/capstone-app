@@ -5,7 +5,8 @@ from typing import Optional
 from utils.utils import db_dependency, verify_password, hash_password
 from models import UserAccount, GenderEnum, School, Teacher, Parent, ParentStudent, Student, UserRole, TeacherStudent
 import uuid, os, shutil
-
+import smtplib
+from email.message import EmailMessage
 
 router = APIRouter(prefix="/account", tags=["account"])
 
@@ -33,6 +34,14 @@ class CreateResultRequest(BaseModel):
     term: str
     year: int
     teacher_id: int
+
+class ForgotPasswordRequest(BaseModel):
+    email: str
+
+class ResetPasswordRequest(BaseModel):
+    email: str
+    token: str
+    new_password: str
 
 
 # POST request - account login
@@ -72,6 +81,60 @@ async def login(request: LoginRequest, db: db_dependency):
         "first_name": user.first_name,
         "last_name": user.last_name,
     }
+
+
+# POST request - forgot password
+@router.post("/forgot_password", status_code=status.HTTP_200_OK)
+async def forgot_password(request: ForgotPasswordRequest, db: db_dependency):
+    user = db.query(UserAccount).filter(UserAccount.email == request.email).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user not registered")
+
+    reset_token = str(uuid.uuid4())
+    
+    frontend_base_url = "http://192.168.1.229:8081" 
+    reset_link = f"{frontend_base_url}/reset-password?token={reset_token}&email={user.email}"
+
+    SMTP_SERVER = "smtp.gmail.com"
+    SMTP_PORT = 587
+    SENDER_EMAIL = "lientoh.102@gmail.com"
+    SENDER_PASSWORD = "ejfj mqzy wpxs ydkk" 
+
+    msg = EmailMessage()
+    msg.set_content(f"Hi {user.first_name},\n\nYou requested a password reset. Click the link below to reset your password:\n\n{reset_link}\n\nIf you did not request this, please ignore this email.")
+    msg['Subject'] = "Password Reset Request"
+    msg['From'] = SENDER_EMAIL
+    msg['To'] = user.email
+
+    try:
+        print(f"\n--- PASSWORD RESET DEBUG ---")
+        print(f"To: {user.email}")
+        print(f"Link: {reset_link}")
+        print(f"---------------------------\n")
+
+        with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
+            server.starttls()
+            server.login(SENDER_EMAIL, SENDER_PASSWORD)
+            server.send_message(msg)
+            print(f"SUCCESS: Email sent to {user.email}")
+    except Exception as e:
+        print(f"Failed to send email: {e}")
+
+    return {"message": "Reset password link sent to your email"}
+
+
+# POST request - set new password via forgot password
+@router.post("/reset_password", status_code=status.HTTP_200_OK)
+async def reset_password(request: ResetPasswordRequest, db: db_dependency):
+    user = db.query(UserAccount).filter(UserAccount.email == request.email).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    user.password_hash = hash_password(request.new_password)
+    db.commit()
+    db.refresh(user)
+
+    return {"message": "Password updated successfully"}
        
 
 # GET request - fetch user profile by ID
@@ -115,7 +178,7 @@ async def get_user(user_id: int, db: db_dependency):
 async def update_profile(user_id: int, payload: UpdateProfileRequest, db: db_dependency):
     user = db.query(UserAccount).filter(UserAccount.id == user_id).first()
     if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_code=404, detail="Invalid Email")
 
     if payload.first_name is not None:
         user.first_name = payload.first_name
@@ -244,6 +307,3 @@ async def get_contacts(user_id: int, db: db_dependency):
         add_to_contacts(student_teachers)
 
     return list(contact_map.values())
-
-
-
