@@ -84,11 +84,7 @@ function EditProfileForm({ user }: ProfileDetailsFormProps) {
       password: updatedPassword,
       gender: gender ?? undefined,
       mobile_number: mobileNumber,
-      profile_image_url: uploadedAvatarUrl
-        ? uploadedAvatarUrl.startsWith("http")
-          ? uploadedAvatarUrl
-          : `${ENV.API_BASE_URL}${uploadedAvatarUrl}`
-        : undefined,
+      profile_image_url: uploadedAvatarUrl ?? undefined,
     };
 
     try {

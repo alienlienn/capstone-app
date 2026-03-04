@@ -15,11 +15,7 @@ export default function ProfileHeader({ fullName, phone, email, imageUrl }: Prof
     email: (global as any).loggedInUser.email,
     gender: (global as any).loggedInUser.gender,
     mobile_number: (global as any).loggedInUser.mobile_number,
-    profile_image_url: (global as any).loggedInUser.profile_image_url
-      ? ((global as any).loggedInUser.profile_image_url.startsWith("http")
-          ? (global as any).loggedInUser.profile_image_url
-          : `${ENV.API_BASE_URL}${(global as any).loggedInUser.profile_image_url}`)
-      : "",
+    profile_image_url: (global as any).loggedInUser.profile_image_url,
   });
 
   useFocusEffect(
@@ -30,14 +26,7 @@ export default function ProfileHeader({ fullName, phone, email, imageUrl }: Prof
           const updatedUser = await fetchUserById(String((global as any).loggedInUser.id));
           if (!isActive) return;
 
-          setUserData({
-            ...updatedUser,
-            profile_image_url: updatedUser.profile_image_url
-              ? (updatedUser.profile_image_url.startsWith("http")
-                  ? updatedUser.profile_image_url
-                  : `${ENV.API_BASE_URL}${updatedUser.profile_image_url}`)
-              : "",
-          });
+          setUserData(updatedUser);
         } catch (err) {
           console.error("Failed to fetch user:", err);
         }

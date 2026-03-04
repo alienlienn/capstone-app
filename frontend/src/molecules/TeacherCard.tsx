@@ -5,6 +5,7 @@ import { styles } from "../styles/styles";
 import { ENV } from "../config/environment";
 import LinkText from "../atoms/LinkText";
 import { colors } from "../styles/colors";
+import ProfileAvatar from "../atoms/ProfileAvatar";
 
 export default function TeacherCard({ user, onPress }: TeacherCardProps) {
   const [modalVisible, setModalVisible] = useState(false);
@@ -43,34 +44,24 @@ export default function TeacherCard({ user, onPress }: TeacherCardProps) {
     });
   };
 
-  // Use a ref to keep track of the timestamp to avoid infinite re-renders if we put it in state without care
-  // However, for this specific issue, we want to force a refresh if the URL is the same but the content might have changed.
-  // The simplest way is to use the current time when the component mounts.
-  
-  const profileImage = React.useMemo(() => {
-    if (!user.profile_image_url) return require("../../assets/default_profile_avatar.png");
-    
-    // Ensure the URL is absolute and add a timestamp to force fresh fetch
-    const baseUrl = ENV.API_BASE_URL.endsWith('/') ? ENV.API_BASE_URL.slice(0, -1) : ENV.API_BASE_URL;
-    let path = user.profile_image_url;
-    
-    // If the path already has a protocol, don't prepend baseUrl
-    if (path.startsWith('http://') || path.startsWith('https://')) {
-      return { uri: `${path}${path.includes('?') ? '&' : '?'}t=${new Date().getTime()}` };
-    }
-
-    if (!path.startsWith('/')) {
-      path = `/${path}`;
-    }
-    
-    return { uri: `${baseUrl}${path}${path.includes('?') ? '&' : '?'}t=${new Date().getTime()}` };
-  }, [user.profile_image_url]);
-
   const openTelegram = (mobile?: string) => {
     if (mobile) {
-      const cleanMobile = mobile.replace(/\s+/g, "");
-      const url = `https://t.me/${cleanMobile}`;
-      Linking.openURL(url).catch(err => console.error("Couldn't load page", err));
+      // Clean mobile number - keep only digits and plus sign
+      const cleanMobile = mobile.replace(/[^\d+]/g, "");
+      
+      // Ensure it starts with a plus if it's a mobile number
+      // Telegram t.me links work best with the international format without the "+" prefix for phone numbers
+      const phoneForLink = cleanMobile.startsWith("+") ? cleanMobile.substring(1) : cleanMobile;
+      
+      const url = `https://t.me/+${phoneForLink}`;
+      Linking.canOpenURL(url).then(supported => {
+        if (supported) {
+          Linking.openURL(url);
+        } else {
+          // Fallback to web link if app isn't installed
+          Linking.openURL(`https://web.telegram.org/post?phone=${phoneForLink}`);
+        }
+      }).catch(err => console.error("Couldn't load page", err));
     }
   };
 
@@ -113,7 +104,21 @@ export default function TeacherCard({ user, onPress }: TeacherCardProps) {
         }} 
         onPress={handlePress}
       >
-        <Image source={profileImage} style={{ width: 60, height: 60, borderRadius: 30, marginRight: 16 }} />
+        <ProfileAvatar 
+          imageUrl={user.profile_image_url} 
+          containerStyle={{ 
+            width: 60, 
+            height: 60, 
+            borderRadius: 999, 
+            marginRight: 16, 
+            marginTop: 0,
+            borderWidth: 2,
+            borderColor: "#F1F5F9",
+            elevation: 4,
+            shadowOpacity: 0.1,
+            alignSelf: "center",
+          }} 
+        />
         <View style={{ flex: 1 }}>
           <Text style={{ fontSize: 17, fontWeight: "700", color: "#1E293B", letterSpacing: 0.2 }}>
             {user.first_name} {user.last_name}
@@ -127,7 +132,7 @@ export default function TeacherCard({ user, onPress }: TeacherCardProps) {
           </View>
           <Text style={{ fontSize: 13, color: "#94A3B8", marginTop: 6 }}>{user.school_name || "N/A"}</Text>
         </View>
-        <View style={{ backgroundColor: "#F8FAFC", padding: 8, borderRadius: 20 }}>
+        <View style={{ padding: 8, borderRadius: 20 }}>
           <Image
             source={require("../../assets/chevron_icons/chevron_right.png")}
             style={{ width: 14, height: 14, tintColor: "#64748B" }}
@@ -166,9 +171,22 @@ export default function TeacherCard({ user, onPress }: TeacherCardProps) {
             >
               <View style={{ width: 40, height: 4, backgroundColor: "#E2E8F0", borderRadius: 2, marginBottom: 24 }} />
               
-              <Image 
-                source={profileImage}
-                style={{ width: 100, height: 100, borderRadius: 50, marginBottom: 16, borderWidth: 4, borderColor: "#F1F5F9" }}
+              <ProfileAvatar 
+                imageUrl={user.profile_image_url}
+                containerStyle={{ 
+                  width: 80, 
+                  height: 80, 
+                  borderRadius: 40, 
+                  marginBottom: 16, 
+                  borderWidth: 4, 
+                  borderColor: "#F8FAFC", 
+                  marginTop: 0,
+                  elevation: 8,
+                  shadowColor: "#000",
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.15,
+                  shadowRadius: 12
+                }}
               />
               <Text style={{ fontSize: 22, fontWeight: "800", color: "#1E293B" }}>{user.first_name} {user.last_name}</Text>
               <Text style={{ fontSize: 14, fontWeight: "600", color: "#64748B", marginTop: 4, textTransform: "uppercase", letterSpacing: 1 }}>
