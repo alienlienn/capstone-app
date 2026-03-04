@@ -232,8 +232,8 @@ async def upload_avatar(db: db_dependency, user_id: int, file: UploadFile = File
     with open(file_path, "wb") as f:
         shutil.copyfileobj(file.file, f)
 
-    # Store relative path
-    user.profile_image_url = f"/uploads/{filename}"
+    # Store path as "uploads/filename" without leading slash for easier resolution
+    user.profile_image_url = f"uploads/{filename}"
     db.add(user)
     db.commit()
     db.refresh(user)
