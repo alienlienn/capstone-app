@@ -6,4 +6,5 @@ if (!API_BASE_URL) {
 
 export const ENV = {
   API_BASE_URL,
+  APP_BASE_URL: API_BASE_URL.replace(":8000", ":8081"),
 };

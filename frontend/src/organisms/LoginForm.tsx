@@ -8,6 +8,7 @@ import { LoginRequest } from "../types/types";
 import { styles } from "../styles/styles";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import ForgotPasswordModal from "../molecules/ForgotPasswordModal";
 
 
 function LoginForm() {
@@ -16,6 +17,7 @@ function LoginForm() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isForgotPasswordVisible, setIsForgotPasswordVisible] = useState(false);
 
   const handleLogin = async () => {
     const payload: LoginRequest = { email, password };
@@ -35,9 +37,9 @@ function LoginForm() {
     }
   };
 
-  const handleForgotPassword = async () => {
-    console.log("forgot pwd clicked")
-  }
+  const handleForgotPassword = () => {
+    setIsForgotPasswordVisible(true);
+  };
 
   return (
     <View style={styles.loginFormContainer}>
@@ -56,6 +58,11 @@ function LoginForm() {
       <LinkText 
         linkTitle="Forgot Password?" 
         onPressLink={handleForgotPassword}
+      />
+
+      <ForgotPasswordModal 
+        visible={isForgotPasswordVisible} 
+        onClose={() => setIsForgotPasswordVisible(false)} 
       />
 
       {errorMessage && (

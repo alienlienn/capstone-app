@@ -63,3 +63,18 @@ export async function fetchAdminsBySchool(userId: number) {
 
   return response.json();
 }
+
+export async function forgotPassword(email: string) {
+  const response = await fetch(`${ENV.API_BASE_URL}/account/forgot_password`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.detail || "Failed to send reset link");
+  }
+
+  return response.json();
+}
