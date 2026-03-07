@@ -92,7 +92,7 @@ async def forgot_password(request: ForgotPasswordRequest, db: db_dependency):
 
     reset_token = str(uuid.uuid4())
     
-    frontend_base_url = "http://192.168.1.229:8081" 
+    frontend_base_url = "http://192.168.1.238:8081" 
     reset_link = f"{frontend_base_url}/reset-password?token={reset_token}&email={user.email}"
 
     SMTP_SERVER = "smtp.gmail.com"
@@ -244,6 +244,12 @@ async def upload_avatar(db: db_dependency, user_id: int, file: UploadFile = File
 # GET request - fetch relevant contacts (Admins & Student's Teachers)
 @router.get("/get_contacts/{user_id}", status_code=status.HTTP_200_OK)
 async def get_contacts(user_id: int, db: db_dependency):
+    # 0. Get the current user's role
+    current_user_acc = db.query(UserAccount).filter(UserAccount.id == user_id).first()
+    if not current_user_acc:
+        return []
+    user_role = current_user_acc.role
+
     # 1. Identify all students associated with the parent (user_id)
     parent = db.query(Parent).filter(Parent.user_id == user_id).first()
     
@@ -286,24 +292,71 @@ async def get_contacts(user_id: int, db: db_dependency):
             }
 
     # 2. Get all Admins for all relevant schools
-    for sid in school_ids:
-        # Expire any existing objects to ensure we get fresh data from DB
-        db.expire_all()
-        admins = db.query(UserAccount, Teacher, School.school_name)\
-            .join(Teacher, Teacher.user_id == UserAccount.id)\
-            .join(School, School.id == Teacher.school_id)\
-            .filter(Teacher.school_id == sid)\
-            .filter(UserAccount.role == UserRole.ADMIN).all()
-        add_to_contacts(admins)
+    # Only if the user is a 'user' (parent) role
+    if user_role == UserRole.USER:
+        for sid in school_ids:
+            # Expire any existing objects to ensure we get fresh data from DB
+            db.expire_all()
+            admins = db.query(UserAccount, Teacher, School.school_name)\
+                .join(Teacher, Teacher.user_id == UserAccount.id)\
+                .join(School, School.id == Teacher.school_id)\
+                .filter(Teacher.school_id == sid)\
+                .filter(UserAccount.role == UserRole.ADMIN).all()
+            add_to_contacts(admins)
 
     # 3. Get all Teachers assigned to all associated students
-    for stid in student_ids:
-        db.expire_all()
-        student_teachers = db.query(UserAccount, Teacher, School.school_name)\
-            .join(Teacher, Teacher.user_id == UserAccount.id)\
-            .join(School, School.id == Teacher.school_id)\
-            .join(TeacherStudent, TeacherStudent.teacher_id == Teacher.id)\
-            .filter(TeacherStudent.student_id == stid).all()
-        add_to_contacts(student_teachers)
+    # Only if the user is a 'user' (parent) role
+    if user_role == UserRole.USER:
+        for stid in student_ids:
+            db.expire_all()
+            student_teachers = db.query(UserAccount, Teacher, School.school_name)\
+                .join(Teacher, Teacher.user_id == UserAccount.id)\
+                .join(School, School.id == Teacher.school_id)\
+                .join(TeacherStudent, TeacherStudent.teacher_id == Teacher.id)\
+                .filter(TeacherStudent.student_id == stid).all()
+            add_to_contacts(student_teachers)
+
+    # 4. If the user is a teacher or admin, get parents of their students
+    if user_role != UserRole.USER:
+        teacher_record = db.query(Teacher).filter(Teacher.user_id == user_id).first()
+        if teacher_record:
+            # Get students assigned to this teacher
+            my_student_links = db.query(TeacherStudent).filter(TeacherStudent.teacher_id == teacher_record.id).all()
+            my_student_ids = [link.student_id for link in my_student_links]
+            
+            if my_student_ids:
+                # 1. Get all unique parents for these students who have the 'user' role
+                # We first get the parent user details
+                relevant_parents = db.query(UserAccount, Parent, School.school_name)\
+                    .join(Parent, Parent.user_id == UserAccount.id)\
+                    .join(ParentStudent, ParentStudent.parent_id == Parent.id)\
+                    .join(Student, Student.id == ParentStudent.student_id)\
+                    .join(School, School.id == Student.school_id)\
+                    .filter(ParentStudent.student_id.in_(my_student_ids))\
+                    .filter(UserAccount.role == UserRole.USER).distinct().all()
+                
+                for user, parent, school_name in relevant_parents:
+                    # 2. For EACH parent, find ALL their students (not just the ones assigned to this teacher)
+                    # OR if you preferred only the ones assigned to this teacher, use my_student_ids.
+                    # The user example suggests showing all kids (Aiden, Sophie).
+                    
+                    all_parent_students = db.query(Student.first_name)\
+                        .join(ParentStudent, ParentStudent.student_id == Student.id)\
+                        .filter(ParentStudent.parent_id == parent.id).all()
+                    
+                    student_names_list = [s[0] for s in all_parent_students]
+                    student_names_str = ", ".join(student_names_list)
+
+                    contact_map[user.id] = {
+                        "id": user.id,
+                        "first_name": user.first_name,
+                        "last_name": user.last_name,
+                        "email": user.email,
+                        "profile_image_url": user.profile_image_url,
+                        "mobile_number": user.mobile_number,
+                        "school_name": school_name,
+                        "school_role": "Parent",
+                        "student_names": student_names_str,
+                    }
 
     return list(contact_map.values())

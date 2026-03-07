@@ -45,6 +45,8 @@ class SubjectCategoryEnum(str, Enum):
     OTHERS = "others"
 
 class TermEnum(str, Enum):
+    AY2025_T3 = "AY2025 Term 3"
+    AY2025_T4 = "AY2025 Term 4"
     AY2026_T1 = "AY2026 Term 1"
     AY2026_T2 = "AY2026 Term 2"
     AY2026_T3 = "AY2026 Term 3"
