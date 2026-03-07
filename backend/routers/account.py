@@ -320,43 +320,40 @@ async def get_contacts(user_id: int, db: db_dependency):
     if user_role != UserRole.USER:
         teacher_record = db.query(Teacher).filter(Teacher.user_id == user_id).first()
         if teacher_record:
-            # Get students assigned to this teacher
-            my_student_links = db.query(TeacherStudent).filter(TeacherStudent.teacher_id == teacher_record.id).all()
-            my_student_ids = [link.student_id for link in my_student_links]
+            # We need to filter students and their parents based on the logged-in user's school_id
+            my_school_id = teacher_record.school_id
             
-            if my_student_ids:
-                # 1. Get all unique parents for these students who have the 'user' role
-                # We first get the parent user details
-                relevant_parents = db.query(UserAccount, Parent, School.school_name)\
-                    .join(Parent, Parent.user_id == UserAccount.id)\
-                    .join(ParentStudent, ParentStudent.parent_id == Parent.id)\
-                    .join(Student, Student.id == ParentStudent.student_id)\
-                    .join(School, School.id == Student.school_id)\
-                    .filter(ParentStudent.student_id.in_(my_student_ids))\
-                    .filter(UserAccount.role == UserRole.USER).distinct().all()
+            # 1. Get all unique parents who have students in the SAME school as the logged-in user
+            # and who have the 'user' role
+            relevant_parents = db.query(UserAccount, Parent, School.school_name)\
+                .select_from(UserAccount)\
+                .join(Parent, Parent.user_id == UserAccount.id)\
+                .join(ParentStudent, ParentStudent.parent_id == Parent.id)\
+                .join(Student, Student.id == ParentStudent.student_id)\
+                .join(School, School.id == Student.school_id)\
+                .filter(Student.school_id == my_school_id)\
+                .filter(UserAccount.role == UserRole.USER).distinct().all()
+            
+            for user, parent, school_name in relevant_parents:
+                # 2. For EACH parent, find ONLY their students that belong to the SAME school as the logged-in user
+                matching_school_students = db.query(Student.first_name)\
+                    .join(ParentStudent, ParentStudent.student_id == Student.id)\
+                    .filter(ParentStudent.parent_id == parent.id)\
+                    .filter(Student.school_id == my_school_id).all()
                 
-                for user, parent, school_name in relevant_parents:
-                    # 2. For EACH parent, find ALL their students (not just the ones assigned to this teacher)
-                    # OR if you preferred only the ones assigned to this teacher, use my_student_ids.
-                    # The user example suggests showing all kids (Aiden, Sophie).
-                    
-                    all_parent_students = db.query(Student.first_name)\
-                        .join(ParentStudent, ParentStudent.student_id == Student.id)\
-                        .filter(ParentStudent.parent_id == parent.id).all()
-                    
-                    student_names_list = [s[0] for s in all_parent_students]
-                    student_names_str = ", ".join(student_names_list)
+                student_names_list = [s[0] for s in matching_school_students]
+                student_names_str = ", ".join(student_names_list)
 
-                    contact_map[user.id] = {
-                        "id": user.id,
-                        "first_name": user.first_name,
-                        "last_name": user.last_name,
-                        "email": user.email,
-                        "profile_image_url": user.profile_image_url,
-                        "mobile_number": user.mobile_number,
-                        "school_name": school_name,
-                        "school_role": "Parent",
-                        "student_names": student_names_str,
-                    }
+                contact_map[user.id] = {
+                    "id": user.id,
+                    "first_name": user.first_name,
+                    "last_name": user.last_name,
+                    "email": user.email,
+                    "profile_image_url": user.profile_image_url,
+                    "mobile_number": user.mobile_number,
+                    "school_name": school_name,
+                    "school_role": "Parent",
+                    "student_names": student_names_str,
+                }
 
     return list(contact_map.values())
