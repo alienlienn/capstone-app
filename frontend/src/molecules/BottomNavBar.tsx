@@ -17,7 +17,7 @@ const TABS: TabItem[] = [
     route: "Home",
   },
   {
-    label: "Contact Us",
+    label: "Contacts",
     icon: require("../../assets/contact_us_icon.png"),
     route: "ContactUs",
   },
@@ -35,13 +35,8 @@ function BottomNavbar({ route }: { route: any }) {
   const loggedInUser = (global as any).loggedInUser;
   const userRole = loggedInUser?.role;
 
-  // Filter out "Contact Us" for admins
-  const filteredTabs = TABS.filter(tab => {
-    if (tab.route === "ContactUs" && userRole === "admin") {
-      return false;
-    }
-    return true;
-  });
+  // Show all tabs for everyone. Filter removed to allow admins/super_admins to see "Contact Us"
+  const filteredTabs = TABS;
 
   return (
     <View style={styles.navBarContainer}>

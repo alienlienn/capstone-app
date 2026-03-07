@@ -75,7 +75,7 @@ export default function BulkUploadModal({ visible, onClose, onUploadSuccess }: B
                 }
               }}
             >
-              <Text style={localStyles.templateLinkText}>Download Structure Template</Text>
+              <Text style={localStyles.templateLinkText}>Download Results Template</Text>
             </Pressable>
 
             <Pressable 

@@ -123,14 +123,18 @@ export default function TeacherCard({ user, onPress }: TeacherCardProps) {
           <Text style={{ fontSize: 17, fontWeight: "700", color: "#1E293B", letterSpacing: 0.2 }}>
             {user.first_name} {user.last_name}
           </Text>
-          <View style={{ flexDirection: "row", alignItems: "center", marginTop: 4 }}>
-            <View style={{ backgroundColor: "#F1F5F9", paddingHorizontal: 8, paddingVertical: 2, borderRadius: 6 }}>
-              <Text style={{ fontSize: 11, fontWeight: "600", color: "#64748B", textTransform: "uppercase" }}>
-                {user.school_role || "Admin"}
-              </Text>
+          {user.school_role !== "Parent" && (
+            <View style={{ flexDirection: "row", alignItems: "center", marginTop: 4 }}>
+              <View style={{ backgroundColor: "#F1F5F9", paddingHorizontal: 8, paddingVertical: 2, borderRadius: 6 }}>
+                <Text style={{ fontSize: 11, fontWeight: "600", color: "#64748B", textTransform: "uppercase" }}>
+                  {user.school_role || "Admin"}
+                </Text>
+              </View>
             </View>
-          </View>
-          <Text style={{ fontSize: 13, color: "#94A3B8", marginTop: 6 }}>{user.school_name || "N/A"}</Text>
+          )}
+          {user.school_role !== "Parent" && (
+            <Text style={{ fontSize: 13, color: "#94A3B8", marginTop: 6 }}>{user.school_name || "N/A"}</Text>
+          )}
         </View>
         <View style={{ padding: 8, borderRadius: 20 }}>
           <Image
@@ -189,10 +193,18 @@ export default function TeacherCard({ user, onPress }: TeacherCardProps) {
                 }}
               />
               <Text style={{ fontSize: 22, fontWeight: "800", color: "#1E293B" }}>{user.first_name} {user.last_name}</Text>
-              <Text style={{ fontSize: 14, fontWeight: "600", color: "#64748B", marginTop: 4, textTransform: "uppercase", letterSpacing: 1 }}>
-                {user.school_role || "Admin"}
-              </Text>
-              <Text style={{ fontSize: 15, color: "#94A3B8", marginTop: 4 }}>{user.school_name || "N/A"}</Text>
+              {user.school_role !== "Parent" ? (
+                <>
+                  <Text style={{ fontSize: 14, fontWeight: "600", color: "#64748B", marginTop: 4, textTransform: "uppercase", letterSpacing: 1 }}>
+                    {user.school_role || "Admin"}
+                  </Text>
+                  <Text style={{ fontSize: 15, color: "#94A3B8", marginTop: 4 }}>{user.school_name || "N/A"}</Text>
+                </>
+              ) : (
+                <Text style={{ fontSize: 15, color: "#64748B", marginTop: 4, fontWeight: "500" }}>
+                  Parent of {user.student_names || "N/A"}
+                </Text>
+              )}
               
               <View style={{ marginTop: 32, width: "100%" }}>
                 <View style={{ gap: 12 }}>
@@ -207,9 +219,13 @@ export default function TeacherCard({ user, onPress }: TeacherCardProps) {
                       alignItems: "center",
                       justifyContent: "center",
                       opacity: pressed ? 0.8 : 1,
-                      gap: 10
+                      gap: 12
                     })}
                   >
+                    <Image 
+                      source={require("../../assets/telegram_icon.png")} 
+                      style={{ width: 18, height: 18, tintColor: "#FFFFFF", marginRight: -2}} 
+                    />
                     <Text style={{ color: "#FFFFFF", fontWeight: "700", fontSize: 16 }}>Message on Telegram</Text>
                   </Pressable>
 
@@ -224,10 +240,14 @@ export default function TeacherCard({ user, onPress }: TeacherCardProps) {
                       alignItems: "center",
                       justifyContent: "center",
                       opacity: pressed ? 0.8 : 1,
-                      gap: 10
+                      gap: 12
                     })}
                   >
-                    <Text style={{ color: "#FFFFFF", fontWeight: "700", fontSize: 16 }}>Send Outlook Email</Text>
+                    <Image 
+                      source={require("../../assets/mail_icon.png")} 
+                      style={{ width: 18, height: 18, tintColor: "#FFFFFF", marginRight: -2 }} 
+                    />
+                    <Text style={{ color: "#FFFFFF", fontWeight: "700", fontSize: 16 }}>Contact via Mail</Text>
                   </Pressable>
                 </View>
               </View>

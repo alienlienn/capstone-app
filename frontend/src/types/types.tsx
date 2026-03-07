@@ -196,6 +196,7 @@ export type User = {
   school_id?: number;
   school_name?: string;
   school_role?: string;
+  student_names?: string;
 };
 
 export interface TeacherCardProps {

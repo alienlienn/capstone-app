@@ -204,7 +204,9 @@ export default function StudentResultView({ summary: initialSummary, results: in
           <View style={localStyles.summaryCard}>
             <Text style={localStyles.cardLabel}>Overall Average</Text>
             <View style={localStyles.averageContainer}>
-              <Text style={localStyles.averageValue}>{summary?.overall_percentage ?? "0"}%</Text>
+              <Text style={localStyles.averageValue}>
+                {summary?.overall_percentage ? summary.overall_percentage.toFixed(1) : "0.0"}%
+              </Text>
             </View>
             <View style={localStyles.progressBarContainer}>
               <View style={[localStyles.progressBar, { width: `${summary?.overall_percentage ?? 0}%` as DimensionValue }]} />
@@ -240,7 +242,7 @@ export default function StudentResultView({ summary: initialSummary, results: in
                 </View>
               ) : (
                 <View style={[localStyles.topPercentBadge, { backgroundColor: "#F1F8E9" }]}>
-                  <Text style={[localStyles.topPercentText, { color: "#558B2F" }]}>💪 Good Effort</Text>
+                  <Text style={[localStyles.topPercentText, { color: "#558B2F" }]}>💪 Solid</Text>
                 </View>
               )
             )}

@@ -34,6 +34,9 @@ const ContactUsForm = ({ userId }: ContactUsFormProps) => {
     }
   }, [userId]);
 
+  const currentUser = (global as any).loggedInUser;
+  const userRole = currentUser?.role;
+
   const handleSearch = (text: string) => {
     setSearchQuery(text);
     const filtered = admins.filter((admin) => {
@@ -51,6 +54,9 @@ const ContactUsForm = ({ userId }: ContactUsFormProps) => {
     );
   }
 
+  const placeholderText = userRole === 'user' ? "Search Teachers..." : "Search Parents...";
+  const emptyListText = userRole === 'user' ? "No Teachers found." : "No Parents found.";
+
   return (
     <SafeAreaView 
       style={{ flex: 1, width: "95%", alignSelf: "center", paddingTop: 16 }}
@@ -58,7 +64,7 @@ const ContactUsForm = ({ userId }: ContactUsFormProps) => {
     >
       <UserInput
         inputValue={searchQuery}
-        placeholder="Search teachers..."
+        placeholder={placeholderText}
         onChangeInputText={handleSearch}
         rightIconSource={require("../../assets/search_icon.png")}
       />
@@ -74,7 +80,7 @@ const ContactUsForm = ({ userId }: ContactUsFormProps) => {
         )}
         ListEmptyComponent={
           <Text style={{ textAlign: "center", marginTop: 20, color: "#666" }}>
-            No Teachers found.
+            {emptyListText}
           </Text>
         }
       />
