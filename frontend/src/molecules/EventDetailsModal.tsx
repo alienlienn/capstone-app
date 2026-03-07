@@ -51,6 +51,23 @@ export default function EventDetailsModal({ visible, event, onClose }: EventDeta
     });
   };
 
+  const isCompleted = () => {
+    if (!event) return false;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const parseDate = (dStr: string) => {
+      if (dStr.includes("/")) {
+        const [d, m, y] = dStr.split("/").map(Number);
+        return new Date(y, m - 1, d);
+      }
+      return new Date(dStr);
+    };
+
+    const endDate = parseDate(event.endDate || event.startDate);
+    return endDate < today;
+  };
+
   return (
     <Modal 
       visible={visible} 
@@ -96,9 +113,18 @@ export default function EventDetailsModal({ visible, event, onClose }: EventDeta
 
             {event && (
               <ScrollView showsVerticalScrollIndicator={false}>
-                <Text style={{ fontSize: 22, fontWeight: "800", color: "#1E293B", marginBottom: 20 }}>
-                  {event.title}
-                </Text>
+                <View style={{ flexDirection: "row", alignItems: "baseline", marginBottom: 20, flexWrap: "wrap" }}>
+                  <Text style={{ fontSize: 22, fontWeight: "800", color: "#1E293B", marginRight: 8, textAlignVertical: 'bottom' }}>
+                    {event.title}
+                  </Text>
+                  {isCompleted() && (
+                    <View style={{ backgroundColor: "#F1F5F9", paddingHorizontal: 8, paddingVertical: 2, borderRadius: 4, borderWidth: 1, borderColor: "#CBD5E1", alignSelf: 'center', marginTop: 11 }}>
+                      <Text style={{ fontSize: 11, fontWeight: "700", color: "#64748B", textTransform: "uppercase" }}>
+                        Completed
+                      </Text>
+                    </View>
+                  )}
+                </View>
 
                 {event.description && (
                   <View style={{ marginBottom: 20 }}>

@@ -5,6 +5,7 @@ import EventListCard from "../molecules/EventListCard";
 import EventDetailsModal from "../molecules/EventDetailsModal";
 import { CalendarViewProps, Day, CalendarEvent } from "../types/types";
 import { calendarStyles, calendarTheme, calendarMarkedDates } from "../styles/calendarstyles";
+import { colors } from "../styles/colors";
 import EventTypeLegend from "../molecules/EventTypeLegend";
 import { styles } from "../styles/styles";
 
@@ -55,6 +56,7 @@ export default function CalendarView({ month, year, events }: CalendarViewProps)
   const [selectedDate, setSelectedDate] = useState(todayString);
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
   const [showEventModal, setShowEventModal] = useState(false);
+  const [highlightDate, setHighlightDate] = useState<string | null>(null);
 
   const currentMonth = month !== undefined ? month + 1 : today.getMonth() + 1;
   const currentYear = year ?? today.getFullYear();
@@ -63,6 +65,34 @@ export default function CalendarView({ month, year, events }: CalendarViewProps)
   const lastDayString = `${currentYear}-${String(currentMonth).padStart(2, "0")}-${String(lastDayOfMonth.getDate()).padStart(2, "0")}`;
 
   const expandedEvents = expandEventsByDateRange(events ?? []);
+  
+  const onDayPress = (day: Day) => {
+    const clickedDate = day.dateString;
+    setSelectedDate(clickedDate);
+
+    // Filter events for this specific date
+    const eventsOnDay = expandedEvents.filter(e => e.startDate === clickedDate);
+    
+    if (eventsOnDay.length > 0) {
+      // If it's a past date, open the modal for the first event
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const [y, m, d] = clickedDate.split("-").map(Number);
+      const dateObj = new Date(y, m - 1, d);
+
+      if (dateObj < today) {
+        setSelectedEvent(eventsOnDay[0]);
+        setShowEventModal(true);
+      } else {
+        // For current/future dates, just highlight
+        setHighlightDate(clickedDate);
+        setTimeout(() => {
+          setHighlightDate(null);
+        }, 1000);
+      }
+    }
+  };
+
   const todayEvents: CalendarEvent[] = expandedEvents
     .filter(e => e.startDate === todayString)
     .sort((a, b) => a.startDate.localeCompare(b.startDate));
@@ -75,9 +105,57 @@ export default function CalendarView({ month, year, events }: CalendarViewProps)
       {/* Legend is now only rendered in ChildCalendarSection for both views */}
       <Calendar
         current={`${currentYear}-${String(currentMonth).padStart(2, "0")}-01`}
-        onDayPress={(day: Day) => setSelectedDate(day.dateString)}
+        onDayPress={onDayPress}
         markingType="multi-dot"
         markedDates={calendarMarkedDates(selectedDate, todayString, events)}
+        dayComponent={({ date, state, marking, onPress }: any) => {
+          const isToday = todayString === date.dateString;
+          const isSelected = selectedDate === date.dateString;
+          const isDisabled = state === "disabled";
+          const hasDots = marking?.dots && marking.dots.length > 0;
+          
+          return (
+            <View style={{ width: 36, height: 44, alignItems: "center", justifyContent: "flex-start" }}>
+              <View 
+                style={[
+                  { width: 36, height: 36, borderRadius: 18, justifyContent: "center", alignItems: "center" },
+                  marking?.customStyles?.container,
+                  isSelected && { backgroundColor: marking.selectedColor || colors.gray_200 },
+                ]}
+              >
+                <Text 
+                  onPress={() => onPress(date)}
+                  style={[
+                    { fontSize: 12, color: colors.gray_600 },
+                    marking?.customStyles?.text,
+                    isToday && { color: colors.primary_600, fontWeight: "700" },
+                    isSelected && { color: marking.selectedTextColor || colors.gray_800 },
+                    isDisabled && { color: "#d9e1e8" }
+                  ]}
+                >
+                  {date.day}
+                </Text>
+              </View>
+              
+              <View style={{ flexDirection: "row", marginTop: -11, height: 8, alignItems: "center", justifyContent: "center" }}>
+                {hasDots && (
+                  marking.dots.map((dot: any, index: number) => (
+                    <View 
+                      key={index} 
+                      style={{ 
+                        width: 4, 
+                        height: 4, 
+                        borderRadius: 2, 
+                        backgroundColor: dot.color, 
+                        marginHorizontal: 1 
+                      }} 
+                    />
+                  ))
+                )}
+              </View>
+            </View>
+          );
+        }}
         theme={calendarTheme}
         style={calendarStyles.calendarComponent}
       />
@@ -99,6 +177,7 @@ export default function CalendarView({ month, year, events }: CalendarViewProps)
                 venue={event.venue}
                 startTime={event.startTime}
                 endTime={event.endTime}
+                highlighted={highlightDate === event.startDate}
                 onPress={() => {
                   setSelectedEvent(event);
                   setShowEventModal(true);
@@ -119,6 +198,7 @@ export default function CalendarView({ month, year, events }: CalendarViewProps)
                 venue={event.venue}
                 startTime={event.startTime}
                 endTime={event.endTime}
+                highlighted={highlightDate === event.startDate}
                 onPress={() => {
                   setSelectedEvent(event);
                   setShowEventModal(true);

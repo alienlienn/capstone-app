@@ -11,7 +11,8 @@ function UserInput({
   inputStyle,
   rightIconSource,
   onPressRightIcon,
-  rightIconStyle }: UserInputProps & { containerStyle?: any; inputStyle?: any }) {
+  rightIconStyle,
+  multiline = false }: UserInputProps & { containerStyle?: any; inputStyle?: any; multiline?: boolean }) {
 
   return (
     <View style={[styles.userInputContainer, containerStyle]}>
@@ -21,6 +22,7 @@ function UserInput({
         onChangeText={onChangeInputText}
         secureTextEntry={secureInputTextEntry}
         style={[styles.userInputText, inputStyle]}
+        multiline={multiline}
       />
       {rightIconSource && (
         <Pressable onPress={onPressRightIcon}>

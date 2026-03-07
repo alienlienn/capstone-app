@@ -1,6 +1,8 @@
-import { Pressable, View, Text, Image } from "react-native";
+import { useEffect, useRef } from "react";
+import { Pressable, View, Text, Image, Animated } from "react-native";
 import { EventListCardProps } from "../types/types";
 import { styles } from "../styles/styles";
+import { colors } from "../styles/colors";
 
 
 function formatDayMonth(dateStr: string) {
@@ -10,15 +12,59 @@ function formatDayMonth(dateStr: string) {
   return { day, month };
 }
 
-export default function EventListCard({ date, title, venue, startTime, endTime, onPress }: EventListCardProps) {
+export default function EventListCard({ date, title, venue, startTime, endTime, onPress, highlighted }: EventListCardProps) {
   const { day, month } = formatDayMonth(date);
   const isTimeMissing = !startTime || !endTime || (startTime === "00:00" && endTime === "00:00");
   const timeString = isTimeMissing ? "Not Specified" : `${startTime} - ${endTime}`;
 
   const venueString = venue || null;
 
+  // Animation logic for smooth fade
+  const animatedValue = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (highlighted) {
+      // Instant highlight
+      Animated.timing(animatedValue, {
+        toValue: 1,
+        duration: 0,
+        useNativeDriver: false,
+      }).start();
+    } else {
+      // Smooth fade out
+      Animated.timing(animatedValue, {
+        toValue: 0,
+        duration: 600,
+        useNativeDriver: false,
+      }).start();
+    }
+  }, [highlighted]);
+
+  const backgroundColor = animatedValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: [colors.gray_50, colors.primary_50],
+  });
+
+  const borderColor = animatedValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: [colors.gray_50, colors.primary_300],
+  });
+
   return (
-    <Pressable style={styles.eventListCardContainer} onPress={onPress}>
+    <Animated.View
+      style={[
+        styles.eventListCardContainer,
+        {
+          backgroundColor,
+          borderColor,
+          borderWidth: 1,
+        }
+      ]}
+    >
+      <Pressable 
+        style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }} 
+        onPress={onPress}
+      >
       <View style={styles.eventListCardDateBox}>
         <Text style={styles.eventListCardDateBoxDay}>{day}</Text>
         <Text style={styles.eventListCardDateBoxMonth}>{month}</Text>
@@ -63,10 +109,11 @@ export default function EventListCard({ date, title, venue, startTime, endTime, 
         )}
       </View>
 
-      <Image
+      <Animated.Image
         source={require("../../assets/chevron_icons/chevron_right.png")}
         style={styles.eventListCardChevron}
       />
-    </Pressable>
+      </Pressable>
+    </Animated.View>
   );
 }

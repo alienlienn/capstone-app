@@ -183,8 +183,9 @@ export default function EditEventForm() {
             inputValue={description}
             placeholder="Enter description"
             onChangeInputText={setDescription}
-            containerStyle={{ height: 80 }}
-            inputStyle={{ textAlignVertical: "top", paddingTop: 8 }}
+            containerStyle={{ height: 80, alignItems: "flex-start" }}
+            inputStyle={{ textAlignVertical: "top", paddingTop: 12 }}
+            multiline={true}
           />
         </Field>
 

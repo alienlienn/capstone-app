@@ -171,7 +171,9 @@ export default function CreateEventForm() {
             inputValue={description}
             placeholder="Event description"
             onChangeInputText={setDescription}
-            containerStyle={{ height: 80 }}
+            containerStyle={{ height: 80, alignItems: "flex-start" }}
+            inputStyle={{ textAlignVertical: "top", paddingTop: 12 }}
+            multiline={true}
           />
         </Field>
 

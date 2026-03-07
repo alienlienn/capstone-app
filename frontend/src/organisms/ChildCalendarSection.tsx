@@ -89,7 +89,8 @@ export default function ChildCalendarSection({ refreshKey }: { refreshKey?: numb
         } else if (currentUser.school_id) {
           fetchedEvents = await fetchEventsBySchoolId(currentUser.school_id);
         }
-      } else if (currentUser && currentUser.school_id) {
+      } else if (currentUser && (currentUser.role === "admin" || currentUser.school_id)) {
+        // For admins and staff, fetch events for their school
         fetchedEvents = await fetchEventsBySchoolId(currentUser.school_id);
       }
       

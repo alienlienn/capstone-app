@@ -65,6 +65,17 @@ export const calendarTheme: CalendarProps["theme"] = {
 
   dotColor: colors.event_default,
   selectedDotColor: colors.event_default,
+
+  // Reduce vertical gap between lines of dates
+  // @ts-ignore
+  "stylesheet.calendar.main": {
+    week: {
+      marginTop: 2,
+      marginBottom: 2,
+      flexDirection: "row",
+      justifyContent: "space-around",
+    },
+  },
 }
 
 
@@ -75,7 +86,11 @@ type CustomMarkedDate = {
   };
   dots?: Array<{ key: string; color: string }>;
   selected?: boolean;
+  selectedColor?: string;
+  selectedTextColor?: string;
   activeOpacity?: number;
+  // Custom property to handle dash logic
+  isNoEvent?: boolean;
 };
 
 type CalendarMarkedDates = {
@@ -132,24 +147,34 @@ export const calendarMarkedDates = (selectedDate: string, todayString: string, e
 
   // Always mark selected date (whether it's today or not)
   const selectedTypes = eventTypeMap.get(selectedDate) ?? [];
-  const selectedDots = selectedTypes.slice(0, 3).map((t, i) => ({ key: `event${i + 1}`, color: eventTypeColor(t) }));
+  const selectedDots = selectedTypes.slice(0, 3).map((t, i) => ({ key: `event${i + 1}`, color: eventTypeColor(t) })); // Use original event colors
 
   // Selected date styling - filled background with primary color
   marked[selectedDate] = {
+    selected: true,
+    selectedColor: colors.primary_100,
+    selectedTextColor: colors.primary_600,
+    // When no dots, the native background can look shifted. 
+    // We combine native selection with centering offsets to ensure visual balance.
     customStyles: {
       container: {
-        backgroundColor: colors.primary_600,
-        borderRadius: 999,
+        width: 36,
+        height: 36,
+        borderRadius: 18,
         alignSelf: "center",
         justifyContent: "center",
-        borderWidth: 0,
+        alignItems: "center",
+        borderWidth: 1,
+        borderColor: colors.primary_600,
       },
       text: {
-        color: colors.gray_50,
-        fontWeight: "700",
-      },
+        // Ensuring text is not bolded for selected date
+        fontWeight: "400",
+        textAlign: "center",
+      }
     },
     ...(selectedDots.length > 0 && { dots: selectedDots }),
+    isNoEvent: selectedDots.length === 0,
   };
 
   // Mark today if not selected
@@ -160,12 +185,8 @@ export const calendarMarkedDates = (selectedDate: string, todayString: string, e
     marked[todayString] = {
       customStyles: {
         container: {
-          backgroundColor: colors.primary_100,
-          borderRadius: 999,
-          alignSelf: "center",
-          justifyContent: "center",
-          borderWidth: 1,
-          borderColor: colors.primary_600,
+          // Remove circular background and border for today, keeping only bold text
+          backgroundColor: 'transparent',
         },
         text: {
           color: colors.primary_600,
@@ -173,6 +194,7 @@ export const calendarMarkedDates = (selectedDate: string, todayString: string, e
         },
       },
       ...(todayDots.length > 0 && { dots: todayDots }),
+      isNoEvent: todayDots.length === 0,
     };
   }
 
@@ -180,8 +202,24 @@ export const calendarMarkedDates = (selectedDate: string, todayString: string, e
   eventTypeMap.forEach((typesArr, dateStr) => {
     if (dateStr === selectedDate || dateStr === todayString) return;
     const dotsForDate = typesArr.slice(0, 3).map((t, i) => ({ key: `event${i + 1}`, color: eventTypeColor(t) }));
-    if (dotsForDate.length > 0) marked[dateStr] = { dots: dotsForDate };
+    if (dotsForDate.length > 0) {
+      marked[dateStr] = { 
+        dots: dotsForDate 
+      };
+    }
   });
+
+  // New addition: Mark ALL other dates in the month (approximately) as having No Event
+  // The calendar component only shows dates that are actually rendered, so we just need a baseline.
+  // We'll calculate the current month range to ensure at least those have the dash.
+  const [y, m] = todayString.split("-").map(Number);
+  const daysInMonth = new Date(y, m, 0).getDate();
+  for (let i = 1; i <= daysInMonth; i++) {
+    const dateStr = `${y}-${String(m).padStart(2, "0")}-${String(i).padStart(2, "0")}`;
+    if (!marked[dateStr]) {
+      marked[dateStr] = { isNoEvent: true };
+    }
+  }
 
   return marked;
 };

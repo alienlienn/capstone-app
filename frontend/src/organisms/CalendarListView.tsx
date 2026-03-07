@@ -73,6 +73,12 @@ export default function CalendarListView({ events }: { events: CalendarEvent[] }
             {grouped[date].map((event, idx) => {
               const id = event.id ? `${event.id}-${date}` : `${date}-${idx}`;
               const isExpanded = expandedId === id;
+              
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+              const eventDate = new Date(date);
+              eventDate.setHours(0, 0, 0, 0);
+              const isCompleted = eventDate < today;
             
             return (
               <Pressable 
@@ -83,7 +89,14 @@ export default function CalendarListView({ events }: { events: CalendarEvent[] }
                 <View style={[styles.eventTypeBar, { backgroundColor: eventTypeColor(event.eventType) }]} />
                 <View style={styles.eventInfo}>
                   <View style={styles.titleRow}>
-                    <Text style={styles.eventTitle}>{event.title}</Text>
+                    <View style={{ flexDirection: "row", alignItems: "center", flex: 1, flexWrap: "wrap" }}>
+                      <Text style={[styles.eventTitle, { marginRight: 8 }]}>{event.title}</Text>
+                      {isCompleted && (
+                        <View style={{ backgroundColor: "#F1F5F9", paddingHorizontal: 6, paddingVertical: 1, borderRadius: 4, borderWidth: 1, borderColor: "#CBD5E1" }}>
+                          <Text style={{ fontSize: 9, fontWeight: "700", color: "#64748B", textTransform: "uppercase" }}>Completed</Text>
+                        </View>
+                      )}
+                    </View>
                     <Image 
                       source={require("../../assets/chevron_icons/chevron_down.png")} 
                       style={[styles.chevronIcon, isExpanded && styles.chevronRotated]} 

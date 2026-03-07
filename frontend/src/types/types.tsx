@@ -216,6 +216,7 @@ export type EventListCardProps = {
   startTime?: string;
   endTime?: string;
   onPress?: () => void;
+  highlighted?: boolean;
 };
 
 export type EventDetailsModalProps = {
