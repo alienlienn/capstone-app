@@ -146,6 +146,9 @@ class Student(Base):
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ))
     updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(SINGAPORE_TZ), onupdate=lambda: datetime.now(SINGAPORE_TZ))
 
+    from sqlalchemy.orm import relationship
+    school = relationship("School")
+
 
 class Parent(Base):
     __tablename__ = "parents"

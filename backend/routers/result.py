@@ -6,8 +6,8 @@ from pydantic import BaseModel
 from typing import List, Optional
 import io
 import pandas as pd
-from sqlalchemy.orm import Session
-from models import Parent, Student, ParentStudent, Teacher, TeacherStudent, StudentResult, StudentPerformanceSummary, Subject, SubjectCategoryEnum
+from sqlalchemy.orm import Session, joinedload
+from models import School, Parent, Student, ParentStudent, Teacher, TeacherStudent, StudentResult, StudentPerformanceSummary, Subject, SubjectCategoryEnum
 
 
 router = APIRouter(prefix="/result", tags=["result"])
@@ -91,15 +91,28 @@ async def get_teacher_students(user_id: int, db: db_dependency):
 # GET request - fetch results and summary for a student by term
 @router.get("/student/{student_id}", status_code=status.HTTP_200_OK)
 async def get_student_results(student_id: int, term: str, db: db_dependency):
+    # Fetch student with school and teacher info
+    student = db.query(Student).options(joinedload(Student.school)).filter(Student.id == student_id).first()
+    if not student:
+        raise HTTPException(status_code=404, detail="Student not found")
+
     # Fetch summary
     summary = db.query(StudentPerformanceSummary).filter(
         StudentPerformanceSummary.student_id == student_id,
         StudentPerformanceSummary.term == term
     ).first()
 
-    # Fetch results with Subject Name and Category
-    results = db.query(StudentResult, Subject.subject_name, Subject.subject_category).join(
+    # Fetch results with Subject Name and Category and Teacher Name
+    results = db.query(
+        StudentResult, 
+        Subject.subject_name, 
+        Subject.subject_category,
+        Teacher.first_name,
+        Teacher.last_name
+    ).join(
         Subject, StudentResult.subject_id == Subject.id
+    ).join(
+        Teacher, StudentResult.teacher_id == Teacher.id
     ).filter(
         StudentResult.student_id == student_id,
         StudentResult.term == term
@@ -107,10 +120,16 @@ async def get_student_results(student_id: int, term: str, db: db_dependency):
 
     # Format results list
     results_list = []
-    for result, subject_name, subject_category in results:
+    teacher_name = "N/A"
+    if results:
+        # Take teacher name from the first result entry
+        _, _, _, t_first, t_last = results[0]
+        teacher_name = f"{t_first} {t_last if t_last else ''}".strip()
+
+    for result, subject_name, subject_category, _, _ in results:
         # Extract year from term string "AY2026 Term 1" -> 2026
         try:
-            year_str = result.term.split()[0][2:] # "2026"
+            year_str = result.term.value.split()[0][2:] if hasattr(result.term, 'value') else result.term.split()[0][2:]
             year_int = int(year_str)
         except:
             year_int = 0
@@ -131,7 +150,14 @@ async def get_student_results(student_id: int, term: str, db: db_dependency):
 
     return {
         "summary": summary,
-        "results": results_list
+        "results": results_list,
+        "student_info": {
+            "nric": student.nric,
+            "date_of_birth": student.date_of_birth,
+            "assigned_groups": student.assigned_groups,
+            "school_name": student.school.school_name if student.school else "N/A",
+            "teacher_name": teacher_name
+        }
     }
 
 
@@ -331,7 +357,7 @@ async def update_student_results(request: ResultsSaveRequest, db: db_dependency)
         raise HTTPException(status_code=400, detail=str(e))
     
     
-@router.get("/download_template")
+@router.get("/download_template", status_code=status.HTTP_200_OK)
 async def download_template():
     output = io.BytesIO()
     
