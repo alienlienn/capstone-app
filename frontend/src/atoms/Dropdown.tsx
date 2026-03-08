@@ -4,7 +4,7 @@ import { DropdownProps } from "../types/types";
 import { styles } from "../styles/styles";
 
 
-function Dropdown({ value, placeholder, options, onSelect, height, containerStyle, textStyle }: DropdownProps) {
+function Dropdown({ value, placeholder, options, onSelect, height, containerStyle, textStyle, disabled }: DropdownProps) {
   const [open, setOpen] = useState(false);
   const [menuPos, setMenuPos] = useState({ x: 0, y: 0, width: 0, height: 0 });
   const buttonRef = useRef<any>(null);
@@ -12,6 +12,7 @@ function Dropdown({ value, placeholder, options, onSelect, height, containerStyl
   const selectedLabel = options.find((o) => o.value === value)?.label || placeholder;
 
   const openAndMeasure = () => {
+    if (disabled) return;
     setOpen(true);
 
     requestAnimationFrame(() => {
@@ -24,12 +25,13 @@ function Dropdown({ value, placeholder, options, onSelect, height, containerStyl
   };
 
   const toggle = () => {
+    if (disabled) return;
     if (!open) openAndMeasure();
     else setOpen(false);
   };
 
   return (
-    <View style={[styles.userInputContainer, containerStyle]}>
+    <View style={[styles.userInputContainer, containerStyle, disabled && { opacity: 0.5, backgroundColor: '#F1F5F9' }]}>
       <Pressable
         ref={buttonRef}
         style={[styles.dropdownContainer, height ? { height } : {}]}

@@ -20,6 +20,7 @@ export interface DropdownProps {
   height?: number;
   containerStyle?: ViewStyle;
   textStyle?: TextStyle;
+  disabled?: boolean;
 }
 
 export interface DropdownOption {
