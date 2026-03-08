@@ -7,6 +7,11 @@ import { styles, navBarTabIcon, navBarTabLabel } from "../styles/styles";
 
 const TABS: TabItem[] = [
   {
+    label: "Dashboard",
+    icon: require("../../assets/dashboard_icon.png"),
+    route: "Dashboard",
+  },
+  {
     label: "Results",
     icon: require("../../assets/result_icon.png"),
     route: "Results",

@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback } from "react";
 import { View, StyleSheet, Text, Image, ScrollView, DimensionValue, ActivityIndicator, Alert, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useFocusEffect } from "@react-navigation/native";
+import * as Print from 'expo-print';
+import * as Sharing from 'expo-sharing';
 import { colors } from "../styles/colors";
 import { StudentPerformanceSummary, StudentResult, DropdownOption } from "../types/types";
 import { getParentStudents, fetchStudentResults } from "../services/result";
@@ -21,7 +23,17 @@ export default function StudentResultView({ summary: initialSummary, results: in
   const [students, setStudents] = useState<DropdownOption[]>([]);
   const [termOptions, setTermOptions] = useState<DropdownOption[]>([]);
   const [loading, setLoading] = useState(false);
-  const [fetchedData, setFetchedData] = useState<{summary: StudentPerformanceSummary | null, results: StudentResult[]}>({ 
+  const [fetchedData, setFetchedData] = useState<{
+    summary: StudentPerformanceSummary | null, 
+    results: StudentResult[],
+    studentInfo?: {
+      nric: string;
+      date_of_birth: string | null;
+      assigned_groups: string | null;
+      school_name: string;
+      teacher_name: string;
+    }
+  }>({ 
     summary: initialSummary || null, 
     results: initialResults || [] 
   });
@@ -78,7 +90,8 @@ export default function StudentResultView({ summary: initialSummary, results: in
 
       setFetchedData({
         summary: data.summary,
-        results: data.results || []
+        results: data.results || [],
+        studentInfo: data.student_info
       });
       setViewClicked(true);
     } catch (error: any) {
@@ -132,6 +145,175 @@ export default function StudentResultView({ summary: initialSummary, results: in
       </SafeAreaView>
     );
   }
+
+  const handlePrint = async () => {
+    try {
+      const studentName = students.find((s) => s.value === selectedStudent)?.label || "Student Name";
+      const printDate = new Date().toLocaleDateString('en-GB');
+      const studentInfo = fetchedData.studentInfo;
+      
+      const currentYear = summary?.year || new Date().getFullYear();
+      
+      // Calculate Age on 1st Jan
+      let ageOnJan1 = "--";
+      if (studentInfo?.date_of_birth) {
+        const dob = new Date(studentInfo.date_of_birth);
+        const dobYear = dob.getFullYear();
+        let age = currentYear - dobYear;
+        // If student's date_of_birth is "yyyy-01-01", add 1 to the age
+        if (dob.getMonth() === 0 && dob.getDate() === 1) {
+          age += 1;
+        }
+        ageOnJan1 = age.toString();
+      }
+
+      // Parse Class from assigned_groups (2nd item)
+      let studentClass = "--";
+      if (studentInfo?.assigned_groups) {
+        try {
+          const groups = studentInfo.assigned_groups.split(',').map(g => g.trim());
+          if (groups.length >= 2) {
+             // Example: "secondary 4-4" -> "4-4"
+             studentClass = groups[1].replace(/secondary\s+/i, '');
+          } else if (groups.length === 1) {
+             studentClass = groups[0].replace(/secondary\s+/i, '');
+          }
+        } catch (e) {
+          console.log("Error parsing groups", e);
+        }
+      }
+
+      const htmlContent = `
+        <html>
+          <head>
+            <style>
+              body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; padding: 40px; color: #000; }
+              .header { text-align: center; margin-bottom: 40px; }
+              .school-name { font-size: 24px; font-weight: bold; letter-spacing: 1px; margin: 0; text-transform: uppercase; }
+              .school-country { font-size: 16px; margin: 5px 0 20px 0; text-transform: uppercase; }
+              .report-title { font-size: 18px; font-weight: bold; margin-bottom: 30px; }
+              
+              .info-table { width: 100%; margin-bottom: 20px; font-size: 14px; border: none; }
+              .info-table td { padding: 4px; border: none; vertical-align: top; }
+              
+              .results-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px; }
+              .results-table th, .results-table td { padding: 8px; text-align: left; }
+              .results-table th { border-top: 2px solid #000; border-bottom: 1px solid #000; font-weight: bold; }
+              .results-table td { border: none; }
+              .results-table tr.last-row td { border-bottom: 2px solid #000; }
+              
+              .summary-container { display: flex; justify-content: space-between; font-size: 14px; margin-top: 10px; }
+              .summary-left, .summary-right { width: 48%; }
+              .summary-row { display: flex; margin-bottom: 5px; }
+              .summary-label { width: 150px; font-weight: bold; }
+              
+              .comments-section { margin-top: 40px; font-size: 14px; }
+              .comments-title { font-weight: bold; margin-bottom: 10px; text-decoration: underline; }
+            </style>
+          </head>
+          <body>
+            <div class="header">
+              <h1 class="school-name">${studentInfo?.school_name || 'SCHOOL NAME'}</h1>
+              <p class="school-country">SINGAPORE</p>
+              <h2 class="report-title">Examination Results</h2>
+            </div>
+
+            <table class="info-table">
+              <tr>
+                <td style="width: 150px; font-weight: bold;">Name</td>
+                <td>: <span style="text-transform: uppercase;">${studentName}</span></td>
+                <td style="width: 150px; font-weight: bold;">Date</td>
+                <td>: ${printDate}</td>
+              </tr>
+              <tr>
+                <td style="font-weight: bold;">Age on 1st Jan</td>
+                <td>: ${ageOnJan1}</td>
+                <td style="font-weight: bold;">Identification No.</td>
+                <td>: ${studentInfo?.nric || '--'}</td>
+              </tr>
+              <tr>
+                <td style="font-weight: bold;">Class</td>
+                <td>: ${studentClass}</td>
+                <td style="font-weight: bold;">S/N</td>
+                <td>: ${summary?.student_id || selectedStudent || '--'}</td>
+              </tr>
+              <tr>
+                <td style="font-weight: bold;">Class Teacher</td>
+                <td colspan="3">: <span style="text-transform: uppercase;">${studentInfo?.teacher_name || '--'}</span></td>
+              </tr>
+            </table>
+
+            <table class="results-table">
+              <thead>
+                <tr>
+                  <th>Subject</th>
+                  <th>Score</th>
+                  <th>Grade</th>
+                  <th>Remarks</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${results.map((res, i) => `
+                  <tr class="${i === results.length - 1 ? 'last-row' : ''}">
+                    <td style="text-transform: uppercase;">${res.subject}</td>
+                    <td>${res.score ?? '--'}</td>
+                    <td>${res.grade ?? '--'}</td>
+                    <td>${res.remarks ?? ''}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+
+            <div class="summary-container">
+              <div class="summary-left">
+                <div class="summary-row">
+                  <span class="summary-label">Total Mark:</span>
+                  <span>${summary?.total_marks ?? 0} / ${summary?.total_max_marks ?? 0}</span>
+                </div>
+                <div class="summary-row">
+                  <span class="summary-label">Percentage:</span>
+                  <span>${summary?.overall_percentage ? summary.overall_percentage.toFixed(1) : "0.0"}%</span>
+                </div>
+                <div class="summary-row">
+                  <span class="summary-label">Class Position:</span>
+                  <span>${summary?.class_position ?? '--'} / ${summary?.class_total ?? '--'}</span>
+                </div>
+              </div>
+              <div class="summary-right">
+                <div class="summary-row">
+                  <span class="summary-label">L1R4 Aggregate:</span>
+                  <span>${summary?.l1r4 ?? '--'}</span>
+                </div>
+                <div class="summary-row">
+                  <span class="summary-label">L1R5 Aggregate:</span>
+                  <span>${summary?.l1r5 ?? '--'}</span>
+                </div>
+                <div class="summary-row">
+                  <span class="summary-label">Attendance:</span>
+                  <span>${summary?.attendance_present ?? 0} / ${summary?.attendance_total ?? 0}</span>
+                </div>
+                <div class="summary-row">
+                  <span class="summary-label">Conduct:</span>
+                  <span style="text-transform: uppercase;">${summary?.conduct?.replace(/_/g, ' ') ?? '--'}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="comments-section">
+              <div class="comments-title">Teacher's Comments:</div>
+              <p>${summary?.teacher_comments || "No comments available for this term."}</p>
+            </div>
+          </body>
+        </html>
+      `;
+
+      const { uri } = await Print.printToFileAsync({ html: htmlContent });
+      await Sharing.shareAsync(uri);
+    } catch (error) {
+      console.error("Error printing:", error);
+      Alert.alert("Error", "Could not generate PDF");
+    }
+  };
 
   const renderSubjectRow = (res: StudentResult, index: number, isLast: boolean) => {
     // Subject color indicator tied to subject category
@@ -318,17 +500,8 @@ export default function StudentResultView({ summary: initialSummary, results: in
 
         <View style={localStyles.actionButtonsRow}>
           <Button 
-            buttonTitle="View Analytics"
-            onPressButton={() => Alert.alert("Coming Soon", "Analytics feature will be available in the next update.")}
-            buttonStyle={[localStyles.buttonContainer, { flex: 1 }]}
-            textStyle={localStyles.buttonText}
-            iconSource={require("../../assets/dashboard_icon.png")}
-            iconStyle={localStyles.buttonIcon}
-          />
-
-          <Button 
             buttonTitle="Print Report"
-            onPressButton={() => Alert.alert("Coming Soon", "Print feature will be available in the next update.")}
+            onPressButton={handlePrint}
             buttonStyle={[localStyles.buttonContainer, { flex: 1 }]}
             textStyle={localStyles.buttonText}
             iconSource={require("../../assets/print_icon.png")}
