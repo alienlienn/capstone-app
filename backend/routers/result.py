@@ -6,8 +6,10 @@ from pydantic import BaseModel
 from typing import List, Optional
 import io
 import pandas as pd
+import numpy as np
+from sklearn.linear_model import LinearRegression
 from sqlalchemy.orm import Session, joinedload
-from models import School, Parent, Student, ParentStudent, Teacher, TeacherStudent, StudentResult, StudentPerformanceSummary, Subject, SubjectCategoryEnum
+from models import Parent, Student, ParentStudent, Teacher, TeacherStudent, StudentResult, StudentPerformanceSummary, Subject, SubjectCategoryEnum
 
 
 router = APIRouter(prefix="/result", tags=["result"])
@@ -159,6 +161,110 @@ async def get_student_results(student_id: int, term: str, db: db_dependency):
             "teacher_name": teacher_name
         }
     }
+
+
+# GET request - fetch historical results for a student, optionally filtered by subject
+@router.get("/historical/{student_id}", status_code=status.HTTP_200_OK)
+async def get_historical_results(student_id: int, db: db_dependency, subject_name: Optional[str] = None):
+    if subject_name and subject_name != "Overall":
+        # Process individual subject scores
+        results = db.query(
+            StudentResult.score,
+            StudentResult.term
+        ).join(
+            Subject, StudentResult.subject_id == Subject.id
+        ).filter(
+            StudentResult.student_id == student_id,
+            Subject.subject_name == subject_name
+        ).order_by(StudentResult.term).all()
+        
+        result = []
+        for score, term in results:
+            try:
+                year = int(term.value.split()[0][2:]) if hasattr(term, 'value') else int(term.split()[0][2:])
+            except:
+                year = 0
+            result.append({
+                "term": term.value if hasattr(term, 'value') else term,
+                "score": score,
+                "year": year
+            })
+            
+        # Supervised ML Trend Detection for Subject
+        if len(result) >= 2:
+            scores = np.array([r["score"] for r in result])
+            for i, r in enumerate(result):
+                r["trend"] = "neutral"
+                if i < 1: continue
+                local_diff = scores[i] - scores[i-1]
+                
+                # Check for Sharp changes first (1-point lookback)
+                if local_diff <= -12: 
+                    r["trend"] = "sharp_decrease"
+                elif local_diff >= 12: 
+                    r["trend"] = "sharp_increase"
+                # Check for Constant changes (2nd point onwards)
+                elif i >= 2:
+                    prev_diff = scores[i-1] - scores[i-2]
+                    if local_diff <= -5 and prev_diff <= -5: 
+                        r["trend"] = "constant_decrease"
+                    elif local_diff >= 5 and prev_diff >= 5: 
+                        r["trend"] = "constant_increase"
+        
+        return result
+    else:
+        # Process overall percentage
+        summaries = db.query(StudentPerformanceSummary).filter(
+            StudentPerformanceSummary.student_id == student_id
+        ).order_by(StudentPerformanceSummary.term).all()
+        
+        result = []
+        for s in summaries:
+            try:
+                year = int(s.term.value.split()[0][2:]) if hasattr(s.term, 'value') else int(s.term.split()[0][2:])
+            except:
+                year = 0
+                
+            result.append({
+                "term": s.term.value if hasattr(s.term, 'value') else s.term,
+                "score": s.overall_percentage,
+                "year": year
+            })
+        
+        # Supervised ML Trend Detection
+        if len(result) >= 2:
+            scores = np.array([r["score"] for r in result])
+            for i, r in enumerate(result):
+                r["trend"] = "neutral"
+                if i < 1: continue
+                local_diff = scores[i] - scores[i-1]
+                
+                # Check for Sharp changes first (1-point lookback)
+                if local_diff <= -12: 
+                    r["trend"] = "sharp_decrease"
+                elif local_diff >= 12: 
+                    r["trend"] = "sharp_increase"
+                # Check for Constant changes (2nd point onwards)
+                elif i >= 2:
+                    prev_diff = scores[i-1] - scores[i-2]
+                    if local_diff <= -5 and prev_diff <= -5: 
+                        r["trend"] = "constant_decrease"
+                    elif local_diff >= 5 and prev_diff >= 5: 
+                        r["trend"] = "constant_increase"
+
+        return result
+    
+
+# GET request - list unique subjects for a student's history
+@router.get("/student_subjects/{student_id}", status_code=status.HTTP_200_OK)
+async def get_student_historical_subjects(student_id: int, db: db_dependency):
+    subjects = db.query(Subject.subject_name).join(
+        StudentResult, StudentResult.subject_id == Subject.id
+    ).filter(
+        StudentResult.student_id == student_id
+    ).distinct().all()
+    
+    return [s[0] for s in subjects]
 
 
 # POST request - bulk upload student's results in excel 
